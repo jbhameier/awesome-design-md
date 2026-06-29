@@ -23,12 +23,12 @@
     --ink-soft:rgba(60,60,67,0.74);
     --ink-dim:rgba(60,60,67,0.55);
     --ink-faint:rgba(60,60,67,0.34);
-    /* glass — clean frosted white */
-    --glass:linear-gradient(180deg,rgba(255,255,255,0.80),rgba(255,255,255,0.62));
-    --glass-strong:linear-gradient(180deg,rgba(255,255,255,0.92),rgba(255,255,255,0.78));
-    --hair:rgba(0,0,0,0.09);
-    --hair-soft:rgba(0,0,0,0.055);
-    --shadow:0 1px 2px rgba(0,0,0,0.04),0 12px 32px rgba(17,17,40,0.07),inset 0 1px 0 rgba(255,255,255,0.7);
+    /* glass — translucent frost (Apple) */
+    --glass:linear-gradient(180deg,rgba(255,255,255,0.55),rgba(255,255,255,0.36));
+    --glass-strong:linear-gradient(180deg,rgba(255,255,255,0.72),rgba(255,255,255,0.52));
+    --hair:rgba(0,0,0,0.08);
+    --hair-soft:rgba(0,0,0,0.05);
+    --shadow:0 1px 2px rgba(0,0,0,0.05),0 16px 36px rgba(20,20,45,0.10),inset 0 1px 0 rgba(255,255,255,0.9);
     --font:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Segoe UI",system-ui,sans-serif;
     --mono:ui-monospace,"SF Mono","JetBrains Mono",Menlo,monospace;
     --r-lg:26px; --r-md:18px; --r-sm:13px;
@@ -55,7 +55,7 @@
   }
   .app{
     position:relative;width:100vw;height:100dvh;overflow:hidden;
-    background:var(--space);display:flex;flex-direction:column;isolation:isolate;
+    background:linear-gradient(168deg,#F4F3F9 0%,#E9E8F1 55%,#EEEDF4 100%);display:flex;flex-direction:column;isolation:isolate;
   }
   @media(min-width:600px){
     .app{
@@ -66,10 +66,10 @@
 
   /* ---------- aurora (the one bold thing) ---------- */
   .aurora{position:absolute;inset:0;z-index:0;overflow:hidden}
-  .aurora b{position:absolute;border-radius:50%;filter:blur(72px);will-change:transform}
-  .aurora .b1{width:380px;height:380px;left:-130px;top:-110px;background:radial-gradient(circle,rgba(0,122,255,0.14),transparent 70%);animation:drift1 24s var(--ease) infinite alternate}
-  .aurora .b2{width:300px;height:300px;right:-130px;top:30px;background:radial-gradient(circle,rgba(126,87,240,0.10),transparent 70%);animation:drift2 28s var(--ease) infinite alternate}
-  .aurora .b3{display:none}
+  .aurora b{position:absolute;border-radius:50%;filter:blur(70px);will-change:transform}
+  .aurora .b1{width:400px;height:400px;left:-130px;top:-120px;background:radial-gradient(circle,rgba(0,122,255,0.20),transparent 70%);animation:drift1 24s var(--ease) infinite alternate}
+  .aurora .b2{width:340px;height:340px;right:-150px;top:50px;background:radial-gradient(circle,rgba(90,200,250,0.17),transparent 70%);animation:drift2 28s var(--ease) infinite alternate}
+  .aurora .b3{width:360px;height:360px;left:-90px;bottom:-150px;background:radial-gradient(circle,rgba(0,122,255,0.12),transparent 72%);animation:drift3 30s var(--ease) infinite alternate}
   .aurora .grain{display:none}
   @keyframes drift1{to{transform:translate(60px,80px) scale(1.15)}}
   @keyframes drift2{to{transform:translate(-50px,90px) scale(1.1)}}
@@ -119,7 +119,7 @@
   .scr-head .hint{margin-top:9px}
 
   /* ---------- glass ---------- */
-  .glass{background:var(--glass);backdrop-filter:blur(24px) saturate(170%);-webkit-backdrop-filter:blur(24px) saturate(170%);
+  .glass{background:var(--glass);backdrop-filter:blur(32px) saturate(190%);-webkit-backdrop-filter:blur(32px) saturate(190%);
     border:1px solid var(--hair);border-radius:var(--r-lg);box-shadow:var(--shadow)}
   .card{padding:18px;margin-bottom:14px}
   .card.tight{padding:15px}
@@ -200,6 +200,27 @@
   .lstep .ln{font-size:12px;font-weight:700;letter-spacing:.02em}
   .ldelay{font-size:10px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--brand);
     background:rgba(0,122,255,.10);padding:3px 8px;border-radius:99px;margin-left:auto;white-space:nowrap}
+
+  /* senders / people */
+  .person{position:relative;padding:16px;margin-bottom:12px}
+  .person .p-del{position:absolute;top:11px;right:11px;width:26px;height:26px;border-radius:50%;border:none;cursor:pointer;
+    background:rgba(0,0,0,.05);color:var(--ink-dim);font-size:16px;line-height:1;display:grid;place-items:center;z-index:1}
+  .person .p-del:hover{background:rgba(255,59,48,.14);color:var(--ember)}
+  .p-top{display:flex;align-items:center;gap:13px;padding-right:26px}
+  .avatar{width:54px;height:54px;border-radius:50%;flex-shrink:0;cursor:pointer;position:relative;overflow:hidden;
+    background:rgba(0,122,255,.10);border:1px solid var(--hair);display:grid;place-items:center}
+  .avatar .ava-init{font-size:17px;font-weight:600;color:var(--brand)}
+  .avatar .ava-img{position:absolute;inset:0;background-size:cover;background-position:center;display:none}
+  .avatar.has .ava-img{display:block}
+  .avatar.has .ava-init{display:none}
+  .p-names{flex:1;min-width:0;display:flex;flex-direction:column;gap:8px}
+  .p-share{margin-top:14px}
+  .p-share>label{display:block;font-size:12.5px;font-weight:600;color:var(--ink-soft);margin-bottom:8px}
+  .share-ctl{display:flex;align-items:center;gap:11px}
+  .share-bar{flex:1;height:7px;border-radius:99px;background:rgba(0,0,0,.07);overflow:hidden}
+  .share-bar b{display:block;height:100%;width:100%;background:var(--brand);border-radius:99px;transition:width .2s var(--ease)}
+  .share-ctl .pf-pct{width:64px;text-align:center;padding:9px 8px}
+  .share-ctl .pct{font-size:14px;color:var(--ink-dim)}
 
   .add-row{display:flex;align-items:center;gap:8px;color:var(--accent);font-size:14px;font-weight:600;cursor:pointer;
     padding:13px;border:1px dashed rgba(0,122,255,.32);border-radius:var(--r-md);justify-content:center;background:rgba(0,122,255,.05)}
@@ -344,6 +365,7 @@
   .hero-rk{color:var(--brand)}
   .hero-rk .em svg.icn{width:54px;height:54px}
 
+  .welcome-screen{display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding-bottom:130px}
   .center{text-align:center}
   .mt8{margin-top:8px}.mt16{margin-top:16px}.mt24{margin-top:24px}
   .stack>*+*{margin-top:12px}
@@ -385,26 +407,20 @@
     <main class="screens" id="screens">
 
       <!-- 0 · WELCOME -->
-      <section class="screen" data-screen="welcome" data-flow="0">
+      <section class="screen welcome-screen" data-screen="welcome" data-flow="0">
         <div class="hero-rk"><span class="em"><svg class="icn" viewBox="0 0 24 24"><path d="M12 2.5c3.3 1.8 5 5 5 8.7 0 2.3-.7 4.3-1.7 5.8H8.7C7.7 15.5 7 13.5 7 11.2c0-3.7 1.7-6.9 5-8.7z"/><circle cx="12" cy="10" r="1.9"/><path d="M8.5 18l-2.7 4.5L10 20.8M15.5 18l2.7 4.5L14 20.8"/></svg></span></div>
-        <div class="center" style="padding:0 6px">
+        <div class="center" style="padding:0 16px">
           <p class="eyebrow" style="text-align:center">Automated Onboarding</p>
-          <h1>Let's get your<br>outbound engine<br>off the ground.</h1>
-          <p class="lede" style="margin:14px auto 0">In a few guided steps we'll set up your domains, mailboxes, knowledge base and first four campaigns — your AI agents handle the rest.</p>
+          <h1>Ready for liftoff</h1>
+          <p class="lede" style="margin:14px auto 0">A few quick steps to set up your outbound — your AI agents take it from there.</p>
         </div>
-        <div class="glass card mt24" style="margin:24px 4px 0">
-          <div class="feat"><span class="fi"><svg class="icn" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3c2.4 2.4 2.4 15.6 0 18M12 3c-2.4 2.4-2.4 15.6 0 18"/></svg></span><div><div class="ft">Tell us about your business</div><div class="fs">Website, products, and any docs you want the AI to learn from.</div></div></div>
-          <div class="feat" style="border-top:1px solid var(--hair-soft)"><span class="fi"><svg class="icn" viewBox="0 0 24 24"><path d="M4 13l2-7.2A1.5 1.5 0 0 1 7.4 4.6h9.2A1.5 1.5 0 0 1 18 5.8L20 13"/><path d="M4 13h4.2l1.2 2h5.2l1.2-2H20v4.8A1.6 1.6 0 0 1 18.4 19.4H5.6A1.6 1.6 0 0 1 4 17.8z"/></svg></span><div><div class="ft">We provision your infrastructure</div><div class="fs">Domains and mailboxes ordered through InboxKit, ready after warmup.</div></div></div>
-          <div class="feat" style="border-top:1px solid var(--hair-soft)"><span class="fi"><svg class="icn" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.4"/><circle cx="12" cy="12" r="1.1" fill="currentColor" stroke="none"/></svg></span><div><div class="ft">Review your ICP & campaigns</div><div class="fs">AI drafts, you approve. Launch when it's exactly right.</div></div></div>
-        </div>
-        <p class="hint center mt16" style="padding:0 14px">This is a simulated walkthrough — explore freely, nothing is sent.</p>
       </section>
 
       <!-- 1 · BUSINESS -->
       <section class="screen" data-screen="business" data-flow="1">
         <div class="scr-head">
           <p class="eyebrow">Step 1 · Your business</p>
-          <h1>Products &<br>Services</h1>
+          <h1>Products &amp; Services</h1>
           <p class="hint">Your website and offerings train the AI on how to talk about you.</p>
         </div>
 
@@ -433,7 +449,7 @@
       <section class="screen" data-screen="domains" data-flow="2">
         <div class="scr-head">
           <p class="eyebrow">Step 2 · Sending setup</p>
-          <h1>Domains &<br>mailboxes</h1>
+          <h1>Domains &amp; mailboxes</h1>
           <p class="hint">We'll spread volume across fresh domains to protect your main one.</p>
         </div>
 
@@ -455,22 +471,24 @@
 
         <h2 style="margin:4px 2px 10px">Sending volume</h2>
         <div class="opts" id="volOpts">
-          <div class="opt-row" data-domains="15" data-mailboxes="45"><span class="radio"></span><span class="opt-meta"><span class="otitle">15 domains</span><span class="osub">45 mailboxes · ~1,350 sends/day</span></span></div>
-          <div class="opt-row" data-domains="34" data-mailboxes="100"><span class="radio"></span><span class="opt-meta"><span class="otitle">34 domains</span><span class="osub">100 mailboxes · ~3,000 sends/day</span></span></div>
-          <div class="opt-row" data-domains="67" data-mailboxes="201"><span class="radio"></span><span class="opt-meta"><span class="otitle">67 domains</span><span class="osub">201 mailboxes · ~6,030 sends/day</span></span></div>
+          <div class="opt-row" data-domains="15" data-mailboxes="45"><span class="radio"></span><span class="opt-meta"><span class="otitle">15 domains</span><span class="osub">45 mailboxes</span></span></div>
+          <div class="opt-row" data-domains="34" data-mailboxes="100"><span class="radio"></span><span class="opt-meta"><span class="otitle">34 domains</span><span class="osub">100 mailboxes</span></span></div>
+          <div class="opt-row" data-domains="67" data-mailboxes="201"><span class="radio"></span><span class="opt-meta"><span class="otitle">67 domains</span><span class="osub">201 mailboxes</span></span></div>
         </div>
-        <p class="hint" style="margin:12px 2px 0">3 mailboxes per domain at 30 sends/day each.</p>
+        <p class="hint" style="margin:12px 2px 0">3 mailboxes per domain.</p>
 
-        <h2 style="margin:22px 2px 10px">Mailbox naming</h2>
-        <p class="hint" style="margin:0 2px 12px">Auto-created per domain from your sender's name.</p>
-        <div class="glass card tight" id="mailboxList"></div>
+        <h2 style="margin:22px 2px 10px">Senders</h2>
+        <p class="hint" style="margin:0 2px 12px">Each sender becomes 3 mailboxes per domain — firstname@, lastname@, first.last@. Add a photo and set how volume splits between them.</p>
+        <div id="peopleList"></div>
+        <div class="add-row" id="addPerson">＋ Add a person</div>
+        <p class="hint center" id="pTotal" style="margin:13px 2px 0;font-weight:600">Total volume — 100%</p>
       </section>
 
       <!-- 4 · CONNECT -->
       <section class="screen" data-screen="connect" data-flow="4">
         <div class="scr-head">
           <p class="eyebrow">Step 4 · Connect accounts</p>
-          <h1>Link your<br>inbox & socials</h1>
+          <h1>Connect accounts</h1>
           <p class="hint">We use these to send from, sync replies, and enrich LinkedIn outreach.</p>
         </div>
 
@@ -500,7 +518,7 @@
       <section class="screen" data-screen="inboxkit" data-flow="3">
         <div class="scr-head">
           <p class="eyebrow">Step 3 · Infrastructure</p>
-          <h1>Your sending<br>infrastructure</h1>
+          <h1>Infrastructure</h1>
           <p class="hint">We auto-selected available domains close to your brand and configured every mailbox.</p>
         </div>
 
@@ -525,7 +543,7 @@
       <section class="screen" data-screen="research" data-flow="5">
         <div class="scr-head">
           <p class="eyebrow">Step 5 · Knowledge Center</p>
-          <h1 id="researchTitle">Researching<br>your business…</h1>
+          <h1 id="researchTitle">Researching…</h1>
           <p class="hint" id="researchSub">Our AI is reading your site and docs, then a human reviewer checks everything.</p>
         </div>
 
@@ -561,7 +579,7 @@
       <section class="screen" data-screen="icp" data-flow="6">
         <div class="scr-head">
           <p class="eyebrow">Step 6 · Ideal Customer Profile</p>
-          <h1>Who should<br>we target?</h1>
+          <h1>Your ICP</h1>
           <p class="hint">The AI drafted your ICP from your business. Refine it — we'll save it to the Knowledge Center for your team.</p>
         </div>
 
@@ -585,7 +603,7 @@
       <section class="screen" data-screen="campaigns" data-flow="7">
         <div class="scr-head">
           <p class="eyebrow">Step 7 · Campaigns</p>
-          <h1>Review<br>campaigns</h1>
+          <h1>Review campaigns</h1>
           <p class="hint">We've set up 4 campaigns — one LinkedIn sequence and three cold-email steps. Edit anything, then confirm each. On launch we apply spintax, default settings, and attach your mailboxes.</p>
         </div>
         <div id="campaignList"></div>
@@ -599,7 +617,7 @@
         <div class="center" style="padding-top:18px">
           <div class="hero-rk" style="margin-top:10px"><span class="em"><svg class="icn" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8.2 12.4l2.6 2.6 5-5.4"/></svg></span></div>
           <p class="eyebrow" style="text-align:center;color:var(--ok)">Onboarding complete</p>
-          <h1>You're cleared<br>for launch.</h1>
+          <h1>Cleared for launch</h1>
           <p class="lede" style="margin:12px auto 0">Your campaigns are queued. Mailboxes go live the moment warmup finishes — no action needed from you.</p>
         </div>
 
@@ -743,30 +761,16 @@
   // Step 2 — domains & mailboxes
   // =====================================================================
   var st = { domains:15, mailboxes:45 };
-  var SENDER = { first:"alex", last:"rivera" };
   function rootDomainVal(){ var v=$("#rootDomain").value.trim()||$("#website").value.trim()||"acme.io"; return v.replace(/^https?:\/\//,"").replace(/\/.*$/,""); }
   function domainVariants(base){
     var stem = base.split(".")[0];
     return ["get"+stem+".com","try"+stem+".com","go"+stem+".io","use"+stem+".com","the"+stem+".co","join"+stem+".com","hey"+stem+".com","my"+stem+".com"];
-  }
-  function mailNames(){ return [SENDER.first, SENDER.last, SENDER.first+"."+SENDER.last]; }
-  function renderMailboxes(){
-    var list = $("#mailboxList"); list.innerHTML="";
-    var dom = domainVariants(rootDomainVal())[0];
-    mailNames().forEach(function(n){
-      var row = document.createElement("div"); row.className="mbx";
-      row.innerHTML = '<span class="ad" contenteditable="true" spellcheck="false">'+n+"@"+dom+'</span><span class="lim">30/day</span>';
-      list.appendChild(row);
-    });
-    list.insertAdjacentHTML("beforeend",
-      '<p class="hint" style="margin:10px 2px 2px">Repeats across all '+st.domains+' domains — '+st.mailboxes+' mailboxes total.</p>');
   }
   function selectVolume(row){
     $$("#volOpts .opt-row").forEach(function(r){ r.classList.remove("sel"); });
     row.classList.add("sel");
     st.domains = +row.getAttribute("data-domains");
     st.mailboxes = +row.getAttribute("data-mailboxes");
-    renderMailboxes();
   }
   $$("#volOpts .opt-row").forEach(function(r){ r.addEventListener("click", function(){ selectVolume(r); }); });
   selectVolume($("#volOpts .opt-row"));   // default to first tier
@@ -775,6 +779,53 @@
     if(this.checked){ f.style.display="none"; $("#fwdDomain").value = rootDomainVal(); }
     else { $("#fwdDomain").value=""; f.style.display="block"; $("#fwdDomain").focus(); }
   });
+
+  // ----- senders (people) -----
+  var people = $("#peopleList");
+  function initialsOf(f,l){ return (((f||"")[0]||"")+((l||"")[0]||"")).toUpperCase() || "?"; }
+  function updateBar(r){ var v=Math.max(0,Math.min(100,+r.querySelector(".pf-pct").value||0)); r.querySelector(".share-bar b").style.width=v+"%"; }
+  function updateTotal(){
+    var t=0; $$(".person .pf-pct",people).forEach(function(i){ t+=+i.value||0; });
+    var el=$("#pTotal"); el.textContent="Total volume — "+t+"%"; el.style.color=(t===100)?"":"var(--ember)";
+  }
+  function rebalance(){
+    var rows=$$(".person",people), n=rows.length; if(!n) return;
+    var base=Math.floor(100/n), rem=100-base*n;
+    rows.forEach(function(r,i){ r.querySelector(".pf-pct").value=base+(i<rem?1:0); updateBar(r); });
+    updateTotal();
+  }
+  function personCard(){
+    var d=document.createElement("div"); d.className="glass card person";
+    d.innerHTML =
+      '<button class="p-del" type="button" title="Remove">×</button>'+
+      '<div class="p-top">'+
+        '<label class="avatar"><span class="ava-img"></span><span class="ava-init">?</span><input type="file" accept="image/*" hidden></label>'+
+        '<div class="p-names">'+
+          '<input class="pf-first" placeholder="First name" autocomplete="off">'+
+          '<input class="pf-last" placeholder="Last name" autocomplete="off">'+
+        '</div>'+
+      '</div>'+
+      '<div class="p-share">'+
+        '<label>Volume share</label>'+
+        '<div class="share-ctl"><span class="share-bar"><b></b></span><input class="pf-pct" type="number" min="0" max="100" inputmode="numeric" value="100"><span class="pct">%</span></div>'+
+      '</div>';
+    var first=d.querySelector(".pf-first"), last=d.querySelector(".pf-last"), init=d.querySelector(".ava-init");
+    function setInit(){ init.textContent=initialsOf(first.value.trim(),last.value.trim()); }
+    first.addEventListener("input",setInit); last.addEventListener("input",setInit);
+    var fileInp=d.querySelector(".avatar input"), ava=d.querySelector(".avatar"), img=d.querySelector(".ava-img");
+    fileInp.addEventListener("change",function(){
+      var f=fileInp.files&&fileInp.files[0]; if(!f) return;
+      var rd=new FileReader(); rd.onload=function(e){ img.style.backgroundImage="url("+e.target.result+")"; ava.classList.add("has"); }; rd.readAsDataURL(f);
+    });
+    d.querySelector(".pf-pct").addEventListener("input",function(){ updateBar(d); updateTotal(); });
+    d.querySelector(".p-del").addEventListener("click",function(){
+      if($$(".person",people).length>1){ d.remove(); rebalance(); }
+    });
+    return d;
+  }
+  function addPerson(){ people.appendChild(personCard()); rebalance(); }
+  $("#addPerson").addEventListener("click", addPerson);
+  addPerson();   // start with one blank sender
 
   // =====================================================================
   // Step 3 — connect
@@ -849,7 +900,7 @@
       if(k<lis.length){ lis[k].className="run"; k++; setTimeout(step, rm?0:900); }
       else {
         researchDone = true;
-        $("#researchTitle").innerHTML = "Review your<br>knowledge base";
+        $("#researchTitle").innerHTML = "Knowledge base";
         $("#researchSub").textContent = "AI drafted these, a human refined them. Edit anything before it's saved.";
         $("#researchCard").style.display="none";
         $("#reviewDocs").style.display="";
@@ -958,7 +1009,6 @@
         if(w) $("#rootDomain").value = w.replace(/^https?:\/\//,"").replace(/\/.*$/,"");
       }
       if($("#fwdToggle").checked) $("#fwdDomain").value = rootDomainVal();
-      renderMailboxes();
     },
     inboxkit: fillInboxKit,
     research: function(){ runResearch(); },
@@ -1015,7 +1065,7 @@
   function resetAll(){
     // reset campaigns + research + order so restart feels fresh
     confirmed=[false,false,false,false]; campBuilt=false; researchRun=false; researchDone=false; ordered=false;
-    $("#researchTitle").innerHTML="Researching<br>your business…";
+    $("#researchTitle").innerHTML="Researching…";
   }
 
   // =====================================================================
