@@ -2,7 +2,7 @@ name: Deploy onboarding to GitHub Pages
 
 on:
   push:
-    branches: ["claude/b2b-rocket-mobile-onboarding-lyoxl4"]
+    branches: ["main"]
   workflow_dispatch:
 
 # Allow the workflow to enable Pages and publish to it
