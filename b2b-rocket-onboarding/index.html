@@ -790,11 +790,36 @@
     var t=0; $$(".person .pf-pct",people).forEach(function(i){ t+=+i.value||0; });
     var el=$("#pTotal"); el.textContent="Total volume — "+t+"%"; el.style.color=(t===100)?"":"var(--ember)";
   }
+  function pctVal(r){ var v=parseInt(r.querySelector(".pf-pct").value,10); return isNaN(v)?0:v; }
   function rebalance(){
     var rows=$$(".person",people), n=rows.length; if(!n) return;
     var base=Math.floor(100/n), rem=100-base*n;
     rows.forEach(function(r,i){ r.querySelector(".pf-pct").value=base+(i<rem?1:0); updateBar(r); });
     updateTotal();
+  }
+  // editing one share redistributes the rest (proportionally) so the total stays at 100%
+  function distribute(changed, commit){
+    var rows=$$(".person",people), n=rows.length; if(!n) return;
+    var inp=changed.querySelector(".pf-pct");
+    var raw=parseInt(inp.value,10); if(isNaN(raw)) raw=0;
+    var v=Math.max(0,Math.min(100,raw));
+    if(commit || raw>100 || raw<0) inp.value=v;
+    if(n===1){ inp.value=100; updateBar(changed); updateTotal(); return; }
+    var others=rows.filter(function(r){ return r!==changed; });
+    var sumOthers=others.reduce(function(a,r){ return a+pctVal(r); },0);
+    var remaining=100-v;
+    others.forEach(function(r){
+      var share = sumOthers>0 ? Math.round(remaining*pctVal(r)/sumOthers) : Math.round(remaining/others.length);
+      r.querySelector(".pf-pct").value=Math.max(0,Math.min(100,share)); updateBar(r);
+    });
+    // fix any rounding drift on the largest other so it sums to exactly 100
+    var total=rows.reduce(function(a,r){ return a+pctVal(r); },0);
+    if(total!==100){
+      var big=others[0];
+      others.forEach(function(r){ if(pctVal(r)>pctVal(big)) big=r; });
+      var bi=big.querySelector(".pf-pct"); bi.value=Math.max(0,pctVal(big)+(100-total)); updateBar(big);
+    }
+    updateBar(changed); updateTotal();
   }
   function personCard(){
     var d=document.createElement("div"); d.className="glass card person";
@@ -819,7 +844,9 @@
       var f=fileInp.files&&fileInp.files[0]; if(!f) return;
       var rd=new FileReader(); rd.onload=function(e){ img.style.backgroundImage="url("+e.target.result+")"; ava.classList.add("has"); }; rd.readAsDataURL(f);
     });
-    d.querySelector(".pf-pct").addEventListener("input",function(){ updateBar(d); updateTotal(); });
+    var pctInp=d.querySelector(".pf-pct");
+    pctInp.addEventListener("input",function(){ distribute(d,false); });
+    pctInp.addEventListener("change",function(){ distribute(d,true); });
     d.querySelector(".p-del").addEventListener("click",function(){
       if($$(".person",people).length>1){ d.remove(); rebalance(); }
     });
