@@ -1,0 +1,38 @@
+name: Deploy onboarding to GitHub Pages
+
+on:
+  push:
+    branches: ["claude/b2b-rocket-mobile-onboarding-lyoxl4"]
+  workflow_dispatch:
+
+# Allow the workflow to enable Pages and publish to it
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# One concurrent deployment
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Configure Pages (auto-enable if needed)
+        uses: actions/configure-pages@v5
+        with:
+          enablement: true
+      - name: Upload the onboarding site as the Pages root
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./b2b-rocket-onboarding
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
