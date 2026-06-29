@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0">
-<meta name="theme-color" content="#EFECFB">
+<meta name="theme-color" content="#E8E7EE">
 <meta name="description" content="B2B Rocket — a simulated mobile onboarding journey with Apple-style glassmorphism.">
 <title>B2B Rocket · Onboarding</title>
 <style>
@@ -11,13 +11,13 @@
     /* ground — Apple light system grey */
     --space:#F2F1F6;
     --panel:#FBFBFD;
-    /* brand violet — the ONLY color, for buttons + accents */
-    --brand:#6C3CE9;
-    --glow:#7E57F0;
-    --accent:#6C3CE9;        /* accents use the primary, nothing else */
-    --ember:#FF3B30;         /* reserved strictly for validation errors */
-    --ok:#6C3CE9;            /* success states also use the primary */
-    --warn:#8E8E93;          /* neutral grey, no amber */
+    /* Apple system blue — the single accent for buttons + accents */
+    --brand:#007AFF;
+    --glow:#3399FF;
+    --accent:#007AFF;        /* accents use the system tint, nothing else */
+    --ember:#FF3B30;         /* Apple system red — validation errors only */
+    --ok:#007AFF;            /* success states use the tint */
+    --warn:#8E8E93;          /* neutral grey */
     /* ink — neutral Apple greys (system labels) */
     --ink:#1D1D1F;
     --ink-soft:rgba(60,60,67,0.74);
@@ -50,7 +50,7 @@
   .stage{
     height:100dvh;width:100vw;display:grid;place-items:center;
     background:
-      radial-gradient(120% 90% at 80% -10%,rgba(108,60,233,0.07),transparent 55%),
+      radial-gradient(120% 90% at 80% -10%,rgba(0,122,255,0.07),transparent 55%),
       #E8E7EE;
   }
   .app{
@@ -67,7 +67,7 @@
   /* ---------- aurora (the one bold thing) ---------- */
   .aurora{position:absolute;inset:0;z-index:0;overflow:hidden}
   .aurora b{position:absolute;border-radius:50%;filter:blur(72px);will-change:transform}
-  .aurora .b1{width:380px;height:380px;left:-130px;top:-110px;background:radial-gradient(circle,rgba(108,60,233,0.14),transparent 70%);animation:drift1 24s var(--ease) infinite alternate}
+  .aurora .b1{width:380px;height:380px;left:-130px;top:-110px;background:radial-gradient(circle,rgba(0,122,255,0.14),transparent 70%);animation:drift1 24s var(--ease) infinite alternate}
   .aurora .b2{width:300px;height:300px;right:-130px;top:30px;background:radial-gradient(circle,rgba(126,87,240,0.10),transparent 70%);animation:drift2 28s var(--ease) infinite alternate}
   .aurora .b3{display:none}
   .aurora .grain{display:none}
@@ -86,7 +86,7 @@
   .topbar .row{display:flex;align-items:center;gap:14px;min-height:24px}
   .brandmark{display:flex;align-items:center;gap:9px;font-weight:700;font-size:15px;letter-spacing:-0.02em}
   .brandmark .rk{width:26px;height:26px;display:grid;place-items:center;border-radius:9px;
-    background:linear-gradient(150deg,var(--brand),var(--glow));box-shadow:0 3px 10px rgba(108,60,233,.32)}
+    background:linear-gradient(150deg,var(--brand),var(--glow));box-shadow:0 3px 10px rgba(0,122,255,.32)}
   .step-label{margin-left:auto;font-size:12px;color:var(--ink-dim);font-variant-numeric:tabular-nums}
   .segs{display:flex;gap:5px}
   .segs i{height:4px;flex:1;border-radius:99px;background:rgba(27,22,51,.12);overflow:hidden}
@@ -135,7 +135,7 @@
   textarea{resize:none;line-height:1.5}
   input::placeholder,textarea::placeholder{color:var(--ink-faint)}
   input:focus,textarea:focus,select:focus{border-color:var(--glow);background:rgba(255,255,255,.92);
-    box-shadow:0 0 0 4px rgba(139,92,246,.18)}
+    box-shadow:0 0 0 4px rgba(0,122,255,.18)}
   select{appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none'><path d='M1 1l5 5 5-5' stroke='%235B5280' stroke-width='1.6' stroke-linecap='round'/></svg>");
     background-repeat:no-repeat;background-position:right 14px center;padding-right:36px}
   .field.invalid input,.field.invalid textarea{border-color:var(--ember);box-shadow:0 0 0 4px rgba(251,113,133,.16)}
@@ -146,7 +146,7 @@
   /* prefix input (domain) */
   .at{display:flex;align-items:center;background:rgba(255,255,255,.55);border:1px solid var(--hair);
     border-radius:var(--r-sm);overflow:hidden}
-  .at:focus-within{border-color:var(--glow);box-shadow:0 0 0 4px rgba(139,92,246,.18)}
+  .at:focus-within{border-color:var(--glow);box-shadow:0 0 0 4px rgba(0,122,255,.18)}
   .at span{padding:0 4px 0 14px;color:var(--ink-dim);font-family:var(--mono);font-size:13px}
   .at input{border:none;background:none;box-shadow:none!important;padding-left:2px}
 
@@ -154,13 +154,13 @@
   .btn{appearance:none;border:none;font:inherit;font-weight:600;cursor:pointer;border-radius:99px;
     display:inline-flex;align-items:center;justify-content:center;gap:8px;transition:transform .12s var(--ease),filter .15s,opacity .15s}
   .btn:active{transform:scale(.97)}
-  .btn-primary{background:linear-gradient(135deg,var(--brand),var(--glow));color:#fff;padding:16px 22px;font-size:16px;
-    border-radius:14px;box-shadow:0 6px 20px rgba(108,60,233,.32),inset 0 1px 0 rgba(255,255,255,.22);width:100%}
+  .btn-primary{background:var(--brand);color:#fff;padding:16px 22px;font-size:16px;
+    border-radius:14px;box-shadow:0 4px 14px rgba(0,122,255,.28);width:100%}
   .btn-primary:hover{filter:brightness(1.08)}
   .btn-primary[disabled]{opacity:.4;cursor:not-allowed;box-shadow:none}
   .btn-ghost{background:rgba(255,255,255,.62);border:1px solid var(--hair);color:var(--brand);padding:13px 18px;font-size:14px;border-radius:12px}
   .btn-ghost:hover{background:rgba(255,255,255,.92)}
-  .btn-launch{background:linear-gradient(135deg,var(--brand),var(--glow));box-shadow:0 10px 30px rgba(108,60,233,.4),inset 0 1px 0 rgba(255,255,255,.25)}
+  .btn-launch{background:var(--brand);box-shadow:0 4px 14px rgba(0,122,255,.28)}
 
   /* ---------- action bar ---------- */
   .actionbar{position:absolute;left:0;right:0;bottom:0;z-index:6;padding:16px 22px calc(20px + env(safe-area-inset-bottom));
@@ -170,7 +170,7 @@
   /* ---------- pieces ---------- */
   .pill{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:5px 11px;border-radius:99px;
     background:rgba(27,22,51,.05);border:1px solid var(--hair-soft);color:var(--ink-soft)}
-  .pill.ok{color:var(--ok);border-color:rgba(108,60,233,.25);background:rgba(108,60,233,.10)}
+  .pill.ok{color:var(--ok);border-color:rgba(0,122,255,.25);background:rgba(0,122,255,.10)}
   .pill.dot::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
 
   .stepper{display:flex;align-items:center;gap:0;background:rgba(255,255,255,.5);border:1px solid var(--hair);
@@ -182,8 +182,8 @@
   .duo>*{flex:1}
 
   .add-row{display:flex;align-items:center;gap:8px;color:var(--accent);font-size:14px;font-weight:600;cursor:pointer;
-    padding:13px;border:1px dashed rgba(108,60,233,.32);border-radius:var(--r-md);justify-content:center;background:rgba(108,60,233,.05)}
-  .add-row:hover{background:rgba(108,60,233,.09)}
+    padding:13px;border:1px dashed rgba(0,122,255,.32);border-radius:var(--r-md);justify-content:center;background:rgba(0,122,255,.05)}
+  .add-row:hover{background:rgba(0,122,255,.09)}
 
   .prod{position:relative}
   .prod .del{position:absolute;top:12px;right:12px;width:26px;height:26px;border-radius:50%;border:none;cursor:pointer;
@@ -193,13 +193,13 @@
 
   /* upload tiles */
   .uploads{display:flex;gap:10px}
-  .uptile{flex:1;border:1px dashed var(--hair);border-radius:var(--r-md);padding:16px 10px;text-align:center;cursor:pointer;
-    transition:background .15s,border-color .15s}
-  .uptile:hover{background:rgba(27,22,51,.04)}
-  .uptile.has{border-style:solid;border-color:rgba(108,60,233,.4);background:rgba(108,60,233,.07)}
+  .uptile{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;border:1px dashed var(--hair);
+    border-radius:var(--r-md);padding:16px 8px;text-align:center;cursor:pointer;transition:background .15s,border-color .15s}
+  .uptile:hover{background:rgba(0,0,0,.03)}
+  .uptile.has{border-style:solid;border-color:rgba(0,122,255,.4);background:rgba(0,122,255,.07)}
   .uptile .ic{font-size:22px;margin-bottom:6px}
   .uptile .t{font-size:12.5px;font-weight:600}
-  .uptile .s{font-size:11px;color:var(--ink-dim);margin-top:3px}
+  .uptile .s{font-size:11px;color:var(--ink-dim);margin-top:3px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .uptile.has .s{color:var(--ok)}
 
   /* connect rows */
@@ -211,7 +211,7 @@
   .conn .cbtn{flex-shrink:0;font-size:13px;font-weight:600;padding:9px 15px;border-radius:99px;border:1px solid var(--hair);
     background:rgba(255,255,255,.7);color:var(--ink);cursor:pointer;transition:.15s}
   .conn .cbtn:hover{background:#fff}
-  .conn.linked .cbtn{background:rgba(108,60,233,.12);border-color:rgba(108,60,233,.3);color:var(--ok);pointer-events:none}
+  .conn.linked .cbtn{background:rgba(0,122,255,.12);border-color:rgba(0,122,255,.3);color:var(--ok);pointer-events:none}
 
   /* mailbox list */
   .mbx{display:flex;align-items:center;gap:10px;padding:11px 13px;border-radius:var(--r-md);background:rgba(255,255,255,.55);
@@ -247,7 +247,7 @@
   .doc .dt{font-size:14.5px;font-weight:600}
   .doc .ds{font-size:11.5px;color:var(--ink-dim);margin-top:1px}
   .doc .body{margin-top:13px}
-  .doc .ic{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:rgba(139,92,246,.16);font-size:16px}
+  .doc .ic{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:rgba(0,122,255,.16);font-size:16px}
 
   /* campaign cards */
   .camp{padding:0;margin-bottom:13px;overflow:hidden}
@@ -260,7 +260,7 @@
   .camp .body{max-height:0;overflow:hidden;transition:max-height .4s var(--ease)}
   .camp .pad{padding:0 16px 16px}
   .camp .sub-l{font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint);margin:4px 0 6px}
-  .camp.confirmed .head{background:rgba(108,60,233,.06)}
+  .camp.confirmed .head{background:rgba(0,122,255,.06)}
 
   /* done timeline */
   .tl{position:relative;padding-left:30px;margin-top:6px}
@@ -269,7 +269,7 @@
   .tl .pt:last-child{padding-bottom:0}
   .tl .pt::before{content:"";position:absolute;left:-26px;top:3px;width:14px;height:14px;border-radius:50%;
     background:var(--space);border:2px solid var(--accent)}
-  .tl .pt.now::before{background:var(--accent);box-shadow:0 0 0 5px rgba(108,60,233,.18)}
+  .tl .pt.now::before{background:var(--accent);box-shadow:0 0 0 5px rgba(0,122,255,.18)}
   .tl .pt .when{font-family:var(--mono);font-size:11px;color:var(--accent);letter-spacing:.04em}
   .tl .pt .what{font-size:14.5px;font-weight:600;margin-top:3px}
   .tl .pt .sub{font-size:12.5px;color:var(--ink-dim);margin-top:2px;line-height:1.4}
@@ -282,12 +282,12 @@
   /* hero rocket */
   .hero-rk{display:grid;place-items:center;margin:30px auto 8px;width:128px;height:128px;border-radius:36px;
     background:var(--glass-strong);border:1px solid var(--hair);box-shadow:var(--shadow);position:relative;overflow:hidden}
-  .hero-rk::after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 50% 120%,rgba(108,60,233,.28),transparent 62%)}
+  .hero-rk::after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 50% 120%,rgba(0,122,255,.28),transparent 62%)}
   .hero-rk .em{font-size:62px;position:relative;z-index:1;animation:bob 3.5s ease-in-out infinite}
   @keyframes bob{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-7px) rotate(2deg)}}
   .feat{display:flex;gap:12px;align-items:flex-start;padding:13px 0}
   .feat .fi{width:34px;height:34px;flex-shrink:0;border-radius:10px;display:grid;place-items:center;
-    background:linear-gradient(150deg,rgba(108,60,233,.16),rgba(108,60,233,.05));font-size:16px}
+    background:linear-gradient(150deg,rgba(0,122,255,.16),rgba(0,122,255,.05));font-size:16px}
   .feat .ft{font-size:14px;font-weight:600}
   .feat .fs{font-size:12.5px;color:var(--ink-dim);margin-top:2px;line-height:1.4}
 
@@ -303,6 +303,23 @@
 
   /* confetti canvas */
   #confetti{position:absolute;inset:0;z-index:15;pointer-events:none}
+
+  /* SF Symbol-style icons */
+  svg.icn{display:block;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+  svg.icn.fill{fill:currentColor;stroke:none}
+  .brandmark .rk{color:#fff}
+  .brandmark .rk svg.icn{width:15px;height:15px}
+  .feat .fi{color:var(--brand)}
+  .feat .fi svg.icn{width:19px;height:19px}
+  .doc .ic{color:var(--brand)}
+  .doc .ic svg.icn{width:18px;height:18px}
+  .recap .rc{color:var(--brand);background:rgba(0,122,255,.10)}
+  .recap .rc svg.icn{width:18px;height:18px}
+  .uptile .ic{color:var(--ink-dim);transition:color .15s}
+  .uptile.has .ic{color:var(--brand)}
+  .uptile .ic svg.icn{width:25px;height:25px;margin:0 auto}
+  .hero-rk{color:var(--brand)}
+  .hero-rk .em svg.icn{width:54px;height:54px}
 
   .center{text-align:center}
   .mt8{margin-top:8px}.mt16{margin-top:16px}.mt24{margin-top:24px}
@@ -335,7 +352,7 @@
     <header class="topbar">
       <div class="row">
         <button class="back-btn" id="backBtn">‹ Back</button>
-        <div class="brandmark" id="brandmark"><span class="rk">🚀</span> B2B Rocket</div>
+        <div class="brandmark" id="brandmark"><span class="rk"><svg class="icn" viewBox="0 0 24 24"><path d="M12 3c2.9 1.6 4.3 4.5 4.3 7.8 0 2-.6 3.7-1.4 5H9.1c-.8-1.3-1.4-3-1.4-5C7.7 7.5 9.1 4.6 12 3z"/><circle cx="12" cy="9.4" r="1.5"/><path d="M9 16l-2.2 3.8L10 18.4M15 16l2.2 3.8L14 18.4"/></svg></span> B2B Rocket</div>
         <span class="step-label" id="stepLabel"></span>
       </div>
       <div class="segs" id="segs"></div>
@@ -346,16 +363,16 @@
 
       <!-- 0 · WELCOME -->
       <section class="screen" data-screen="welcome" data-flow="0">
-        <div class="hero-rk"><span class="em">🚀</span></div>
+        <div class="hero-rk"><span class="em"><svg class="icn" viewBox="0 0 24 24"><path d="M12 2.5c3.3 1.8 5 5 5 8.7 0 2.3-.7 4.3-1.7 5.8H8.7C7.7 15.5 7 13.5 7 11.2c0-3.7 1.7-6.9 5-8.7z"/><circle cx="12" cy="10" r="1.9"/><path d="M8.5 18l-2.7 4.5L10 20.8M15.5 18l2.7 4.5L14 20.8"/></svg></span></div>
         <div class="center" style="padding:0 6px">
           <p class="eyebrow" style="text-align:center">Automated Onboarding</p>
           <h1>Let's get your<br>outbound engine<br>off the ground.</h1>
           <p class="lede" style="margin:14px auto 0">In a few guided steps we'll set up your domains, mailboxes, knowledge base and first four campaigns — your AI agents handle the rest.</p>
         </div>
         <div class="glass card mt24" style="margin:24px 4px 0">
-          <div class="feat"><span class="fi">📥</span><div><div class="ft">Tell us about your business</div><div class="fs">Website, products, and any docs you want the AI to learn from.</div></div></div>
-          <div class="feat" style="border-top:1px solid var(--hair-soft)"><span class="fi">🛰️</span><div><div class="ft">We provision your infrastructure</div><div class="fs">Domains and mailboxes ordered through InboxKit, ready after warmup.</div></div></div>
-          <div class="feat" style="border-top:1px solid var(--hair-soft)"><span class="fi">🎯</span><div><div class="ft">Review your ICP & campaigns</div><div class="fs">AI drafts, you approve. Launch when it's exactly right.</div></div></div>
+          <div class="feat"><span class="fi"><svg class="icn" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3c2.4 2.4 2.4 15.6 0 18M12 3c-2.4 2.4-2.4 15.6 0 18"/></svg></span><div><div class="ft">Tell us about your business</div><div class="fs">Website, products, and any docs you want the AI to learn from.</div></div></div>
+          <div class="feat" style="border-top:1px solid var(--hair-soft)"><span class="fi"><svg class="icn" viewBox="0 0 24 24"><path d="M4 13l2-7.2A1.5 1.5 0 0 1 7.4 4.6h9.2A1.5 1.5 0 0 1 18 5.8L20 13"/><path d="M4 13h4.2l1.2 2h5.2l1.2-2H20v4.8A1.6 1.6 0 0 1 18.4 19.4H5.6A1.6 1.6 0 0 1 4 17.8z"/></svg></span><div><div class="ft">We provision your infrastructure</div><div class="fs">Domains and mailboxes ordered through InboxKit, ready after warmup.</div></div></div>
+          <div class="feat" style="border-top:1px solid var(--hair-soft)"><span class="fi"><svg class="icn" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.4"/><circle cx="12" cy="12" r="1.1" fill="currentColor" stroke="none"/></svg></span><div><div class="ft">Review your ICP & campaigns</div><div class="fs">AI drafts, you approve. Launch when it's exactly right.</div></div></div>
         </div>
         <p class="hint center mt16" style="padding:0 14px">This is a simulated walkthrough — explore freely, nothing is sent.</p>
       </section>
@@ -381,11 +398,11 @@
         <div class="add-row" id="addProduct">＋ Add another product or service</div>
 
         <h2 style="margin:22px 2px 10px">Reference docs <span class="opt hint" style="font-weight:500">— optional</span></h2>
-        <p class="hint" style="margin:0 2px 12px">A deck, white paper or one-pager makes the AI sharper.</p>
+        <p class="hint" style="margin:0 2px 12px">A deck, one-pager or screenshots make the AI sharper.</p>
         <div class="uploads">
-          <div class="uptile" data-up="Pitch deck" data-file="Pitch-Deck-2026.pdf"><div class="ic">📊</div><div class="t">Pitch deck</div><div class="s">Tap to attach</div></div>
-          <div class="uptile" data-up="White paper" data-file="Whitepaper.pdf"><div class="ic">📄</div><div class="t">White paper</div><div class="s">Tap to attach</div></div>
-          <div class="uptile" data-up="One-pager" data-file="One-Pager.pdf"><div class="ic">📁</div><div class="t">One-pager</div><div class="s">Tap to attach</div></div>
+          <label class="uptile"><input type="file" accept="image/*" hidden><span class="ic"><svg class="icn" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="8.5" cy="9.5" r="1.6"/><path d="M21 15.5l-4.5-4.5L4.5 19.5"/></svg></span><span class="t">Image</span><span class="s">Tap to attach</span></label>
+          <label class="uptile"><input type="file" accept=".pdf,.doc,.docx,.ppt,.pptx,.key,.pages,.txt,.md" hidden><span class="ic"><svg class="icn" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M9 13h6M9 17h4"/></svg></span><span class="t">Doc</span><span class="s">Tap to attach</span></label>
+          <label class="uptile"><input type="file" hidden><span class="ic"><svg class="icn" viewBox="0 0 24 24"><path d="M20 11.5l-8.1 8.1a5 5 0 0 1-7.1-7.1l8.5-8.5a3.3 3.3 0 0 1 4.7 4.7l-8.5 8.5a1.6 1.6 0 0 1-2.3-2.3l7.8-7.8"/></svg></span><span class="t">Other</span><span class="s">Tap to attach</span></label>
         </div>
       </section>
 
@@ -511,13 +528,13 @@
             <div><div style="font-size:13.5px;font-weight:600">Ready for your review</div>
             <div class="hint">A specialist refined these drafts. Tap to read or edit before they're saved.</div></div></div>
           </div>
-          <details class="glass doc" open><summary><span class="ic">🏢</span><span><span class="dt">Company Overview</span><span class="ds">Who you are, in the AI's words</span></span><span class="chev">›</span></summary>
+          <details class="glass doc" open><summary><span class="ic"><svg class="icn" viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="2.5"/><path d="M9 8h6M9 12h6M9 16h4"/></svg></span><span><span class="dt">Company Overview</span><span class="ds">Who you are, in the AI's words</span></span><span class="chev">›</span></summary>
             <div class="body"><textarea rows="4" data-grow>Acme helps mid-market RevOps teams replace 6 disconnected tools with one workflow engine. Founded 2021, ~80 employees, trusted by 400+ B2B teams. Differentiator: setup in days, not quarters.</textarea></div>
           </details>
-          <details class="glass doc"><summary><span class="ic">📦</span><span><span class="dt">Product One-Pager</span><span class="ds">Value props & proof points</span></span><span class="chev">›</span></summary>
+          <details class="glass doc"><summary><span class="ic"><svg class="icn" viewBox="0 0 24 24"><path d="M21 8l-9-5-9 5v8l9 5 9-5z"/><path d="M3 8l9 5 9-5M12 13v8"/></svg></span><span><span class="dt">Product One-Pager</span><span class="ds">Value props & proof points</span></span><span class="chev">›</span></summary>
             <div class="body"><textarea rows="4" data-grow>Core: unified pipeline automation. Outcomes customers cite — 32% faster cycle times, 1.8x rep capacity, &lt;1 week to value. Integrates with Salesforce, HubSpot, Slack.</textarea></div>
           </details>
-          <details class="glass doc"><summary><span class="ic">🛡️</span><span><span class="dt">Objection Handling</span><span class="ds">How agents respond to pushback</span></span><span class="chev">›</span></summary>
+          <details class="glass doc"><summary><span class="ic"><svg class="icn" viewBox="0 0 24 24"><path d="M12 3l7 2.5v5.6c0 4.4-3 7.4-7 8.9-4-1.5-7-4.5-7-8.9V5.5z"/><path d="M9 12l2 2 3.5-4"/></svg></span><span><span class="dt">Objection Handling</span><span class="ds">How agents respond to pushback</span></span><span class="chev">›</span></summary>
             <div class="body"><textarea rows="4" data-grow>"Already have a tool" → we replace the stack, not add to it. "No budget" → ROI in &lt;2 quarters. "Bad timing" → 30-min audit, no commitment.</textarea></div>
           </details>
         </div>
@@ -563,7 +580,7 @@
       <!-- 8 · DONE -->
       <section class="screen" data-screen="done" data-flow="8">
         <div class="center" style="padding-top:18px">
-          <div class="hero-rk" style="margin-top:10px"><span class="em">🛰️</span></div>
+          <div class="hero-rk" style="margin-top:10px"><span class="em"><svg class="icn" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8.2 12.4l2.6 2.6 5-5.4"/></svg></span></div>
           <p class="eyebrow" style="text-align:center;color:var(--ok)">Onboarding complete</p>
           <h1>You're cleared<br>for launch.</h1>
           <p class="lede" style="margin:12px auto 0">Your campaigns are queued. Mailboxes go live the moment warmup finishes — no action needed from you.</p>
@@ -580,10 +597,10 @@
 
         <div class="glass card">
           <h2 style="margin-bottom:6px">Your setup</h2>
-          <div class="recap"><span class="rc">🛰️</span><span>Domains & mailboxes</span><span class="rv" id="recapMbx">6 mailboxes</span></div>
-          <div class="recap"><span class="rc">🧠</span><span>Knowledge Center</span><span class="rv">3 docs + ICP</span></div>
-          <div class="recap"><span class="rc">🎯</span><span>Campaigns</span><span class="rv">4 launching</span></div>
-          <div class="recap"><span class="rc">🤖</span><span>AI agents</span><span class="rv" style="color:var(--ok)">Configured</span></div>
+          <div class="recap"><span class="rc"><svg class="icn" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="M4 7.5l8 5.5 8-5.5"/></svg></span><span>Domains & mailboxes</span><span class="rv" id="recapMbx">6 mailboxes</span></div>
+          <div class="recap"><span class="rc"><svg class="icn" viewBox="0 0 24 24"><path d="M6.5 3H18a1 1 0 0 1 1 1v16H6.5A1.5 1.5 0 0 1 5 18.5v-14A1.5 1.5 0 0 1 6.5 3z"/><path d="M5 18.5A1.5 1.5 0 0 1 6.5 17H19"/></svg></span><span>Knowledge Center</span><span class="rv">3 docs + ICP</span></div>
+          <div class="recap"><span class="rc"><svg class="icn" viewBox="0 0 24 24"><path d="M22 3 11 14"/><path d="M22 3l-7 18-4-7-7-4 18-7z"/></svg></span><span>Campaigns</span><span class="rv">4 launching</span></div>
+          <div class="recap"><span class="rc"><svg class="icn" viewBox="0 0 24 24"><path d="M12 4l1.5 4 4 1.5-4 1.5L12 15l-1.5-4-4-1.5 4-1.5z" fill="currentColor" stroke="none"/><path d="M18 13.5l.8 2.2 2.2.8-2.2.8-.8 2.2-.8-2.2-2.2-.8 2.2-.8z" fill="currentColor" stroke="none"/></svg></span><span>AI agents</span><span class="rv" style="color:var(--ok)">Configured</span></div>
         </div>
       </section>
 
@@ -691,12 +708,17 @@
   $("#addProduct").addEventListener("click", function(){ products.appendChild(productCard(products.children.length+1)); });
   products.appendChild(productCard(1));
 
-  // upload tiles
-  $$(".uptile").forEach(function(t){
-    t.addEventListener("click", function(){
-      var has = t.classList.toggle("has");
-      var s = t.querySelector(".s");
-      s.textContent = has ? t.getAttribute("data-file") : "Tap to attach";
+  // upload tiles — real native picker (Image opens the phone's photo library)
+  $$(".uptile input[type=file]").forEach(function(inp){
+    inp.addEventListener("change", function(){
+      var tile = inp.closest(".uptile"), s = tile.querySelector(".s");
+      if(inp.files && inp.files.length){
+        tile.classList.add("has");
+        s.textContent = inp.files.length > 1 ? inp.files.length + " selected" : inp.files[0].name;
+      } else {
+        tile.classList.remove("has");
+        s.textContent = "Tap to attach";
+      }
     });
   });
 
