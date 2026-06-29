@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0">
+<meta name="theme-color" content="#07071A">
+<meta name="description" content="B2B Rocket — a simulated mobile onboarding journey with Apple-style glassmorphism.">
+<title>B2B Rocket · Onboarding</title>
+<style>
+  :root{
+    /* ground */
+    --space:#07071A;
+    --panel:#100C2A;
+    /* brand */
+    --brand:#6C3CE9;
+    --glow:#8B5CF6;
+    --accent:#22D3EE;
+    --ember:#FB7185;
+    /* semantic */
+    --ok:#34D399;
+    --warn:#FBBF24;
+    /* ink (violet-biased neutrals, never pure grey) */
+    --ink:#FFFFFF;
+    --ink-soft:rgba(231,229,247,0.78);
+    --ink-dim:rgba(201,198,230,0.52);
+    --ink-faint:rgba(201,198,230,0.30);
+    /* glass */
+    --glass:linear-gradient(158deg,rgba(255,255,255,0.11),rgba(255,255,255,0.035));
+    --glass-strong:linear-gradient(158deg,rgba(255,255,255,0.16),rgba(255,255,255,0.06));
+    --hair:rgba(255,255,255,0.14);
+    --hair-soft:rgba(255,255,255,0.08);
+    --shadow:0 12px 48px rgba(0,0,0,0.45),inset 0 1px 0 rgba(255,255,255,0.13);
+    --font:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Segoe UI",system-ui,sans-serif;
+    --mono:ui-monospace,"SF Mono","JetBrains Mono",Menlo,monospace;
+    --r-lg:26px; --r-md:18px; --r-sm:13px;
+    --ease:cubic-bezier(.22,.61,.36,1);
+  }
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{height:100%}
+  body{
+    font-family:var(--font);
+    background:#04040E;
+    color:var(--ink);
+    letter-spacing:-0.01em;
+    -webkit-font-smoothing:antialiased;
+    text-rendering:optimizeLegibility;
+    overflow:hidden;
+  }
+
+  /* ---------- device shell ---------- */
+  .stage{
+    height:100dvh;width:100vw;display:grid;place-items:center;
+    background:
+      radial-gradient(120% 90% at 80% -10%,rgba(108,60,233,0.18),transparent 60%),
+      radial-gradient(120% 90% at 0% 110%,rgba(34,211,238,0.10),transparent 55%),
+      #04040E;
+  }
+  .app{
+    position:relative;width:100vw;height:100dvh;overflow:hidden;
+    background:var(--space);display:flex;flex-direction:column;isolation:isolate;
+  }
+  @media(min-width:600px){
+    .app{
+      width:402px;height:858px;border-radius:54px;
+      box-shadow:0 0 0 12px #16161f,0 0 0 14px #2b2b38,0 40px 120px rgba(0,0,0,.7);
+    }
+  }
+
+  /* ---------- aurora (the one bold thing) ---------- */
+  .aurora{position:absolute;inset:0;z-index:0;overflow:hidden}
+  .aurora b{position:absolute;border-radius:50%;filter:blur(56px);opacity:.85;will-change:transform}
+  .aurora .b1{width:320px;height:320px;left:-90px;top:-60px;background:radial-gradient(circle,var(--brand),transparent 70%);animation:drift1 18s var(--ease) infinite alternate}
+  .aurora .b2{width:300px;height:300px;right:-110px;top:120px;background:radial-gradient(circle,var(--glow),transparent 70%);animation:drift2 22s var(--ease) infinite alternate}
+  .aurora .b3{width:340px;height:340px;left:-60px;bottom:-120px;background:radial-gradient(circle,var(--accent),transparent 72%);opacity:.5;animation:drift3 26s var(--ease) infinite alternate}
+  .aurora .grain{position:absolute;inset:0;opacity:.4;background-image:radial-gradient(rgba(255,255,255,.05) 1px,transparent 1px);background-size:3px 3px;mix-blend-mode:overlay}
+  @keyframes drift1{to{transform:translate(60px,80px) scale(1.15)}}
+  @keyframes drift2{to{transform:translate(-50px,90px) scale(1.1)}}
+  @keyframes drift3{to{transform:translate(70px,-60px) scale(1.2)}}
+
+  /* ---------- status bar ---------- */
+  .statusbar{position:relative;z-index:5;display:flex;justify-content:space-between;align-items:center;
+    padding:14px 26px 4px;font-size:14px;font-weight:600;letter-spacing:0}
+  .statusbar .ico{display:flex;gap:7px;align-items:center}
+  .statusbar svg{display:block}
+
+  /* ---------- progress header ---------- */
+  .topbar{position:relative;z-index:5;padding:6px 22px 14px;display:flex;flex-direction:column;gap:10px}
+  .topbar .row{display:flex;align-items:center;gap:14px;min-height:24px}
+  .brandmark{display:flex;align-items:center;gap:9px;font-weight:700;font-size:15px;letter-spacing:-0.02em}
+  .brandmark .rk{width:26px;height:26px;display:grid;place-items:center;border-radius:9px;
+    background:linear-gradient(150deg,var(--brand),var(--glow));box-shadow:0 4px 14px rgba(108,60,233,.5)}
+  .step-label{margin-left:auto;font-size:12px;color:var(--ink-dim);font-variant-numeric:tabular-nums}
+  .segs{display:flex;gap:5px}
+  .segs i{height:4px;flex:1;border-radius:99px;background:rgba(255,255,255,.12);overflow:hidden}
+  .segs i b{display:block;height:100%;width:0;border-radius:99px;background:linear-gradient(90deg,var(--brand),var(--accent));transition:width .5s var(--ease)}
+  .segs i.done b{width:100%}
+  .segs i.active b{width:100%}
+  .back-btn{appearance:none;background:none;border:none;color:var(--ink-soft);font:inherit;font-size:14px;
+    display:flex;align-items:center;gap:3px;cursor:pointer;padding:4px 4px 4px 0;opacity:0;transform:translateX(-6px);
+    transition:opacity .3s,transform .3s,color .15s;pointer-events:none}
+  .back-btn.show{opacity:1;transform:none;pointer-events:auto}
+  .back-btn:hover{color:var(--ink)}
+
+  /* ---------- screens ---------- */
+  .screens{position:relative;z-index:4;flex:1;overflow:hidden}
+  .screen{position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;
+    padding:8px 22px 130px;opacity:0;transform:translateX(34px);pointer-events:none;
+    transition:opacity .45s var(--ease),transform .45s var(--ease);-webkit-overflow-scrolling:touch}
+  .screen::-webkit-scrollbar{width:0}
+  .screen.active{opacity:1;transform:none;pointer-events:auto}
+  .screen.prev{transform:translateX(-34px)}
+
+  /* ---------- typography ---------- */
+  .eyebrow{font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:10px}
+  h1{font-size:31px;line-height:1.08;font-weight:700;letter-spacing:-0.03em;text-wrap:balance}
+  h2{font-size:15px;font-weight:600;letter-spacing:-0.01em}
+  .lede{margin-top:12px;font-size:16px;line-height:1.5;color:var(--ink-soft);max-width:34ch}
+  .hint{font-size:12.5px;color:var(--ink-dim);line-height:1.45}
+  .scr-head{padding:14px 2px 22px}
+  .scr-head h1{font-size:26px}
+  .scr-head .hint{margin-top:9px}
+
+  /* ---------- glass ---------- */
+  .glass{background:var(--glass);backdrop-filter:blur(24px) saturate(170%);-webkit-backdrop-filter:blur(24px) saturate(170%);
+    border:1px solid var(--hair);border-radius:var(--r-lg);box-shadow:var(--shadow)}
+  .card{padding:18px;margin-bottom:14px}
+  .card.tight{padding:15px}
+
+  /* ---------- forms ---------- */
+  .field{margin-bottom:15px}
+  .field>label{display:block;font-size:12.5px;font-weight:600;color:var(--ink-soft);margin-bottom:7px;letter-spacing:0}
+  .field>label .req{color:var(--accent)}
+  .field>label .opt{color:var(--ink-faint);font-weight:500}
+  input,textarea,select{width:100%;font:inherit;font-size:15px;color:var(--ink);
+    background:rgba(255,255,255,.05);border:1px solid var(--hair-soft);border-radius:var(--r-sm);
+    padding:13px 14px;outline:none;transition:border-color .15s,background .15s,box-shadow .15s}
+  textarea{resize:none;line-height:1.5}
+  input::placeholder,textarea::placeholder{color:var(--ink-faint)}
+  input:focus,textarea:focus,select:focus{border-color:var(--glow);background:rgba(255,255,255,.08);
+    box-shadow:0 0 0 4px rgba(139,92,246,.18)}
+  select{appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none'><path d='M1 1l5 5 5-5' stroke='%23A9A6D9' stroke-width='1.6' stroke-linecap='round'/></svg>");
+    background-repeat:no-repeat;background-position:right 14px center;padding-right:36px}
+  .field.invalid input,.field.invalid textarea{border-color:var(--ember);box-shadow:0 0 0 4px rgba(251,113,133,.16)}
+  .err{display:none;font-size:12px;color:var(--ember);margin-top:6px}
+  .field.invalid .err{display:block}
+  .mono{font-family:var(--mono);font-size:13px;letter-spacing:-0.02em}
+
+  /* prefix input (domain) */
+  .at{display:flex;align-items:center;background:rgba(255,255,255,.05);border:1px solid var(--hair-soft);
+    border-radius:var(--r-sm);overflow:hidden}
+  .at:focus-within{border-color:var(--glow);box-shadow:0 0 0 4px rgba(139,92,246,.18)}
+  .at span{padding:0 4px 0 14px;color:var(--ink-dim);font-family:var(--mono);font-size:13px}
+  .at input{border:none;background:none;box-shadow:none!important;padding-left:2px}
+
+  /* ---------- buttons ---------- */
+  .btn{appearance:none;border:none;font:inherit;font-weight:600;cursor:pointer;border-radius:99px;
+    display:inline-flex;align-items:center;justify-content:center;gap:8px;transition:transform .12s var(--ease),filter .15s,opacity .15s}
+  .btn:active{transform:scale(.97)}
+  .btn-primary{background:linear-gradient(135deg,var(--brand),var(--glow));color:#fff;padding:16px 22px;font-size:16px;
+    box-shadow:0 10px 30px rgba(108,60,233,.45),inset 0 1px 0 rgba(255,255,255,.25);width:100%}
+  .btn-primary:hover{filter:brightness(1.08)}
+  .btn-primary[disabled]{opacity:.4;cursor:not-allowed;box-shadow:none}
+  .btn-ghost{background:rgba(255,255,255,.06);border:1px solid var(--hair);color:var(--ink);padding:13px 18px;font-size:14px}
+  .btn-ghost:hover{background:rgba(255,255,255,.1)}
+  .btn-launch{background:linear-gradient(135deg,var(--ember),#F43F5E);box-shadow:0 12px 36px rgba(244,63,94,.5),inset 0 1px 0 rgba(255,255,255,.3)}
+
+  /* ---------- action bar ---------- */
+  .actionbar{position:absolute;left:0;right:0;bottom:0;z-index:6;padding:16px 22px calc(20px + env(safe-area-inset-bottom));
+    background:linear-gradient(to top,var(--space) 38%,rgba(7,7,26,.85) 75%,transparent);
+    backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+
+  /* ---------- pieces ---------- */
+  .pill{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:5px 11px;border-radius:99px;
+    background:rgba(255,255,255,.08);border:1px solid var(--hair-soft);color:var(--ink-soft)}
+  .pill.ok{color:var(--ok);border-color:rgba(52,211,153,.3);background:rgba(52,211,153,.12)}
+  .pill.dot::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+
+  .stepper{display:flex;align-items:center;gap:0;background:rgba(255,255,255,.05);border:1px solid var(--hair-soft);
+    border-radius:var(--r-sm);overflow:hidden;width:fit-content}
+  .stepper button{appearance:none;border:none;background:none;color:var(--ink);font-size:20px;width:46px;height:46px;cursor:pointer;font-weight:300}
+  .stepper button:active{background:rgba(255,255,255,.08)}
+  .stepper .val{min-width:42px;text-align:center;font-weight:600;font-variant-numeric:tabular-nums;font-size:16px}
+  .duo{display:flex;gap:12px}
+  .duo>*{flex:1}
+
+  .add-row{display:flex;align-items:center;gap:8px;color:var(--accent);font-size:14px;font-weight:600;cursor:pointer;
+    padding:13px;border:1px dashed rgba(34,211,238,.35);border-radius:var(--r-md);justify-content:center;background:rgba(34,211,238,.05)}
+  .add-row:hover{background:rgba(34,211,238,.1)}
+
+  .prod{position:relative}
+  .prod .del{position:absolute;top:12px;right:12px;width:26px;height:26px;border-radius:50%;border:none;cursor:pointer;
+    background:rgba(255,255,255,.08);color:var(--ink-dim);font-size:16px;line-height:1;display:grid;place-items:center}
+  .prod .del:hover{background:rgba(251,113,133,.2);color:var(--ember)}
+  .prod-num{font-family:var(--mono);font-size:11px;color:var(--ink-faint);margin-bottom:12px;letter-spacing:.05em}
+
+  /* upload tiles */
+  .uploads{display:flex;gap:10px}
+  .uptile{flex:1;border:1px dashed var(--hair);border-radius:var(--r-md);padding:16px 10px;text-align:center;cursor:pointer;
+    transition:background .15s,border-color .15s}
+  .uptile:hover{background:rgba(255,255,255,.05)}
+  .uptile.has{border-style:solid;border-color:rgba(52,211,153,.4);background:rgba(52,211,153,.08)}
+  .uptile .ic{font-size:22px;margin-bottom:6px}
+  .uptile .t{font-size:12.5px;font-weight:600}
+  .uptile .s{font-size:11px;color:var(--ink-dim);margin-top:3px}
+  .uptile.has .s{color:var(--ok)}
+
+  /* connect rows */
+  .conn{display:flex;align-items:center;gap:13px;padding:15px;margin-bottom:12px}
+  .conn .logo{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;flex-shrink:0;font-weight:700;font-size:17px}
+  .conn .meta{flex:1;min-width:0}
+  .conn .meta .t{font-size:14.5px;font-weight:600}
+  .conn .meta .s{font-size:12px;color:var(--ink-dim);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .conn .cbtn{flex-shrink:0;font-size:13px;font-weight:600;padding:9px 15px;border-radius:99px;border:1px solid var(--hair);
+    background:rgba(255,255,255,.07);color:var(--ink);cursor:pointer;transition:.15s}
+  .conn .cbtn:hover{background:rgba(255,255,255,.12)}
+  .conn.linked .cbtn{background:rgba(52,211,153,.14);border-color:rgba(52,211,153,.35);color:var(--ok);pointer-events:none}
+
+  /* mailbox list */
+  .mbx{display:flex;align-items:center;gap:10px;padding:11px 13px;border-radius:var(--r-md);background:rgba(255,255,255,.04);
+    border:1px solid var(--hair-soft);margin-bottom:8px}
+  .mbx .ad{flex:1;min-width:0;font-family:var(--mono);font-size:12.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .mbx .lim{font-family:var(--mono);font-size:11px;color:var(--ink-dim);white-space:nowrap}
+
+  /* summary line */
+  .line{display:flex;justify-content:space-between;align-items:center;padding:11px 0;border-bottom:1px solid var(--hair-soft);font-size:14px}
+  .line:last-child{border-bottom:none}
+  .line .k{color:var(--ink-soft)}
+  .line .v{font-weight:600;font-family:var(--mono);font-size:13px}
+
+  /* AI progress */
+  .ai-stages{list-style:none;margin-top:10px}
+  .ai-stages li{display:flex;align-items:center;gap:13px;padding:13px 0;border-bottom:1px solid var(--hair-soft);
+    font-size:14.5px;color:var(--ink-dim);transition:color .3s}
+  .ai-stages li:last-child{border-bottom:none}
+  .ai-stages li.run{color:var(--ink)}
+  .ai-stages li.done{color:var(--ink-soft)}
+  .ai-stages .dot{width:22px;height:22px;flex-shrink:0;border-radius:50%;border:2px solid var(--hair);position:relative}
+  .ai-stages li.run .dot{border-color:transparent;border-top-color:var(--accent);border-right-color:var(--accent);animation:spin .8s linear infinite}
+  .ai-stages li.done .dot{border-color:var(--ok);background:var(--ok)}
+  .ai-stages li.done .dot::after{content:"";position:absolute;left:6px;top:2.5px;width:5px;height:10px;border:solid #07071A;border-width:0 2px 2px 0;transform:rotate(45deg)}
+  @keyframes spin{to{transform:rotate(360deg)}}
+
+  /* doc review cards */
+  .doc{padding:15px;margin-bottom:11px}
+  .doc summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:10px}
+  .doc summary::-webkit-details-marker{display:none}
+  .doc .chev{margin-left:auto;color:var(--ink-dim);transition:transform .25s}
+  .doc[open] .chev{transform:rotate(90deg)}
+  .doc .dt{font-size:14.5px;font-weight:600}
+  .doc .ds{font-size:11.5px;color:var(--ink-dim);margin-top:1px}
+  .doc .body{margin-top:13px}
+  .doc .ic{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:rgba(139,92,246,.16);font-size:16px}
+
+  /* campaign cards */
+  .camp{padding:0;margin-bottom:13px;overflow:hidden}
+  .camp .head{display:flex;align-items:center;gap:11px;padding:15px 16px;cursor:pointer}
+  .camp .num{font-family:var(--mono);font-size:12px;color:var(--accent);font-weight:600}
+  .camp .nm{font-size:14.5px;font-weight:600}
+  .camp .ang{font-size:11.5px;color:var(--ink-dim);margin-top:1px}
+  .camp .chev{margin-left:auto;color:var(--ink-dim);transition:transform .25s}
+  .camp.open .chev{transform:rotate(90deg)}
+  .camp .body{max-height:0;overflow:hidden;transition:max-height .4s var(--ease)}
+  .camp .pad{padding:0 16px 16px}
+  .camp .sub-l{font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint);margin:4px 0 6px}
+  .camp.confirmed .head{background:rgba(52,211,153,.07)}
+
+  /* done timeline */
+  .tl{position:relative;padding-left:30px;margin-top:6px}
+  .tl::before{content:"";position:absolute;left:9px;top:6px;bottom:6px;width:2px;background:linear-gradient(var(--brand),var(--accent))}
+  .tl .pt{position:relative;padding:0 0 22px}
+  .tl .pt:last-child{padding-bottom:0}
+  .tl .pt::before{content:"";position:absolute;left:-26px;top:3px;width:14px;height:14px;border-radius:50%;
+    background:var(--space);border:2px solid var(--accent)}
+  .tl .pt.now::before{background:var(--accent);box-shadow:0 0 0 5px rgba(34,211,238,.2)}
+  .tl .pt .when{font-family:var(--mono);font-size:11px;color:var(--accent);letter-spacing:.04em}
+  .tl .pt .what{font-size:14.5px;font-weight:600;margin-top:3px}
+  .tl .pt .sub{font-size:12.5px;color:var(--ink-dim);margin-top:2px;line-height:1.4}
+
+  .recap{display:flex;gap:11px;align-items:center;padding:12px 0;border-bottom:1px solid var(--hair-soft);font-size:14px}
+  .recap:last-child{border-bottom:none}
+  .recap .rc{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;background:rgba(255,255,255,.06);font-size:15px;flex-shrink:0}
+  .recap .rv{margin-left:auto;font-family:var(--mono);font-size:12px;color:var(--ink-soft)}
+
+  /* hero rocket */
+  .hero-rk{display:grid;place-items:center;margin:30px auto 8px;width:128px;height:128px;border-radius:36px;
+    background:var(--glass-strong);border:1px solid var(--hair);box-shadow:var(--shadow);position:relative;overflow:hidden}
+  .hero-rk::after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 50% 120%,rgba(108,60,233,.5),transparent 60%)}
+  .hero-rk .em{font-size:62px;position:relative;z-index:1;animation:bob 3.5s ease-in-out infinite}
+  @keyframes bob{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-7px) rotate(2deg)}}
+  .feat{display:flex;gap:12px;align-items:flex-start;padding:13px 0}
+  .feat .fi{width:34px;height:34px;flex-shrink:0;border-radius:10px;display:grid;place-items:center;
+    background:linear-gradient(150deg,rgba(108,60,233,.3),rgba(34,211,238,.2));font-size:16px}
+  .feat .ft{font-size:14px;font-weight:600}
+  .feat .fs{font-size:12.5px;color:var(--ink-dim);margin-top:2px;line-height:1.4}
+
+  /* launch overlay */
+  .launch-over{position:absolute;inset:0;z-index:20;background:radial-gradient(circle at 50% 60%,#1a0b3d,#04040E);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;opacity:0;pointer-events:none;transition:opacity .4s}
+  .launch-over.show{opacity:1;pointer-events:auto}
+  .launch-over .rk{font-size:84px;animation:liftoff 2.4s var(--ease) forwards}
+  .launch-over .lt{font-size:20px;font-weight:700;letter-spacing:-0.02em;opacity:0;animation:fadein .5s 1.8s forwards}
+  @keyframes liftoff{0%{transform:translateY(40px) scale(.8);opacity:0}25%{transform:translateY(0) scale(1);opacity:1}
+    100%{transform:translateY(-240px) scale(1.1);opacity:0}}
+  @keyframes fadein{to{opacity:1}}
+
+  /* confetti canvas */
+  #confetti{position:absolute;inset:0;z-index:15;pointer-events:none}
+
+  .center{text-align:center}
+  .mt8{margin-top:8px}.mt16{margin-top:16px}.mt24{margin-top:24px}
+  .stack>*+*{margin-top:12px}
+
+  @media(prefers-reduced-motion:reduce){
+    *{animation:none!important;transition-duration:.01ms!important}
+    .screen{transition:opacity .2s}
+  }
+</style>
+</head>
+<body>
+<div class="stage">
+  <div class="app" id="app">
+    <div class="aurora" aria-hidden="true">
+      <b class="b1"></b><b class="b2"></b><b class="b3"></b><div class="grain"></div>
+    </div>
+
+    <!-- status bar -->
+    <div class="statusbar">
+      <span>9:41</span>
+      <span class="ico">
+        <svg width="17" height="11" viewBox="0 0 17 11" fill="white"><rect x="0" y="7" width="3" height="4" rx="1"/><rect x="4.5" y="5" width="3" height="6" rx="1"/><rect x="9" y="2.5" width="3" height="8.5" rx="1"/><rect x="13.5" y="0" width="3" height="11" rx="1"/></svg>
+        <svg width="16" height="11" viewBox="0 0 16 11" fill="white"><path d="M8 2.2c2 0 3.8.8 5.2 2L14.4 3C12.7 1.3 10.4.3 8 .3S3.3 1.3 1.6 3l1.2 1.2C4.2 3 6 2.2 8 2.2z" opacity=".9"/><path d="M8 5.5c1.1 0 2.1.4 2.9 1.1l1.2-1.2C10.9 4.3 9.5 3.7 8 3.7s-2.9.6-4.1 1.7l1.2 1.2C5.9 5.9 6.9 5.5 8 5.5z" opacity=".9"/><circle cx="8" cy="9.2" r="1.6"/></svg>
+        <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x="1" y="1" width="21" height="10" rx="3" stroke="white" stroke-opacity=".5"/><rect x="2.5" y="2.5" width="16" height="7" rx="1.5" fill="white"/><rect x="23" y="4" width="1.5" height="4" rx="1" fill="white" fill-opacity=".5"/></svg>
+      </span>
+    </div>
+
+    <!-- progress header -->
+    <header class="topbar">
+      <div class="row">
+        <button class="back-btn" id="backBtn">‹ Back</button>
+        <div class="brandmark" id="brandmark"><span class="rk">🚀</span> B2B Rocket</div>
+        <span class="step-label" id="stepLabel"></span>
+      </div>
+      <div class="segs" id="segs"></div>
+    </header>
+
+    <!-- screens -->
+    <main class="screens" id="screens">
+
+      <!-- 0 · WELCOME -->
+      <section class="screen" data-screen="welcome" data-flow="0">
+        <div class="hero-rk"><span class="em">🚀</span></div>
+        <div class="center" style="padding:0 6px">
+          <p class="eyebrow" style="text-align:center">Automated Onboarding</p>
+          <h1>Let's get your<br>outbound engine<br>off the ground.</h1>
+          <p class="lede" style="margin:14px auto 0">In a few guided steps we'll set up your domains, mailboxes, knowledge base and first four campaigns — your AI agents handle the rest.</p>
+        </div>
+        <div class="glass card mt24" style="margin:24px 4px 0">
+          <div class="feat"><span class="fi">📥</span><div><div class="ft">Tell us about your business</div><div class="fs">Website, products, and any docs you want the AI to learn from.</div></div></div>
+          <div class="feat" style="border-top:1px solid var(--hair-soft)"><span class="fi">🛰️</span><div><div class="ft">We provision your infrastructure</div><div class="fs">Domains and mailboxes ordered through InboxKit, ready after warmup.</div></div></div>
+          <div class="feat" style="border-top:1px solid var(--hair-soft)"><span class="fi">🎯</span><div><div class="ft">Review your ICP & campaigns</div><div class="fs">AI drafts, you approve. Launch when it's exactly right.</div></div></div>
+        </div>
+        <p class="hint center mt16" style="padding:0 14px">This is a simulated walkthrough — explore freely, nothing is sent.</p>
+      </section>
+
+      <!-- 1 · BUSINESS -->
+      <section class="screen" data-screen="business" data-flow="1">
+        <div class="scr-head">
+          <p class="eyebrow">Step 1 · Your business</p>
+          <h1>What are we<br>selling?</h1>
+          <p class="hint">Your website and offerings train the AI on how to talk about you.</p>
+        </div>
+
+        <div class="glass card">
+          <div class="field">
+            <label for="website">Company website <span class="req">*</span></label>
+            <div class="at"><span>https://</span><input id="website" type="text" inputmode="url" placeholder="acme.io" autocomplete="off"></div>
+            <div class="err">Add your website so the AI can research you.</div>
+          </div>
+        </div>
+
+        <h2 style="margin:4px 2px 12px">Products & services</h2>
+        <div id="products"></div>
+        <div class="add-row" id="addProduct">＋ Add another product or service</div>
+
+        <h2 style="margin:22px 2px 10px">Reference docs <span class="opt hint" style="font-weight:500">— optional</span></h2>
+        <p class="hint" style="margin:0 2px 12px">A deck, white paper or one-pager makes the AI sharper.</p>
+        <div class="uploads">
+          <div class="uptile" data-up="Pitch deck" data-file="Pitch-Deck-2026.pdf"><div class="ic">📊</div><div class="t">Pitch deck</div><div class="s">Tap to attach</div></div>
+          <div class="uptile" data-up="White paper" data-file="Whitepaper.pdf"><div class="ic">📄</div><div class="t">White paper</div><div class="s">Tap to attach</div></div>
+          <div class="uptile" data-up="One-pager" data-file="One-Pager.pdf"><div class="ic">📁</div><div class="t">One-pager</div><div class="s">Tap to attach</div></div>
+        </div>
+      </section>
+
+      <!-- 2 · DOMAINS & MAILBOXES -->
+      <section class="screen" data-screen="domains" data-flow="2">
+        <div class="scr-head">
+          <p class="eyebrow">Step 2 · Sending setup</p>
+          <h1>Domains &<br>mailboxes</h1>
+          <p class="hint">We'll spread volume across fresh domains to protect your main one.</p>
+        </div>
+
+        <div class="glass card">
+          <div class="field">
+            <label for="rootDomain">Your primary domain <span class="req">*</span></label>
+            <div class="at"><span>@</span><input id="rootDomain" type="text" placeholder="acme.io" autocomplete="off"></div>
+            <div class="err">We need your primary domain.</div>
+          </div>
+          <label class="field" style="display:flex;align-items:center;gap:11px;margin-bottom:0;cursor:pointer">
+            <input type="checkbox" id="fwdToggle" style="width:auto;accent-color:var(--brand)">
+            <span style="font-size:13.5px;color:var(--ink-soft)">Replies should forward to a different domain</span>
+          </label>
+          <div class="field" id="fwdField" style="display:none;margin-top:13px;margin-bottom:0">
+            <label for="fwdDomain">Forwarding domain</label>
+            <div class="at"><span>@</span><input id="fwdDomain" type="text" placeholder="getacme.com" autocomplete="off"></div>
+          </div>
+        </div>
+
+        <div class="glass card">
+          <div class="duo">
+            <div class="field" style="margin-bottom:0">
+              <label>Sending domains</label>
+              <div class="stepper" data-stepper="domains"><button data-d="-1">−</button><span class="val" id="numDomains">2</span><button data-d="1">＋</button></div>
+            </div>
+            <div class="field" style="margin-bottom:0">
+              <label>Mailboxes</label>
+              <div class="stepper" data-stepper="mailboxes"><button data-d="-1">−</button><span class="val" id="numMailboxes">6</span><button data-d="1">＋</button></div>
+            </div>
+          </div>
+          <p class="hint" style="margin-top:12px">Recommended: 3 mailboxes per domain at 30 sends/day each.</p>
+        </div>
+
+        <h2 style="margin:4px 2px 10px">Mailboxes & distribution</h2>
+        <p class="hint" style="margin:0 2px 12px">Auto-generated from your team — tap any name to edit.</p>
+        <div class="glass card tight" id="mailboxList"></div>
+      </section>
+
+      <!-- 3 · CONNECT -->
+      <section class="screen" data-screen="connect" data-flow="3">
+        <div class="scr-head">
+          <p class="eyebrow">Step 3 · Connect accounts</p>
+          <h1>Link your<br>inbox & socials</h1>
+          <p class="hint">We use these to send from, sync replies, and enrich LinkedIn outreach.</p>
+        </div>
+
+        <h2 style="margin:4px 2px 12px">Primary inbox</h2>
+        <div class="glass conn" data-conn="google" data-acct="alex@acme.io">
+          <div class="logo" style="background:#fff;color:#4285F4">G</div>
+          <div class="meta"><div class="t">Google Workspace</div><div class="s">Send & sync replies</div></div>
+          <button class="cbtn">Connect</button>
+        </div>
+        <div class="glass conn" data-conn="ms" data-acct="alex@acme.io">
+          <div class="logo" style="background:#fff;color:#0078D4">M</div>
+          <div class="meta"><div class="t">Microsoft 365</div><div class="s">Send & sync replies</div></div>
+          <button class="cbtn">Connect</button>
+        </div>
+
+        <h2 style="margin:22px 2px 12px">LinkedIn</h2>
+        <div class="glass conn" data-conn="li" data-acct="Alex Rivera">
+          <div class="logo" style="background:#0A66C2;color:#fff">in</div>
+          <div class="meta"><div class="t">LinkedIn account</div><div class="s">Automate connection requests & DMs</div></div>
+          <button class="cbtn">Connect</button>
+        </div>
+        <div class="add-row" id="addLinkedIn" style="margin-top:4px">＋ Add another LinkedIn account</div>
+        <p class="hint center mt16" style="padding:0 10px">Connecting is simulated here — no real OAuth happens.</p>
+      </section>
+
+      <!-- 4 · INBOXKIT -->
+      <section class="screen" data-screen="inboxkit" data-flow="4">
+        <div class="scr-head">
+          <p class="eyebrow">Step 4 · Provisioning</p>
+          <h1>Your InboxKit<br>order</h1>
+          <p class="hint">We auto-selected available domains close to your brand and configured every mailbox.</p>
+        </div>
+
+        <h2 style="margin:4px 2px 10px">Auto-selected domains</h2>
+        <div class="glass card" id="domainPicks"></div>
+
+        <div class="glass card">
+          <h2 style="margin-bottom:6px">Order summary</h2>
+          <div class="line"><span class="k">Sending domains</span><span class="v" id="sumDomains">2</span></div>
+          <div class="line"><span class="k">Mailboxes</span><span class="v" id="sumMailboxes">6</span></div>
+          <div class="line"><span class="k">DNS · SPF / DKIM / DMARC</span><span class="v" style="color:var(--ok)">Auto</span></div>
+          <div class="line"><span class="k">Warmup</span><span class="v">~2 weeks</span></div>
+          <div class="line"><span class="k">Est. monthly</span><span class="v" id="sumPrice">$84.00</span></div>
+        </div>
+        <div class="glass card center" id="orderState">
+          <span class="pill dot" style="color:var(--warn)">Awaiting confirmation</span>
+          <p class="hint mt8">Tap below to place the order through InboxKit.</p>
+        </div>
+      </section>
+
+      <!-- 5 · AI RESEARCH -->
+      <section class="screen" data-screen="research" data-flow="5">
+        <div class="scr-head">
+          <p class="eyebrow">Step 5 · Knowledge Center</p>
+          <h1 id="researchTitle">Researching<br>your business…</h1>
+          <p class="hint" id="researchSub">Our AI is reading your site and docs, then a human reviewer checks everything.</p>
+        </div>
+
+        <div class="glass card" id="researchCard">
+          <ul class="ai-stages" id="aiStages">
+            <li data-st><span class="dot"></span> Analyzing acme.io</li>
+            <li data-st><span class="dot"></span> Reading your uploaded docs</li>
+            <li data-st><span class="dot"></span> Researching your market</li>
+            <li data-st><span class="dot"></span> Drafting your Knowledge Center</li>
+            <li data-st><span class="dot"></span> Pre-configuring your AI agents</li>
+          </ul>
+        </div>
+
+        <div id="reviewDocs" style="display:none">
+          <div class="glass card" style="border-color:rgba(52,211,153,.3);background:rgba(52,211,153,.07)">
+            <div style="display:flex;align-items:center;gap:10px"><span style="font-size:18px">👤</span>
+            <div><div style="font-size:13.5px;font-weight:600">Ready for your review</div>
+            <div class="hint">A specialist refined these drafts. Tap to read or edit before they're saved.</div></div></div>
+          </div>
+          <details class="glass doc" open><summary><span class="ic">🏢</span><span><span class="dt">Company Overview</span><span class="ds">Who you are, in the AI's words</span></span><span class="chev">›</span></summary>
+            <div class="body"><textarea rows="4" data-grow>Acme helps mid-market RevOps teams replace 6 disconnected tools with one workflow engine. Founded 2021, ~80 employees, trusted by 400+ B2B teams. Differentiator: setup in days, not quarters.</textarea></div>
+          </details>
+          <details class="glass doc"><summary><span class="ic">📦</span><span><span class="dt">Product One-Pager</span><span class="ds">Value props & proof points</span></span><span class="chev">›</span></summary>
+            <div class="body"><textarea rows="4" data-grow>Core: unified pipeline automation. Outcomes customers cite — 32% faster cycle times, 1.8x rep capacity, &lt;1 week to value. Integrates with Salesforce, HubSpot, Slack.</textarea></div>
+          </details>
+          <details class="glass doc"><summary><span class="ic">🛡️</span><span><span class="dt">Objection Handling</span><span class="ds">How agents respond to pushback</span></span><span class="chev">›</span></summary>
+            <div class="body"><textarea rows="4" data-grow>"Already have a tool" → we replace the stack, not add to it. "No budget" → ROI in &lt;2 quarters. "Bad timing" → 30-min audit, no commitment.</textarea></div>
+          </details>
+        </div>
+      </section>
+
+      <!-- 6 · ICP -->
+      <section class="screen" data-screen="icp" data-flow="6">
+        <div class="scr-head">
+          <p class="eyebrow">Step 6 · Ideal Customer Profile</p>
+          <h1>Who should<br>we target?</h1>
+          <p class="hint">The AI drafted your ICP from your business. Refine it — we'll save it to the Knowledge Center for your team.</p>
+        </div>
+
+        <div class="glass card">
+          <div class="field"><label>Industries</label><input type="text" value="B2B SaaS · Fintech · Professional services"></div>
+          <div class="duo">
+            <div class="field"><label>Company size</label><input type="text" value="50–500 emp"></div>
+            <div class="field"><label>Geography</label><input type="text" value="US · UK · CA"></div>
+          </div>
+          <div class="field" style="margin-bottom:0"><label>Target titles</label><textarea rows="2" data-grow>VP Sales, Head of RevOps, Director of Demand Gen, CRO</textarea></div>
+        </div>
+        <div class="glass card">
+          <div class="field"><label>Pain points the AI will speak to</label><textarea rows="3" data-grow>Fragmented tooling, manual handoffs, slow pipeline velocity, no single source of truth for revenue.</textarea></div>
+          <div class="field"><label>Buying triggers</label><textarea rows="2" data-grow>Recent funding, new RevOps/sales leader, hiring SDRs, switching CRM.</textarea></div>
+          <div class="field" style="margin-bottom:0"><label>Exclude <span class="opt">— who not to target</span></label><input type="text" value="&lt;20 emp, agencies, students"></div>
+        </div>
+        <p class="hint center" style="padding:0 10px">Saved as <span class="mono">ICP.md</span> in your Knowledge Center.</p>
+      </section>
+
+      <!-- 7 · CAMPAIGNS -->
+      <section class="screen" data-screen="campaigns" data-flow="7">
+        <div class="scr-head">
+          <p class="eyebrow">Step 7 · Campaigns</p>
+          <h1>Review your<br>4 campaigns</h1>
+          <p class="hint">Static copy drafted by the AI. Edit anything, then confirm each. On launch we apply spintax, default settings, and attach your mailboxes.</p>
+        </div>
+        <div id="campaignList"></div>
+        <div class="glass card center" id="campNote" style="border-color:var(--hair-soft)">
+          <p class="hint" id="campCount">0 of 4 campaigns confirmed</p>
+        </div>
+      </section>
+
+      <!-- 8 · DONE -->
+      <section class="screen" data-screen="done" data-flow="8">
+        <div class="center" style="padding-top:18px">
+          <div class="hero-rk" style="margin-top:10px"><span class="em">🛰️</span></div>
+          <p class="eyebrow" style="text-align:center;color:var(--ok)">Onboarding complete</p>
+          <h1>You're cleared<br>for launch.</h1>
+          <p class="lede" style="margin:12px auto 0">Your campaigns are queued. Mailboxes go live the moment warmup finishes — no action needed from you.</p>
+        </div>
+
+        <div class="glass card mt24">
+          <h2 style="margin-bottom:14px">What happens next</h2>
+          <div class="tl">
+            <div class="pt now"><div class="when">TODAY</div><div class="what">Order placed & agents configured</div><div class="sub">Domains provisioning, knowledge base live, ICP saved.</div></div>
+            <div class="pt"><div class="when">DAYS 1–14</div><div class="what">Mailbox warmup</div><div class="sub">We gradually build sender reputation automatically.</div></div>
+            <div class="pt"><div class="when">~JULY 17</div><div class="what">Campaigns go live</div><div class="sub">Mailboxes attach and sending begins on schedule.</div></div>
+          </div>
+        </div>
+
+        <div class="glass card">
+          <h2 style="margin-bottom:6px">Your setup</h2>
+          <div class="recap"><span class="rc">🛰️</span><span>Domains & mailboxes</span><span class="rv" id="recapMbx">6 mailboxes</span></div>
+          <div class="recap"><span class="rc">🧠</span><span>Knowledge Center</span><span class="rv">3 docs + ICP</span></div>
+          <div class="recap"><span class="rc">🎯</span><span>Campaigns</span><span class="rv">4 launching</span></div>
+          <div class="recap"><span class="rc">🤖</span><span>AI agents</span><span class="rv" style="color:var(--ok)">Configured</span></div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- action bar -->
+    <div class="actionbar">
+      <button class="btn btn-primary" id="cta">Get started</button>
+    </div>
+
+    <!-- launch fx -->
+    <div class="launch-over" id="launchOver"><div class="rk">🚀</div><div class="lt">Launching campaigns…</div></div>
+    <canvas id="confetti"></canvas>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var rm = window.matchMedia && window.matchMedia("(prefers-reduced-motion:reduce)").matches;
+
+  // ----- flow definition -----
+  var FLOW = ["welcome","business","domains","connect","inboxkit","research","icp","campaigns","done"];
+  // segmented progress only spans the working steps (1..7)
+  var SEG_FROM = 1, SEG_TO = 7, SEG_N = SEG_TO - SEG_FROM + 1;
+  var idx = 0;
+
+  var $ = function(s,c){return (c||document).querySelector(s);};
+  var $$ = function(s,c){return Array.prototype.slice.call((c||document).querySelectorAll(s));};
+  var screens = $$(".screen");
+  var cta = $("#cta"), backBtn = $("#backBtn"), stepLabel = $("#stepLabel"), segs = $("#segs"), brandmark = $("#brandmark");
+
+  // build segment bars
+  for(var i=0;i<SEG_N;i++){ segs.insertAdjacentHTML("beforeend","<i><b></b></i>"); }
+  var segEls = $$("#segs i");
+
+  // CTA label per screen
+  var CTA = {
+    welcome:"Get started", business:"Continue", domains:"Continue", connect:"Continue",
+    inboxkit:"Place order with InboxKit", research:"Approve & save to Knowledge Center",
+    icp:"Save ICP & continue", campaigns:"Launch campaigns", done:"Restart walkthrough"
+  };
+
+  function show(n){
+    n = Math.max(0, Math.min(FLOW.length-1, n));
+    var dir = n >= idx;
+    screens.forEach(function(s){
+      var f = +s.getAttribute("data-flow");
+      s.classList.remove("active","prev");
+      if(f===n){ s.classList.add("active"); s.scrollTop = 0; }
+      else if(f < n){ s.classList.add("prev"); }
+    });
+    idx = n;
+    var name = FLOW[n];
+
+    // progress
+    var flowStep = +screens.filter(function(s){return s.getAttribute("data-screen")===name;})[0].getAttribute("data-flow");
+    segEls.forEach(function(el,k){
+      var stepNo = SEG_FROM + k;
+      el.classList.toggle("done", stepNo < flowStep);
+      el.classList.toggle("active", stepNo === flowStep);
+    });
+    if(flowStep>=SEG_FROM && flowStep<=SEG_TO){ stepLabel.textContent = "Step "+flowStep+" of "+SEG_N; stepLabel.style.opacity=1; }
+    else { stepLabel.textContent=""; }
+
+    backBtn.classList.toggle("show", n>0 && name!=="done");
+    cta.textContent = CTA[name];
+    cta.className = "btn btn-primary" + (name==="campaigns" ? " btn-launch":"");
+    cta.disabled = false;
+
+    if(onEnter[name]) onEnter[name]();
+  }
+
+  backBtn.addEventListener("click", function(){ if(idx>0) show(idx-1); });
+
+  cta.addEventListener("click", function(){
+    var name = FLOW[idx];
+    if(validators[name] && !validators[name]()) return;
+    if(name==="done"){ resetAll(); show(0); return; }
+    if(name==="campaigns"){ doLaunch(); return; }
+    show(idx+1);
+  });
+
+  // =====================================================================
+  // Step 1 — products
+  // =====================================================================
+  var products = $("#products");
+  function productCard(n){
+    var d = document.createElement("div");
+    d.className = "glass card prod";
+    d.innerHTML =
+      '<button class="del" title="Remove" type="button">×</button>'+
+      '<div class="prod-num">PRODUCT '+String(n).padStart(2,"0")+'</div>'+
+      '<div class="field"><label>Name <span class="req">*</span></label><input class="p-name" type="text" placeholder="e.g. Pipeline Automation"></div>'+
+      '<div class="field"><label>Description <span class="req">*</span></label><textarea class="p-desc" rows="2" data-grow placeholder="What it does and who it’s for."></textarea></div>'+
+      '<div class="field" style="margin-bottom:0"><label>Link <span class="opt">— optional</span></label><input class="p-link" type="text" inputmode="url" placeholder="acme.io/product"></div>'+
+      '<div class="err" style="margin-top:8px">Add a name and description.</div>';
+    d.querySelector(".del").addEventListener("click", function(){
+      if(products.children.length>1){ d.remove(); renumber(); }
+    });
+    bindGrow(d);
+    return d;
+  }
+  function renumber(){ $$(".prod-num", products).forEach(function(el,i){ el.textContent="PRODUCT "+String(i+1).padStart(2,"0"); }); }
+  $("#addProduct").addEventListener("click", function(){ products.appendChild(productCard(products.children.length+1)); });
+  products.appendChild(productCard(1));
+
+  // upload tiles
+  $$(".uptile").forEach(function(t){
+    t.addEventListener("click", function(){
+      var has = t.classList.toggle("has");
+      var s = t.querySelector(".s");
+      s.textContent = has ? t.getAttribute("data-file") : "Tap to attach";
+    });
+  });
+
+  // =====================================================================
+  // Step 2 — domains & mailboxes
+  // =====================================================================
+  var st = { domains:2, mailboxes:6 };
+  var FIRST = ["alex","sam","jordan","taylor","morgan","casey","riley","drew","jamie","quinn","avery","reese"];
+  function rootDomainVal(){ var v=$("#rootDomain").value.trim()||$("#website").value.trim()||"acme.io"; return v.replace(/^https?:\/\//,"").replace(/\/.*$/,""); }
+  function domainVariants(base){
+    var stem = base.split(".")[0];
+    return ["get"+stem+".com","try"+stem+".com","go"+stem+".io","use"+stem+".com","the"+stem+".co","join"+stem+".com"];
+  }
+  function renderMailboxes(){
+    var list = $("#mailboxList"); list.innerHTML="";
+    var base = rootDomainVal(); var doms = domainVariants(base);
+    for(var i=0;i<st.mailboxes;i++){
+      var name = FIRST[i%FIRST.length];
+      var dom = doms[Math.floor(i/Math.ceil(st.mailboxes/st.domains))%st.domains];
+      var row = document.createElement("div");
+      row.className="mbx";
+      row.innerHTML = '<span class="ad" contenteditable="true" spellcheck="false">'+name+"@"+dom+'</span><span class="lim">30/day</span>';
+      list.appendChild(row);
+    }
+    $("#numDomains").textContent = st.domains;
+    $("#numMailboxes").textContent = st.mailboxes;
+  }
+  $$(".stepper").forEach(function(sp){
+    var key = sp.getAttribute("data-stepper");
+    sp.addEventListener("click", function(e){
+      var b = e.target.closest("button"); if(!b) return;
+      var d = +b.getAttribute("data-d");
+      if(key==="domains") st.domains = Math.max(1, Math.min(8, st.domains+d));
+      else st.mailboxes = Math.max(1, Math.min(24, st.mailboxes+d));
+      if(st.mailboxes < st.domains) st.mailboxes = st.domains;
+      renderMailboxes();
+    });
+  });
+  $("#fwdToggle").addEventListener("change", function(){ $("#fwdField").style.display = this.checked?"block":"none"; });
+
+  // =====================================================================
+  // Step 3 — connect
+  // =====================================================================
+  $("#screens").addEventListener("click", function(e){
+    var btn = e.target.closest(".conn .cbtn"); if(!btn) return;
+    var conn = btn.closest(".conn");
+    if(conn.classList.contains("linked")) return;
+    btn.textContent = "Connecting…";
+    setTimeout(function(){
+      conn.classList.add("linked");
+      btn.textContent = "Connected ✓";
+      conn.querySelector(".meta .s").textContent = conn.getAttribute("data-acct");
+    }, rm?0:650);
+  });
+  $("#addLinkedIn").addEventListener("click", function(){
+    var n = document.createElement("div");
+    n.className="glass conn"; n.setAttribute("data-conn","li2"); n.setAttribute("data-acct","Second account");
+    n.innerHTML='<div class="logo" style="background:#0A66C2;color:#fff">in</div><div class="meta"><div class="t">LinkedIn account</div><div class="s">Automate connection requests & DMs</div></div><button class="cbtn">Connect</button>';
+    this.parentNode.insertBefore(n, this);
+  });
+
+  // =====================================================================
+  // Step 4 — InboxKit
+  // =====================================================================
+  var ordered = false;
+  function fillInboxKit(){
+    var base = rootDomainVal(); var doms = domainVariants(base);
+    var box = $("#domainPicks"); box.innerHTML="";
+    for(var i=0;i<st.domains;i++){
+      box.insertAdjacentHTML("beforeend",
+        '<div class="line"><span class="k mono">'+doms[i]+'</span><span class="pill ok dot">Available</span></div>');
+    }
+    $("#sumDomains").textContent = st.domains;
+    $("#sumMailboxes").textContent = st.mailboxes;
+    $("#sumPrice").textContent = "$"+(st.mailboxes*14).toFixed(2);
+    if(!ordered){
+      $("#orderState").innerHTML='<span class="pill dot" style="color:var(--warn)">Awaiting confirmation</span><p class="hint mt8">Tap below to place the order through InboxKit.</p>';
+    }
+  }
+  function placeOrder(cb){
+    var s = $("#orderState");
+    s.innerHTML='<div class="ai-stages" style="margin:0"><li class="run" style="border:none;justify-content:center"><span class="dot"></span> Placing order with InboxKit…</li></div>';
+    cta.disabled = true;
+    setTimeout(function(){
+      ordered = true;
+      s.innerHTML='<span class="pill ok dot">Order confirmed</span><p class="hint mt8">DNS records auto-configured. Warmup starts now.</p>';
+      cta.disabled = false; cb&&cb();
+    }, rm?0:1400);
+  }
+
+  // =====================================================================
+  // Step 5 — research
+  // =====================================================================
+  var researchRun = false, researchDone = false;
+  function runResearch(){
+    if(researchRun) return; researchRun = true;
+    cta.disabled = true;
+    var lis = $$("#aiStages li"); var k=0;
+    $("#researchCard").style.display="";
+    $("#reviewDocs").style.display="none";
+    lis.forEach(function(l){l.className="";});
+    // personalize first stage
+    lis[0].innerHTML = '<span class="dot"></span> Analyzing '+rootDomainVal();
+    function step(){
+      if(k>0) lis[k-1].className="done";
+      if(k<lis.length){ lis[k].className="run"; k++; setTimeout(step, rm?0:900); }
+      else {
+        researchDone = true;
+        $("#researchTitle").innerHTML = "Review your<br>knowledge base";
+        $("#researchSub").textContent = "AI drafted these, a human refined them. Edit anything before it's saved.";
+        $("#researchCard").style.display="none";
+        $("#reviewDocs").style.display="";
+        cta.disabled = false;
+      }
+    }
+    step();
+  }
+
+  // =====================================================================
+  // Step 7 — campaigns
+  // =====================================================================
+  var CAMPAIGNS = [
+    {nm:"The Direct Ask", ang:"Problem → solution",
+     sub:"{first_name}, fixing {company}'s pipeline leaks",
+     body:"Hi {first_name},\n\nMost RevOps teams at companies like {company} lose deals to handoffs between disconnected tools.\n\nWe replaced that stack for 400+ teams — 32% faster cycles, live in under a week.\n\nWorth a 15-min look?"},
+    {nm:"The Case Study", ang:"Social proof",
+     sub:"how a team like {company} cut cycle time 32%",
+     body:"Hi {first_name},\n\nA {industry} team your size was drowning in manual handoffs. After switching to us: 1.8x rep capacity in one quarter.\n\nHappy to share the 1-pager — interested?"},
+    {nm:"The Quick Question", ang:"Curiosity / low-friction",
+     sub:"quick one, {first_name}",
+     body:"Hi {first_name},\n\nIs {company} still running pipeline ops across separate tools, or have you consolidated?\n\nAsking because it's usually where the biggest velocity gains hide."},
+    {nm:"The Final Touch", ang:"Breakup",
+     sub:"closing the loop, {first_name}",
+     body:"Hi {first_name},\n\nHaven't heard back, so I'll assume timing's off.\n\nIf cutting pipeline cycle time ever climbs the list, the door's open. All the best."}
+  ];
+  var campBuilt = false, confirmed = [false,false,false,false];
+  function buildCampaigns(){
+    if(campBuilt) return; campBuilt = true;
+    var list = $("#campaignList"); list.innerHTML="";
+    CAMPAIGNS.forEach(function(c,i){
+      var el = document.createElement("div");
+      el.className="glass camp"+(i===0?" open":"");
+      el.innerHTML =
+        '<div class="head"><span class="num">0'+(i+1)+'</span><div><div class="nm">'+c.nm+'</div><div class="ang">'+c.ang+'</div></div>'+
+        '<span class="chev">›</span></div>'+
+        '<div class="body"><div class="pad">'+
+          '<div class="sub-l">Subject</div><input type="text" value="'+c.sub.replace(/"/g,"&quot;")+'">'+
+          '<div class="sub-l" style="margin-top:12px">Body</div><textarea rows="7" data-grow>'+c.body+'</textarea>'+
+          '<button class="btn btn-ghost confirm" style="width:100%;margin-top:14px">Confirm campaign '+(i+1)+'</button>'+
+        '</div></div>';
+      var body = el.querySelector(".body");
+      el.querySelector(".head").addEventListener("click", function(){
+        var open = el.classList.toggle("open");
+        body.style.maxHeight = open ? body.scrollHeight+"px" : "0";
+      });
+      el.querySelector(".confirm").addEventListener("click", function(){
+        confirmed[i]=true; el.classList.add("confirmed");
+        this.textContent="Confirmed ✓"; this.style.color="var(--ok)";
+        el.querySelector(".head").insertAdjacentHTML("beforeend","");
+        if(!el.querySelector(".head .pill")){
+          var p=document.createElement("span"); p.className="pill ok"; p.style.marginLeft="6px"; p.textContent="✓";
+        }
+        updateCampCount();
+      });
+      list.appendChild(el);
+      if(i===0) requestAnimationFrame(function(){ body.style.maxHeight = body.scrollHeight+"px"; });
+      bindGrow(el);
+    });
+    updateCampCount();
+  }
+  function updateCampCount(){
+    var n = confirmed.filter(Boolean).length;
+    $("#campCount").textContent = n+" of 4 campaigns confirmed";
+    if(n===4){ $("#campNote").style.background="rgba(52,211,153,.1)"; $("#campNote").style.borderColor="rgba(52,211,153,.35)"; cta.disabled=false; }
+  }
+
+  function doLaunch(){
+    if(confirmed.filter(Boolean).length<4){
+      // gently expand unconfirmed
+      var firstUn = confirmed.indexOf(false);
+      var card = $$("#campaignList .camp")[firstUn];
+      if(card && !card.classList.contains("open")){ card.querySelector(".head").click(); }
+      $("#campCount").textContent = "Confirm all 4 campaigns to launch ("+confirmed.filter(Boolean).length+"/4)";
+      $("#campCount").style.color="var(--ember)";
+      card && card.scrollIntoView({behavior: rm?"auto":"smooth", block:"center"});
+      return;
+    }
+    var ov = $("#launchOver");
+    ov.classList.add("show");
+    if(!rm) fireConfetti();
+    setTimeout(function(){ ov.classList.remove("show"); show(FLOW.indexOf("done")); }, rm?300:2600);
+  }
+
+  // =====================================================================
+  // onEnter hooks + validators
+  // =====================================================================
+  var onEnter = {
+    domains: function(){ if(!$("#mailboxList").children.length) renderMailboxes(); },
+    inboxkit: fillInboxKit,
+    research: function(){ runResearch(); },
+    campaigns: function(){ buildCampaigns(); $("#campCount").style.color=""; cta.disabled = confirmed.filter(Boolean).length<4 ? false:false; },
+    done: function(){ $("#recapMbx").textContent = st.mailboxes+" mailboxes"; }
+  };
+
+  var validators = {
+    business: function(){
+      var ok = true;
+      var web = $("#website").closest(".field");
+      if(!$("#website").value.trim()){ web.classList.add("invalid"); ok=false; } else web.classList.remove("invalid");
+      $$(".prod").forEach(function(p){
+        var n=p.querySelector(".p-name").value.trim(), d=p.querySelector(".p-desc").value.trim();
+        if(!n||!d){ p.classList.add("invalid"); ok=false; } else p.classList.remove("invalid");
+      });
+      if(!ok) shake();
+      return ok;
+    },
+    domains: function(){
+      var f = $("#rootDomain").closest(".field");
+      if(!$("#rootDomain").value.trim()){ f.classList.add("invalid"); shake(); return false; }
+      f.classList.remove("invalid"); return true;
+    },
+    inboxkit: function(){
+      if(ordered) return true;
+      placeOrder(function(){ show(idx+1); });
+      return false; // placeOrder advances on completion
+    },
+    research: function(){ return researchDone; }
+  };
+
+  // clear field error on input
+  document.addEventListener("input", function(e){
+    var f = e.target.closest && e.target.closest(".field.invalid, .prod.invalid");
+    if(f && e.target.value.trim()) f.classList.remove("invalid");
+  });
+
+  function shake(){
+    if(rm) return;
+    var a=$("#app"); a.animate([{transform:"translateX(0)"},{transform:"translateX(-7px)"},{transform:"translateX(7px)"},{transform:"translateX(0)"}],{duration:260});
+  }
+
+  // auto-grow textareas
+  function bindGrow(scope){
+    $$("textarea[data-grow]", scope||document).forEach(function(t){
+      var grow=function(){ t.style.height="auto"; t.style.height=t.scrollHeight+"px"; };
+      t.addEventListener("input", grow);
+      requestAnimationFrame(grow);
+    });
+  }
+  bindGrow(document);
+
+  function resetAll(){
+    // reset campaigns + research + order so restart feels fresh
+    confirmed=[false,false,false,false]; campBuilt=false; researchRun=false; researchDone=false; ordered=false;
+    $("#researchTitle").innerHTML="Researching<br>your business…";
+  }
+
+  // =====================================================================
+  // confetti
+  // =====================================================================
+  function fireConfetti(){
+    var c=$("#confetti"), ctx=c.getContext("2d");
+    var w=c.width=c.offsetWidth, h=c.height=c.offsetHeight;
+    var cols=["#6C3CE9","#8B5CF6","#22D3EE","#FB7185","#34D399","#FFFFFF"];
+    var P=[]; for(var i=0;i<90;i++){P.push({x:w/2,y:h*0.6,vx:(Math.cos(i)*6)+(i%7-3),vy:-(6+i%9),g:0.22,r:Math.random()*5+3,c:cols[i%cols.length],a:1,rot:i});}
+    var t0=0, frames=0;
+    (function anim(){
+      ctx.clearRect(0,0,w,h);
+      var alive=false;
+      P.forEach(function(p){
+        p.vy+=p.g; p.x+=p.vx; p.y+=p.vy; p.rot+=0.2; p.a-=0.006;
+        if(p.a>0&&p.y<h+20){ alive=true;
+          ctx.globalAlpha=Math.max(0,p.a); ctx.fillStyle=p.c;
+          ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.rot);
+          ctx.fillRect(-p.r/2,-p.r/2,p.r,p.r*1.6); ctx.restore();
+        }
+      });
+      frames++;
+      if(alive&&frames<260) requestAnimationFrame(anim); else ctx.clearRect(0,0,w,h);
+    })();
+  }
+
+  // boot
+  show(0);
+})();
+</script>
+</body>
+</html>
