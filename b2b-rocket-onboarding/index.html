@@ -8,27 +8,29 @@
 <title>B2B Rocket · Onboarding</title>
 <style>
   :root{
-    /* ground — Apple light system grey */
-    --space:#F2F1F6;
-    --panel:#FBFBFD;
-    /* Apple system blue — the single accent for buttons + accents */
-    --brand:#007AFF;
+    /* iOS system grouped palette (HIG) */
+    --space:#F2F2F7;         /* systemGroupedBackground */
+    --panel:#FFFFFF;         /* secondarySystemGroupedBackground — cells */
+    --brand:#007AFF;         /* systemBlue — tint */
     --glow:#3399FF;
-    --accent:#007AFF;        /* accents use the system tint, nothing else */
-    --ember:#FF3B30;         /* Apple system red — validation errors only */
-    --ok:#007AFF;            /* success states use the tint */
-    --warn:#8E8E93;          /* neutral grey */
-    /* ink — neutral Apple greys (system labels) */
-    --ink:#1D1D1F;
-    --ink-soft:rgba(60,60,67,0.74);
-    --ink-dim:rgba(60,60,67,0.55);
-    --ink-faint:rgba(60,60,67,0.34);
-    /* glass — translucent frost (Apple) */
-    --glass:linear-gradient(180deg,rgba(255,255,255,0.55),rgba(255,255,255,0.36));
-    --glass-strong:linear-gradient(180deg,rgba(255,255,255,0.72),rgba(255,255,255,0.52));
-    --hair:rgba(0,0,0,0.08);
-    --hair-soft:rgba(0,0,0,0.05);
-    --shadow:0 1px 2px rgba(0,0,0,0.05),0 16px 36px rgba(20,20,45,0.10),inset 0 1px 0 rgba(255,255,255,0.9);
+    --accent:#007AFF;
+    --ember:#FF3B30;         /* systemRed — errors */
+    --ok:#007AFF;            /* success/active states use the tint */
+    --switch-on:#34C759;     /* systemGreen — switches */
+    --warn:#8E8E93;
+    /* labels */
+    --ink:#000000;           /* label */
+    --ink-soft:rgba(60,60,67,0.60);   /* secondaryLabel */
+    --ink-dim:rgba(60,60,67,0.45);
+    --ink-faint:rgba(60,60,67,0.30);  /* tertiaryLabel / placeholder */
+    --sep:rgba(60,60,67,0.29);        /* separator */
+    --fill:rgba(118,118,128,0.12);    /* tertiarySystemFill — inputs */
+    /* cells are opaque (HIG); materials are reserved for chrome */
+    --glass:#FFFFFF;
+    --glass-strong:#FFFFFF;
+    --hair:rgba(60,60,67,0.20);
+    --hair-soft:rgba(60,60,67,0.12);
+    --shadow:none;
     --font:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Segoe UI",system-ui,sans-serif;
     --mono:ui-monospace,"SF Mono","JetBrains Mono",Menlo,monospace;
     --r-lg:26px; --r-md:18px; --r-sm:13px;
@@ -49,13 +51,11 @@
   /* ---------- device shell ---------- */
   .stage{
     height:100dvh;width:100vw;display:grid;place-items:center;
-    background:
-      radial-gradient(120% 90% at 80% -10%,rgba(0,122,255,0.07),transparent 55%),
-      #E8E7EE;
+    background:#E3E3E8;
   }
   .app{
     position:relative;width:100vw;height:100dvh;overflow:hidden;
-    background:linear-gradient(168deg,#F4F3F9 0%,#E9E8F1 55%,#EEEDF4 100%);display:flex;flex-direction:column;isolation:isolate;
+    background:var(--space);display:flex;flex-direction:column;isolation:isolate;
   }
   @media(min-width:600px){
     .app{
@@ -65,7 +65,8 @@
   }
 
   /* ---------- aurora (the one bold thing) ---------- */
-  .aurora{position:absolute;inset:0;z-index:0;overflow:hidden}
+  .aurora{display:none}
+  .aurora-x{position:absolute;inset:0;z-index:0;overflow:hidden}
   .aurora b{position:absolute;border-radius:50%;filter:blur(70px);will-change:transform}
   .aurora .b1{width:400px;height:400px;left:-130px;top:-120px;background:radial-gradient(circle,rgba(0,122,255,0.20),transparent 70%);animation:drift1 24s var(--ease) infinite alternate}
   .aurora .b2{width:340px;height:340px;right:-150px;top:50px;background:radial-gradient(circle,rgba(90,200,250,0.17),transparent 70%);animation:drift2 28s var(--ease) infinite alternate}
@@ -82,7 +83,9 @@
   .statusbar svg{display:block}
 
   /* ---------- progress header ---------- */
-  .topbar{position:relative;z-index:5;padding:6px 22px 14px;display:flex;flex-direction:column;gap:10px}
+  .topbar{position:relative;z-index:5;padding:6px 22px 12px;display:flex;flex-direction:column;gap:10px;
+    background:rgba(242,242,247,0.86);backdrop-filter:blur(20px) saturate(180%);-webkit-backdrop-filter:blur(20px) saturate(180%);
+    border-bottom:0.5px solid var(--sep)}
   .topbar .row{display:flex;align-items:center;gap:14px;min-height:24px}
   .brandmark{display:flex;align-items:center;gap:9px;font-weight:700;font-size:15px;letter-spacing:-0.02em}
   .brandmark .rk{width:26px;height:26px;display:grid;place-items:center;border-radius:9px;
@@ -109,58 +112,53 @@
   .screen.prev{transform:translateX(-34px)}
 
   /* ---------- typography ---------- */
-  .eyebrow{font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:10px}
-  h1{font-size:31px;line-height:1.08;font-weight:700;letter-spacing:-0.03em;text-wrap:balance}
-  h2{font-size:15px;font-weight:600;letter-spacing:-0.01em}
-  .lede{margin-top:12px;font-size:16px;line-height:1.5;color:var(--ink-soft);max-width:34ch}
-  .hint{font-size:12.5px;color:var(--ink-dim);line-height:1.45}
-  .scr-head{padding:14px 2px 22px}
-  .scr-head h1{font-size:26px}
-  .scr-head .hint{margin-top:9px}
+  .eyebrow{font-size:12.5px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:7px}
+  h1{font-size:32px;line-height:1.06;font-weight:700;letter-spacing:-0.022em;text-wrap:balance}
+  /* iOS grouped section header */
+  h2{font-size:13px;font-weight:600;letter-spacing:.02em;text-transform:uppercase;color:var(--ink-soft);margin-left:4px}
+  .lede{margin-top:10px;font-size:16px;line-height:1.45;color:var(--ink-soft);max-width:36ch}
+  .hint{font-size:13px;color:var(--ink-dim);line-height:1.4}
+  .scr-head{padding:12px 2px 20px}
+  .scr-head h1{font-size:28px}
+  .scr-head .hint{margin-top:8px}
 
   /* ---------- glass ---------- */
-  .glass{background:var(--glass);backdrop-filter:blur(32px) saturate(190%);-webkit-backdrop-filter:blur(32px) saturate(190%);
-    border:1px solid var(--hair);border-radius:var(--r-lg);box-shadow:var(--shadow)}
-  .card{padding:18px;margin-bottom:14px}
-  .card.tight{padding:15px}
+  .glass{background:var(--panel);border:none;border-radius:18px;box-shadow:none}
+  .card{padding:16px;margin-bottom:16px}
+  .card.tight{padding:14px}
 
   /* ---------- forms ---------- */
   .field{margin-bottom:15px}
-  .field>label{display:block;font-size:12.5px;font-weight:600;color:var(--ink-soft);margin-bottom:7px;letter-spacing:0}
-  .field>label .req{color:var(--accent)}
+  .field>label{display:block;font-size:13px;font-weight:600;color:var(--ink-soft);margin-bottom:7px;letter-spacing:0}
+  .field>label .req{color:var(--brand)}
   .field>label .opt{color:var(--ink-faint);font-weight:500}
-  input,textarea,select{width:100%;font:inherit;font-size:15px;color:var(--ink);
-    background:rgba(255,255,255,.55);border:1px solid var(--hair);border-radius:var(--r-sm);
-    padding:13px 14px;outline:none;transition:border-color .15s,background .15s,box-shadow .15s}
-  textarea{resize:none;line-height:1.5}
+  input,textarea,select{width:100%;font:inherit;font-size:16px;color:var(--ink);
+    background:var(--fill);border:none;border-radius:10px;
+    padding:12px 13px;outline:none;transition:box-shadow .15s,background .15s}
+  textarea{resize:none;line-height:1.45}
   input::placeholder,textarea::placeholder{color:var(--ink-faint)}
-  input:focus,textarea:focus,select:focus{border-color:var(--glow);background:rgba(255,255,255,.92);
-    box-shadow:0 0 0 4px rgba(0,122,255,.18)}
+  input:focus,textarea:focus,select:focus{background:#fff;box-shadow:0 0 0 2px var(--brand)}
   select{appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none'><path d='M1 1l5 5 5-5' stroke='%235B5280' stroke-width='1.6' stroke-linecap='round'/></svg>");
     background-repeat:no-repeat;background-position:right 14px center;padding-right:36px}
-  .field.invalid input,.field.invalid textarea{border-color:var(--ember);box-shadow:0 0 0 4px rgba(251,113,133,.16)}
-  .err{display:none;font-size:12px;color:var(--ember);margin-top:6px}
+  .field.invalid input,.field.invalid textarea{box-shadow:0 0 0 2px var(--ember)}
+  .err{display:none;font-size:12.5px;color:var(--ember);margin-top:6px}
   .field.invalid .err{display:block}
   .mono{font-family:var(--mono);font-size:13px;letter-spacing:-0.02em}
 
   /* prefix input (domain) */
-  .at{display:flex;align-items:center;background:rgba(255,255,255,.55);border:1px solid var(--hair);
-    border-radius:var(--r-sm);overflow:hidden}
-  .at:focus-within{border-color:var(--glow);box-shadow:0 0 0 4px rgba(0,122,255,.18)}
-  .at span{padding:0 4px 0 14px;color:var(--ink-dim);font-family:var(--mono);font-size:13px}
+  .at{display:flex;align-items:center;background:var(--fill);border:none;border-radius:10px;overflow:hidden}
+  .at:focus-within{background:#fff;box-shadow:0 0 0 2px var(--brand)}
+  .at span{padding:0 2px 0 13px;color:var(--ink-dim);font-family:var(--mono);font-size:14px}
   .at input{border:none;background:none;box-shadow:none!important;padding-left:2px}
 
   /* ---------- buttons ---------- */
-  .btn{appearance:none;border:none;font:inherit;font-weight:600;cursor:pointer;border-radius:99px;
-    display:inline-flex;align-items:center;justify-content:center;gap:8px;transition:transform .12s var(--ease),filter .15s,opacity .15s}
-  .btn:active{transform:scale(.97)}
-  .btn-primary{background:var(--brand);color:#fff;padding:16px 22px;font-size:16px;
-    border-radius:14px;box-shadow:0 4px 14px rgba(0,122,255,.28);width:100%}
-  .btn-primary:hover{filter:brightness(1.08)}
-  .btn-primary[disabled]{opacity:.4;cursor:not-allowed;box-shadow:none}
-  .btn-ghost{background:rgba(255,255,255,.62);border:1px solid var(--hair);color:var(--brand);padding:13px 18px;font-size:14px;border-radius:12px}
-  .btn-ghost:hover{background:rgba(255,255,255,.92)}
-  .btn-launch{background:var(--brand);box-shadow:0 4px 14px rgba(0,122,255,.28)}
+  .btn{appearance:none;border:none;font:inherit;font-weight:600;cursor:pointer;border-radius:14px;
+    display:inline-flex;align-items:center;justify-content:center;gap:8px;transition:opacity .15s}
+  .btn:active{opacity:.82}
+  .btn-primary{background:var(--brand);color:#fff;padding:15px 22px;font-size:17px;border-radius:14px;width:100%}
+  .btn-primary[disabled]{opacity:.4;cursor:not-allowed}
+  .btn-ghost{background:var(--fill);border:none;color:var(--brand);padding:13px 18px;font-size:16px;border-radius:12px}
+  .btn-launch{background:var(--brand)}
 
   /* ---------- action bar ---------- */
   /* in-flow: sits at the end of each screen's content so it must be scrolled to */
@@ -180,18 +178,28 @@
   .duo{display:flex;gap:12px}
   .duo>*{flex:1}
 
-  /* volume option rows */
-  .opts{display:flex;flex-direction:column;gap:10px}
-  .opt-row{display:flex;align-items:center;gap:13px;padding:15px 16px;border-radius:var(--r-md);
-    border:1px solid var(--hair);background:rgba(255,255,255,.55);cursor:pointer;transition:border-color .15s,background .15s,box-shadow .15s}
-  .opt-row:hover{background:rgba(255,255,255,.85)}
-  .opt-row.sel{border-color:var(--brand);background:rgba(0,122,255,.06);box-shadow:0 0 0 3px rgba(0,122,255,.12)}
-  .opt-row .radio{width:22px;height:22px;border-radius:50%;border:2px solid var(--hair-soft);flex-shrink:0;display:grid;place-items:center;transition:border-color .15s}
-  .opt-row.sel .radio{border-color:var(--brand)}
-  .opt-row.sel .radio::after{content:"";width:11px;height:11px;border-radius:50%;background:var(--brand)}
-  .opt-row .opt-meta{display:flex;flex-direction:column}
-  .opt-row .otitle{font-size:15px;font-weight:600}
-  .opt-row .osub{font-size:12.5px;color:var(--ink-dim);margin-top:2px;font-variant-numeric:tabular-nums}
+  /* volume — iOS grouped single-select with trailing checkmark */
+  .opts{background:var(--panel);border-radius:18px;overflow:hidden}
+  .opt-row{display:flex;align-items:center;padding:13px 16px;cursor:pointer;
+    border-bottom:0.5px solid var(--sep);transition:background .12s}
+  .opt-row:last-child{border-bottom:none}
+  .opt-row:active{background:rgba(60,60,67,0.06)}
+  .opt-row .opt-meta{order:1;display:flex;flex-direction:column}
+  .opt-row .otitle{font-size:16px;font-weight:500}
+  .opt-row .osub{font-size:13px;color:var(--ink-dim);margin-top:1px;font-variant-numeric:tabular-nums}
+  .opt-row .radio{order:2;margin-left:auto;width:22px;display:grid;place-items:center}
+  .opt-row .radio::after{content:"✓";color:var(--brand);font-size:18px;font-weight:700;opacity:0;transition:opacity .12s}
+  .opt-row.sel .radio::after{opacity:1}
+
+  /* iOS switch + switch row */
+  .row-switch{display:flex;align-items:center;justify-content:space-between;gap:12px;
+    padding-top:14px;margin-top:14px;border-top:0.5px solid var(--sep);font-size:16px;color:var(--ink)}
+  .switch{appearance:none;-webkit-appearance:none;width:51px;height:31px;flex-shrink:0;border-radius:31px;
+    background:rgba(120,120,128,0.16);position:relative;cursor:pointer;transition:background .2s}
+  .switch:checked{background:var(--switch-on)}
+  .switch::after{content:"";position:absolute;top:2px;left:2px;width:27px;height:27px;border-radius:50%;
+    background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.22);transition:transform .2s}
+  .switch:checked::after{transform:translateX(20px)}
 
   /* linkedin sequence steps */
   .lstep{margin-top:15px}
@@ -453,16 +461,16 @@
         </div>
 
         <div class="glass card">
-          <div class="field">
+          <div class="field" style="margin-bottom:0">
             <label for="rootDomain">Your primary domain <span class="req">*</span></label>
             <div class="at"><span>@</span><input id="rootDomain" type="text" placeholder="acme.io" autocomplete="off"></div>
             <div class="err">We need your primary domain.</div>
           </div>
-          <label class="field" style="display:flex;align-items:flex-start;gap:11px;margin-bottom:0;cursor:pointer">
-            <input type="checkbox" id="fwdToggle" checked style="width:auto;margin-top:1px;accent-color:var(--brand)">
-            <span style="font-size:13.5px;color:var(--ink-soft)">Forwarding domain is the same as my primary domain</span>
+          <label class="row-switch" for="fwdToggle">
+            <span>Forwarding domain matches primary</span>
+            <input type="checkbox" id="fwdToggle" class="switch" checked>
           </label>
-          <div class="field" id="fwdField" style="display:none;margin-top:13px;margin-bottom:0">
+          <div class="field" id="fwdField" style="display:none;margin-top:14px;margin-bottom:0">
             <label for="fwdDomain">Forwarding domain</label>
             <div class="at"><span>@</span><input id="fwdDomain" type="text" placeholder="getacme.com" autocomplete="off"></div>
           </div>
