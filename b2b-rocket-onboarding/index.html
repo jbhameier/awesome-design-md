@@ -8,28 +8,27 @@
 <title>B2B Rocket · Onboarding</title>
 <style>
   :root{
-    /* ground (light) */
-    --space:#EFECFB;
-    --panel:#F7F5FE;
-    /* brand */
+    /* ground — Apple light system grey */
+    --space:#F2F1F6;
+    --panel:#FBFBFD;
+    /* brand violet — the ONLY color, for buttons + accents */
     --brand:#6C3CE9;
-    --glow:#8B5CF6;
-    --accent:#0E7490;        /* deep ignition cyan — readable on light */
-    --ember:#E11D48;
-    /* semantic (darkened for contrast on light) */
-    --ok:#047857;
-    --warn:#B45309;
-    /* ink (violet-biased neutrals, never pure grey) */
-    --ink:#1B1633;
-    --ink-soft:rgba(40,33,66,0.74);
-    --ink-dim:rgba(52,44,86,0.56);
-    --ink-faint:rgba(52,44,86,0.40);
-    /* glass — frosted white over a colored ground */
-    --glass:linear-gradient(158deg,rgba(255,255,255,0.78),rgba(255,255,255,0.50));
-    --glass-strong:linear-gradient(158deg,rgba(255,255,255,0.9),rgba(255,255,255,0.66));
-    --hair:rgba(27,22,51,0.12);
-    --hair-soft:rgba(27,22,51,0.07);
-    --shadow:0 14px 44px rgba(80,60,160,0.16),inset 0 1px 0 rgba(255,255,255,0.65);
+    --glow:#7E57F0;
+    --accent:#6C3CE9;        /* accents use the primary, nothing else */
+    --ember:#FF3B30;         /* reserved strictly for validation errors */
+    --ok:#6C3CE9;            /* success states also use the primary */
+    --warn:#8E8E93;          /* neutral grey, no amber */
+    /* ink — neutral Apple greys (system labels) */
+    --ink:#1D1D1F;
+    --ink-soft:rgba(60,60,67,0.74);
+    --ink-dim:rgba(60,60,67,0.55);
+    --ink-faint:rgba(60,60,67,0.34);
+    /* glass — clean frosted white */
+    --glass:linear-gradient(180deg,rgba(255,255,255,0.80),rgba(255,255,255,0.62));
+    --glass-strong:linear-gradient(180deg,rgba(255,255,255,0.92),rgba(255,255,255,0.78));
+    --hair:rgba(0,0,0,0.09);
+    --hair-soft:rgba(0,0,0,0.055);
+    --shadow:0 1px 2px rgba(0,0,0,0.04),0 12px 32px rgba(17,17,40,0.07),inset 0 1px 0 rgba(255,255,255,0.7);
     --font:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Segoe UI",system-ui,sans-serif;
     --mono:ui-monospace,"SF Mono","JetBrains Mono",Menlo,monospace;
     --r-lg:26px; --r-md:18px; --r-sm:13px;
@@ -39,7 +38,7 @@
   html,body{height:100%}
   body{
     font-family:var(--font);
-    background:#E6E0F6;
+    background:#E8E7EE;
     color:var(--ink);
     letter-spacing:-0.01em;
     -webkit-font-smoothing:antialiased;
@@ -51,9 +50,8 @@
   .stage{
     height:100dvh;width:100vw;display:grid;place-items:center;
     background:
-      radial-gradient(120% 90% at 80% -10%,rgba(108,60,233,0.16),transparent 60%),
-      radial-gradient(120% 90% at 0% 110%,rgba(34,211,238,0.12),transparent 55%),
-      #E6E0F6;
+      radial-gradient(120% 90% at 80% -10%,rgba(108,60,233,0.07),transparent 55%),
+      #E8E7EE;
   }
   .app{
     position:relative;width:100vw;height:100dvh;overflow:hidden;
@@ -68,11 +66,11 @@
 
   /* ---------- aurora (the one bold thing) ---------- */
   .aurora{position:absolute;inset:0;z-index:0;overflow:hidden}
-  .aurora b{position:absolute;border-radius:50%;filter:blur(60px);opacity:.4;will-change:transform}
-  .aurora .b1{width:320px;height:320px;left:-90px;top:-60px;background:radial-gradient(circle,var(--brand),transparent 70%);animation:drift1 18s var(--ease) infinite alternate}
-  .aurora .b2{width:300px;height:300px;right:-110px;top:120px;background:radial-gradient(circle,var(--glow),transparent 70%);animation:drift2 22s var(--ease) infinite alternate}
-  .aurora .b3{width:360px;height:360px;left:-60px;bottom:-120px;background:radial-gradient(circle,#5EC8E6,transparent 72%);opacity:.34;animation:drift3 26s var(--ease) infinite alternate}
-  .aurora .grain{position:absolute;inset:0;opacity:.5;background-image:radial-gradient(rgba(27,22,51,.05) 1px,transparent 1px);background-size:3px 3px}
+  .aurora b{position:absolute;border-radius:50%;filter:blur(72px);will-change:transform}
+  .aurora .b1{width:380px;height:380px;left:-130px;top:-110px;background:radial-gradient(circle,rgba(108,60,233,0.14),transparent 70%);animation:drift1 24s var(--ease) infinite alternate}
+  .aurora .b2{width:300px;height:300px;right:-130px;top:30px;background:radial-gradient(circle,rgba(126,87,240,0.10),transparent 70%);animation:drift2 28s var(--ease) infinite alternate}
+  .aurora .b3{display:none}
+  .aurora .grain{display:none}
   @keyframes drift1{to{transform:translate(60px,80px) scale(1.15)}}
   @keyframes drift2{to{transform:translate(-50px,90px) scale(1.1)}}
   @keyframes drift3{to{transform:translate(70px,-60px) scale(1.2)}}
@@ -88,7 +86,7 @@
   .topbar .row{display:flex;align-items:center;gap:14px;min-height:24px}
   .brandmark{display:flex;align-items:center;gap:9px;font-weight:700;font-size:15px;letter-spacing:-0.02em}
   .brandmark .rk{width:26px;height:26px;display:grid;place-items:center;border-radius:9px;
-    background:linear-gradient(150deg,var(--brand),var(--glow));box-shadow:0 4px 14px rgba(108,60,233,.5)}
+    background:linear-gradient(150deg,var(--brand),var(--glow));box-shadow:0 3px 10px rgba(108,60,233,.32)}
   .step-label{margin-left:auto;font-size:12px;color:var(--ink-dim);font-variant-numeric:tabular-nums}
   .segs{display:flex;gap:5px}
   .segs i{height:4px;flex:1;border-radius:99px;background:rgba(27,22,51,.12);overflow:hidden}
@@ -157,12 +155,12 @@
     display:inline-flex;align-items:center;justify-content:center;gap:8px;transition:transform .12s var(--ease),filter .15s,opacity .15s}
   .btn:active{transform:scale(.97)}
   .btn-primary{background:linear-gradient(135deg,var(--brand),var(--glow));color:#fff;padding:16px 22px;font-size:16px;
-    box-shadow:0 10px 30px rgba(108,60,233,.45),inset 0 1px 0 rgba(255,255,255,.25);width:100%}
+    border-radius:14px;box-shadow:0 6px 20px rgba(108,60,233,.32),inset 0 1px 0 rgba(255,255,255,.22);width:100%}
   .btn-primary:hover{filter:brightness(1.08)}
   .btn-primary[disabled]{opacity:.4;cursor:not-allowed;box-shadow:none}
-  .btn-ghost{background:rgba(255,255,255,.62);border:1px solid var(--hair);color:var(--ink);padding:13px 18px;font-size:14px}
+  .btn-ghost{background:rgba(255,255,255,.62);border:1px solid var(--hair);color:var(--brand);padding:13px 18px;font-size:14px;border-radius:12px}
   .btn-ghost:hover{background:rgba(255,255,255,.92)}
-  .btn-launch{background:linear-gradient(135deg,var(--ember),#F43F5E);box-shadow:0 12px 36px rgba(244,63,94,.5),inset 0 1px 0 rgba(255,255,255,.3)}
+  .btn-launch{background:linear-gradient(135deg,var(--brand),var(--glow));box-shadow:0 10px 30px rgba(108,60,233,.4),inset 0 1px 0 rgba(255,255,255,.25)}
 
   /* ---------- action bar ---------- */
   .actionbar{position:absolute;left:0;right:0;bottom:0;z-index:6;padding:16px 22px calc(20px + env(safe-area-inset-bottom));
@@ -172,7 +170,7 @@
   /* ---------- pieces ---------- */
   .pill{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:5px 11px;border-radius:99px;
     background:rgba(27,22,51,.05);border:1px solid var(--hair-soft);color:var(--ink-soft)}
-  .pill.ok{color:var(--ok);border-color:rgba(52,211,153,.3);background:rgba(52,211,153,.12)}
+  .pill.ok{color:var(--ok);border-color:rgba(108,60,233,.25);background:rgba(108,60,233,.10)}
   .pill.dot::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
 
   .stepper{display:flex;align-items:center;gap:0;background:rgba(255,255,255,.5);border:1px solid var(--hair);
@@ -184,8 +182,8 @@
   .duo>*{flex:1}
 
   .add-row{display:flex;align-items:center;gap:8px;color:var(--accent);font-size:14px;font-weight:600;cursor:pointer;
-    padding:13px;border:1px dashed rgba(34,211,238,.35);border-radius:var(--r-md);justify-content:center;background:rgba(34,211,238,.05)}
-  .add-row:hover{background:rgba(34,211,238,.1)}
+    padding:13px;border:1px dashed rgba(108,60,233,.32);border-radius:var(--r-md);justify-content:center;background:rgba(108,60,233,.05)}
+  .add-row:hover{background:rgba(108,60,233,.09)}
 
   .prod{position:relative}
   .prod .del{position:absolute;top:12px;right:12px;width:26px;height:26px;border-radius:50%;border:none;cursor:pointer;
@@ -198,7 +196,7 @@
   .uptile{flex:1;border:1px dashed var(--hair);border-radius:var(--r-md);padding:16px 10px;text-align:center;cursor:pointer;
     transition:background .15s,border-color .15s}
   .uptile:hover{background:rgba(27,22,51,.04)}
-  .uptile.has{border-style:solid;border-color:rgba(52,211,153,.4);background:rgba(52,211,153,.08)}
+  .uptile.has{border-style:solid;border-color:rgba(108,60,233,.4);background:rgba(108,60,233,.07)}
   .uptile .ic{font-size:22px;margin-bottom:6px}
   .uptile .t{font-size:12.5px;font-weight:600}
   .uptile .s{font-size:11px;color:var(--ink-dim);margin-top:3px}
@@ -213,7 +211,7 @@
   .conn .cbtn{flex-shrink:0;font-size:13px;font-weight:600;padding:9px 15px;border-radius:99px;border:1px solid var(--hair);
     background:rgba(255,255,255,.7);color:var(--ink);cursor:pointer;transition:.15s}
   .conn .cbtn:hover{background:#fff}
-  .conn.linked .cbtn{background:rgba(52,211,153,.14);border-color:rgba(52,211,153,.35);color:var(--ok);pointer-events:none}
+  .conn.linked .cbtn{background:rgba(108,60,233,.12);border-color:rgba(108,60,233,.3);color:var(--ok);pointer-events:none}
 
   /* mailbox list */
   .mbx{display:flex;align-items:center;gap:10px;padding:11px 13px;border-radius:var(--r-md);background:rgba(255,255,255,.55);
@@ -262,7 +260,7 @@
   .camp .body{max-height:0;overflow:hidden;transition:max-height .4s var(--ease)}
   .camp .pad{padding:0 16px 16px}
   .camp .sub-l{font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint);margin:4px 0 6px}
-  .camp.confirmed .head{background:rgba(52,211,153,.07)}
+  .camp.confirmed .head{background:rgba(108,60,233,.06)}
 
   /* done timeline */
   .tl{position:relative;padding-left:30px;margin-top:6px}
@@ -271,7 +269,7 @@
   .tl .pt:last-child{padding-bottom:0}
   .tl .pt::before{content:"";position:absolute;left:-26px;top:3px;width:14px;height:14px;border-radius:50%;
     background:var(--space);border:2px solid var(--accent)}
-  .tl .pt.now::before{background:var(--accent);box-shadow:0 0 0 5px rgba(34,211,238,.2)}
+  .tl .pt.now::before{background:var(--accent);box-shadow:0 0 0 5px rgba(108,60,233,.18)}
   .tl .pt .when{font-family:var(--mono);font-size:11px;color:var(--accent);letter-spacing:.04em}
   .tl .pt .what{font-size:14.5px;font-weight:600;margin-top:3px}
   .tl .pt .sub{font-size:12.5px;color:var(--ink-dim);margin-top:2px;line-height:1.4}
@@ -284,17 +282,17 @@
   /* hero rocket */
   .hero-rk{display:grid;place-items:center;margin:30px auto 8px;width:128px;height:128px;border-radius:36px;
     background:var(--glass-strong);border:1px solid var(--hair);box-shadow:var(--shadow);position:relative;overflow:hidden}
-  .hero-rk::after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 50% 120%,rgba(108,60,233,.5),transparent 60%)}
+  .hero-rk::after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 50% 120%,rgba(108,60,233,.28),transparent 62%)}
   .hero-rk .em{font-size:62px;position:relative;z-index:1;animation:bob 3.5s ease-in-out infinite}
   @keyframes bob{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-7px) rotate(2deg)}}
   .feat{display:flex;gap:12px;align-items:flex-start;padding:13px 0}
   .feat .fi{width:34px;height:34px;flex-shrink:0;border-radius:10px;display:grid;place-items:center;
-    background:linear-gradient(150deg,rgba(108,60,233,.3),rgba(34,211,238,.2));font-size:16px}
+    background:linear-gradient(150deg,rgba(108,60,233,.16),rgba(108,60,233,.05));font-size:16px}
   .feat .ft{font-size:14px;font-weight:600}
   .feat .fs{font-size:12.5px;color:var(--ink-dim);margin-top:2px;line-height:1.4}
 
   /* launch overlay */
-  .launch-over{position:absolute;inset:0;z-index:20;background:radial-gradient(circle at 50% 78%,#F3EEFF 0%,#DFE9FB 45%,#C7E4F2 100%);
+  .launch-over{position:absolute;inset:0;z-index:20;background:radial-gradient(circle at 50% 76%,#F7F5FC 0%,#ECEBF1 100%);
     display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;opacity:0;pointer-events:none;transition:opacity .4s}
   .launch-over.show{opacity:1;pointer-events:auto}
   .launch-over .rk{font-size:84px;animation:liftoff 2.4s var(--ease) forwards}
