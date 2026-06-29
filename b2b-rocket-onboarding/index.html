@@ -181,6 +181,26 @@
   .duo{display:flex;gap:12px}
   .duo>*{flex:1}
 
+  /* volume option rows */
+  .opts{display:flex;flex-direction:column;gap:10px}
+  .opt-row{display:flex;align-items:center;gap:13px;padding:15px 16px;border-radius:var(--r-md);
+    border:1px solid var(--hair);background:rgba(255,255,255,.55);cursor:pointer;transition:border-color .15s,background .15s,box-shadow .15s}
+  .opt-row:hover{background:rgba(255,255,255,.85)}
+  .opt-row.sel{border-color:var(--brand);background:rgba(0,122,255,.06);box-shadow:0 0 0 3px rgba(0,122,255,.12)}
+  .opt-row .radio{width:22px;height:22px;border-radius:50%;border:2px solid var(--hair-soft);flex-shrink:0;display:grid;place-items:center;transition:border-color .15s}
+  .opt-row.sel .radio{border-color:var(--brand)}
+  .opt-row.sel .radio::after{content:"";width:11px;height:11px;border-radius:50%;background:var(--brand)}
+  .opt-row .opt-meta{display:flex;flex-direction:column}
+  .opt-row .otitle{font-size:15px;font-weight:600}
+  .opt-row .osub{font-size:12.5px;color:var(--ink-dim);margin-top:2px;font-variant-numeric:tabular-nums}
+
+  /* linkedin sequence steps */
+  .lstep{margin-top:15px}
+  .lstep .lh{display:flex;align-items:center;gap:8px;margin-bottom:7px}
+  .lstep .ln{font-size:12px;font-weight:700;letter-spacing:.02em}
+  .ldelay{font-size:10px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--brand);
+    background:rgba(0,122,255,.10);padding:3px 8px;border-radius:99px;margin-left:auto;white-space:nowrap}
+
   .add-row{display:flex;align-items:center;gap:8px;color:var(--accent);font-size:14px;font-weight:600;cursor:pointer;
     padding:13px;border:1px dashed rgba(0,122,255,.32);border-radius:var(--r-md);justify-content:center;background:rgba(0,122,255,.05)}
   .add-row:hover{background:rgba(0,122,255,.09)}
@@ -244,10 +264,12 @@
   .doc summary::-webkit-details-marker{display:none}
   .doc .chev{margin-left:auto;color:var(--ink-dim);transition:transform .25s}
   .doc[open] .chev{transform:rotate(90deg)}
-  .doc .dt{font-size:14.5px;font-weight:600}
-  .doc .ds{font-size:11.5px;color:var(--ink-dim);margin-top:1px}
+  .doc .dt{display:block;font-size:14.5px;font-weight:600}
+  .doc .ds{display:block;font-size:11.5px;color:var(--ink-dim);margin-top:2px}
   .doc .body{margin-top:13px}
-  .doc .ic{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:rgba(0,122,255,.16);font-size:16px}
+  .doc-h{display:flex;align-items:center;gap:10px}
+  .doc textarea{margin-top:13px}
+  .doc .ic{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:rgba(0,122,255,.16);font-size:16px;flex-shrink:0}
 
   /* campaign cards */
   .camp{padding:0;margin-bottom:13px;overflow:hidden}
@@ -295,7 +317,8 @@
   .launch-over{position:absolute;inset:0;z-index:20;background:radial-gradient(circle at 50% 76%,#F7F5FC 0%,#ECEBF1 100%);
     display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;opacity:0;pointer-events:none;transition:opacity .4s}
   .launch-over.show{opacity:1;pointer-events:auto}
-  .launch-over .rk{font-size:84px;animation:liftoff 2.4s var(--ease) forwards}
+  .launch-over .rk{color:var(--brand);animation:liftoff 2.4s var(--ease) forwards}
+  .launch-over .rk svg{width:84px;height:84px;stroke-width:1.4}
   .launch-over .lt{font-size:20px;font-weight:700;letter-spacing:-0.02em;opacity:0;animation:fadein .5s 1.8s forwards}
   @keyframes liftoff{0%{transform:translateY(40px) scale(.8);opacity:0}25%{transform:translateY(0) scale(1);opacity:1}
     100%{transform:translateY(-240px) scale(1.1);opacity:0}}
@@ -420,9 +443,9 @@
             <div class="at"><span>@</span><input id="rootDomain" type="text" placeholder="acme.io" autocomplete="off"></div>
             <div class="err">We need your primary domain.</div>
           </div>
-          <label class="field" style="display:flex;align-items:center;gap:11px;margin-bottom:0;cursor:pointer">
-            <input type="checkbox" id="fwdToggle" style="width:auto;accent-color:var(--brand)">
-            <span style="font-size:13.5px;color:var(--ink-soft)">Replies should forward to a different domain</span>
+          <label class="field" style="display:flex;align-items:flex-start;gap:11px;margin-bottom:0;cursor:pointer">
+            <input type="checkbox" id="fwdToggle" checked style="width:auto;margin-top:1px;accent-color:var(--brand)">
+            <span style="font-size:13.5px;color:var(--ink-soft)">Forwarding domain is the same as my primary domain</span>
           </label>
           <div class="field" id="fwdField" style="display:none;margin-top:13px;margin-bottom:0">
             <label for="fwdDomain">Forwarding domain</label>
@@ -430,29 +453,23 @@
           </div>
         </div>
 
-        <div class="glass card">
-          <div class="duo">
-            <div class="field" style="margin-bottom:0">
-              <label>Sending domains</label>
-              <div class="stepper" data-stepper="domains"><button data-d="-1">−</button><span class="val" id="numDomains">2</span><button data-d="1">＋</button></div>
-            </div>
-            <div class="field" style="margin-bottom:0">
-              <label>Mailboxes</label>
-              <div class="stepper" data-stepper="mailboxes"><button data-d="-1">−</button><span class="val" id="numMailboxes">6</span><button data-d="1">＋</button></div>
-            </div>
-          </div>
-          <p class="hint" style="margin-top:12px">Recommended: 3 mailboxes per domain at 30 sends/day each.</p>
+        <h2 style="margin:4px 2px 10px">Sending volume</h2>
+        <div class="opts" id="volOpts">
+          <div class="opt-row" data-domains="15" data-mailboxes="45"><span class="radio"></span><span class="opt-meta"><span class="otitle">15 domains</span><span class="osub">45 mailboxes · ~1,350 sends/day</span></span></div>
+          <div class="opt-row" data-domains="34" data-mailboxes="100"><span class="radio"></span><span class="opt-meta"><span class="otitle">34 domains</span><span class="osub">100 mailboxes · ~3,000 sends/day</span></span></div>
+          <div class="opt-row" data-domains="67" data-mailboxes="201"><span class="radio"></span><span class="opt-meta"><span class="otitle">67 domains</span><span class="osub">201 mailboxes · ~6,030 sends/day</span></span></div>
         </div>
+        <p class="hint" style="margin:12px 2px 0">3 mailboxes per domain at 30 sends/day each.</p>
 
-        <h2 style="margin:4px 2px 10px">Mailboxes & distribution</h2>
-        <p class="hint" style="margin:0 2px 12px">Auto-generated from your team — tap any name to edit.</p>
+        <h2 style="margin:22px 2px 10px">Mailbox naming</h2>
+        <p class="hint" style="margin:0 2px 12px">Auto-created per domain from your sender's name.</p>
         <div class="glass card tight" id="mailboxList"></div>
       </section>
 
-      <!-- 3 · CONNECT -->
-      <section class="screen" data-screen="connect" data-flow="3">
+      <!-- 4 · CONNECT -->
+      <section class="screen" data-screen="connect" data-flow="4">
         <div class="scr-head">
-          <p class="eyebrow">Step 3 · Connect accounts</p>
+          <p class="eyebrow">Step 4 · Connect accounts</p>
           <h1>Link your<br>inbox & socials</h1>
           <p class="hint">We use these to send from, sync replies, and enrich LinkedIn outreach.</p>
         </div>
@@ -479,11 +496,11 @@
         <p class="hint center mt16" style="padding:0 10px">Connecting is simulated here — no real OAuth happens.</p>
       </section>
 
-      <!-- 4 · INBOXKIT -->
-      <section class="screen" data-screen="inboxkit" data-flow="4">
+      <!-- 3 · INFRASTRUCTURE -->
+      <section class="screen" data-screen="inboxkit" data-flow="3">
         <div class="scr-head">
-          <p class="eyebrow">Step 4 · Provisioning</p>
-          <h1>Your InboxKit<br>order</h1>
+          <p class="eyebrow">Step 3 · Infrastructure</p>
+          <h1>Your sending<br>infrastructure</h1>
           <p class="hint">We auto-selected available domains close to your brand and configured every mailbox.</p>
         </div>
 
@@ -491,16 +508,16 @@
         <div class="glass card" id="domainPicks"></div>
 
         <div class="glass card">
-          <h2 style="margin-bottom:6px">Order summary</h2>
-          <div class="line"><span class="k">Sending domains</span><span class="v" id="sumDomains">2</span></div>
-          <div class="line"><span class="k">Mailboxes</span><span class="v" id="sumMailboxes">6</span></div>
+          <h2 style="margin-bottom:6px">Summary</h2>
+          <div class="line"><span class="k">Sending domains</span><span class="v" id="sumDomains">15</span></div>
+          <div class="line"><span class="k">Mailboxes</span><span class="v" id="sumMailboxes">45</span></div>
           <div class="line"><span class="k">DNS · SPF / DKIM / DMARC</span><span class="v" style="color:var(--ok)">Auto</span></div>
           <div class="line"><span class="k">Warmup</span><span class="v">~2 weeks</span></div>
-          <div class="line"><span class="k">Est. monthly</span><span class="v" id="sumPrice">$84.00</span></div>
+          <div class="line"><span class="k">Est. monthly</span><span class="v" id="sumPrice">$135.00</span></div>
         </div>
         <div class="glass card center" id="orderState">
           <span class="pill dot" style="color:var(--warn)">Awaiting confirmation</span>
-          <p class="hint mt8">Tap below to place the order through InboxKit.</p>
+          <p class="hint mt8">Tap below to provision your infrastructure.</p>
         </div>
       </section>
 
@@ -523,20 +540,20 @@
         </div>
 
         <div id="reviewDocs" style="display:none">
-          <div class="glass card" style="border-color:rgba(52,211,153,.3);background:rgba(52,211,153,.07)">
-            <div style="display:flex;align-items:center;gap:10px"><span style="font-size:18px">👤</span>
+          <div class="glass card" style="border-color:rgba(0,122,255,.3);background:rgba(0,122,255,.06)">
+            <div style="display:flex;align-items:center;gap:11px"><span class="ic" style="color:var(--brand)"><svg class="icn" viewBox="0 0 24 24" style="width:20px;height:20px"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c0-3.5 3.1-6 7-6s7 2.5 7 6"/></svg></span>
             <div><div style="font-size:13.5px;font-weight:600">Ready for your review</div>
-            <div class="hint">A specialist refined these drafts. Tap to read or edit before they're saved.</div></div></div>
+            <div class="hint">A specialist refined these drafts. Edit anything before they're saved.</div></div></div>
           </div>
-          <details class="glass doc" open><summary><span class="ic"><svg class="icn" viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="2.5"/><path d="M9 8h6M9 12h6M9 16h4"/></svg></span><span><span class="dt">Company Overview</span><span class="ds">Who you are, in the AI's words</span></span><span class="chev">›</span></summary>
-            <div class="body"><textarea rows="4" data-grow>Acme helps mid-market RevOps teams replace 6 disconnected tools with one workflow engine. Founded 2021, ~80 employees, trusted by 400+ B2B teams. Differentiator: setup in days, not quarters.</textarea></div>
-          </details>
-          <details class="glass doc"><summary><span class="ic"><svg class="icn" viewBox="0 0 24 24"><path d="M21 8l-9-5-9 5v8l9 5 9-5z"/><path d="M3 8l9 5 9-5M12 13v8"/></svg></span><span><span class="dt">Product One-Pager</span><span class="ds">Value props & proof points</span></span><span class="chev">›</span></summary>
-            <div class="body"><textarea rows="4" data-grow>Core: unified pipeline automation. Outcomes customers cite — 32% faster cycle times, 1.8x rep capacity, &lt;1 week to value. Integrates with Salesforce, HubSpot, Slack.</textarea></div>
-          </details>
-          <details class="glass doc"><summary><span class="ic"><svg class="icn" viewBox="0 0 24 24"><path d="M12 3l7 2.5v5.6c0 4.4-3 7.4-7 8.9-4-1.5-7-4.5-7-8.9V5.5z"/><path d="M9 12l2 2 3.5-4"/></svg></span><span><span class="dt">Objection Handling</span><span class="ds">How agents respond to pushback</span></span><span class="chev">›</span></summary>
-            <div class="body"><textarea rows="4" data-grow>"Already have a tool" → we replace the stack, not add to it. "No budget" → ROI in &lt;2 quarters. "Bad timing" → 30-min audit, no commitment.</textarea></div>
-          </details>
+          <div class="glass doc"><div class="doc-h"><span class="ic"><svg class="icn" viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="2.5"/><path d="M9 8h6M9 12h6M9 16h4"/></svg></span><span><span class="dt">Company Overview</span><span class="ds">Who you are, in the AI's words</span></span></div>
+            <textarea rows="4" data-grow>Acme helps mid-market RevOps teams replace 6 disconnected tools with one workflow engine. Founded 2021, ~80 employees, trusted by 400+ B2B teams. Differentiator: setup in days, not quarters.</textarea>
+          </div>
+          <div class="glass doc"><div class="doc-h"><span class="ic"><svg class="icn" viewBox="0 0 24 24"><path d="M21 8l-9-5-9 5v8l9 5 9-5z"/><path d="M3 8l9 5 9-5M12 13v8"/></svg></span><span><span class="dt">Product One-Pager</span><span class="ds">Value props & proof points</span></span></div>
+            <textarea rows="4" data-grow>Core: unified pipeline automation. Outcomes customers cite — 32% faster cycle times, 1.8x rep capacity, &lt;1 week to value. Integrates with Salesforce, HubSpot, Slack.</textarea>
+          </div>
+          <div class="glass doc"><div class="doc-h"><span class="ic"><svg class="icn" viewBox="0 0 24 24"><path d="M12 3l7 2.5v5.6c0 4.4-3 7.4-7 8.9-4-1.5-7-4.5-7-8.9V5.5z"/><path d="M9 12l2 2 3.5-4"/></svg></span><span><span class="dt">Objection Handling</span><span class="ds">How agents respond to pushback</span></span></div>
+            <textarea rows="4" data-grow>"Already have a tool" → we replace the stack, not add to it. "No budget" → ROI in &lt;2 quarters. "Bad timing" → 30-min audit, no commitment.</textarea>
+          </div>
         </div>
       </section>
 
@@ -568,8 +585,8 @@
       <section class="screen" data-screen="campaigns" data-flow="7">
         <div class="scr-head">
           <p class="eyebrow">Step 7 · Campaigns</p>
-          <h1>Review your<br>4 campaigns</h1>
-          <p class="hint">Static copy drafted by the AI. Edit anything, then confirm each. On launch we apply spintax, default settings, and attach your mailboxes.</p>
+          <h1>Review<br>campaigns</h1>
+          <p class="hint">We've set up 4 campaigns — one LinkedIn sequence and three cold-email steps. Edit anything, then confirm each. On launch we apply spintax, default settings, and attach your mailboxes.</p>
         </div>
         <div id="campaignList"></div>
         <div class="glass card center" id="campNote" style="border-color:var(--hair-soft)">
@@ -612,7 +629,7 @@
     </div>
 
     <!-- launch fx -->
-    <div class="launch-over" id="launchOver"><div class="rk">🚀</div><div class="lt">Launching campaigns…</div></div>
+    <div class="launch-over" id="launchOver"><div class="rk"><svg class="icn" viewBox="0 0 24 24"><path d="M12 2.5c3.3 1.8 5 5 5 8.7 0 2.3-.7 4.3-1.7 5.8H8.7C7.7 15.5 7 13.5 7 11.2c0-3.7 1.7-6.9 5-8.7z"/><circle cx="12" cy="10" r="1.9"/><path d="M8.5 18l-2.7 4.5L10 20.8M15.5 18l2.7 4.5L14 20.8"/></svg></div><div class="lt">Launching campaigns…</div></div>
     <canvas id="confetti"></canvas>
   </div>
 </div>
@@ -623,7 +640,7 @@
   var rm = window.matchMedia && window.matchMedia("(prefers-reduced-motion:reduce)").matches;
 
   // ----- flow definition -----
-  var FLOW = ["welcome","business","domains","connect","inboxkit","research","icp","campaigns","done"];
+  var FLOW = ["welcome","business","domains","inboxkit","connect","research","icp","campaigns","done"];
   // segmented progress only spans the working steps (1..7)
   var SEG_FROM = 1, SEG_TO = 7, SEG_N = SEG_TO - SEG_FROM + 1;
   var idx = 0;
@@ -640,7 +657,7 @@
   // CTA label per screen
   var CTA = {
     welcome:"Get started", business:"Continue", domains:"Continue", connect:"Continue",
-    inboxkit:"Place order with InboxKit", research:"Approve & save to Knowledge Center",
+    inboxkit:"Provision infrastructure", research:"Approve & save to Knowledge Center",
     icp:"Save ICP & continue", campaigns:"Launch campaigns", done:"Restart walkthrough"
   };
 
@@ -725,39 +742,39 @@
   // =====================================================================
   // Step 2 — domains & mailboxes
   // =====================================================================
-  var st = { domains:2, mailboxes:6 };
-  var FIRST = ["alex","sam","jordan","taylor","morgan","casey","riley","drew","jamie","quinn","avery","reese"];
+  var st = { domains:15, mailboxes:45 };
+  var SENDER = { first:"alex", last:"rivera" };
   function rootDomainVal(){ var v=$("#rootDomain").value.trim()||$("#website").value.trim()||"acme.io"; return v.replace(/^https?:\/\//,"").replace(/\/.*$/,""); }
   function domainVariants(base){
     var stem = base.split(".")[0];
-    return ["get"+stem+".com","try"+stem+".com","go"+stem+".io","use"+stem+".com","the"+stem+".co","join"+stem+".com"];
+    return ["get"+stem+".com","try"+stem+".com","go"+stem+".io","use"+stem+".com","the"+stem+".co","join"+stem+".com","hey"+stem+".com","my"+stem+".com"];
   }
+  function mailNames(){ return [SENDER.first, SENDER.last, SENDER.first+"."+SENDER.last]; }
   function renderMailboxes(){
     var list = $("#mailboxList"); list.innerHTML="";
-    var base = rootDomainVal(); var doms = domainVariants(base);
-    for(var i=0;i<st.mailboxes;i++){
-      var name = FIRST[i%FIRST.length];
-      var dom = doms[Math.floor(i/Math.ceil(st.mailboxes/st.domains))%st.domains];
-      var row = document.createElement("div");
-      row.className="mbx";
-      row.innerHTML = '<span class="ad" contenteditable="true" spellcheck="false">'+name+"@"+dom+'</span><span class="lim">30/day</span>';
+    var dom = domainVariants(rootDomainVal())[0];
+    mailNames().forEach(function(n){
+      var row = document.createElement("div"); row.className="mbx";
+      row.innerHTML = '<span class="ad" contenteditable="true" spellcheck="false">'+n+"@"+dom+'</span><span class="lim">30/day</span>';
       list.appendChild(row);
-    }
-    $("#numDomains").textContent = st.domains;
-    $("#numMailboxes").textContent = st.mailboxes;
-  }
-  $$(".stepper").forEach(function(sp){
-    var key = sp.getAttribute("data-stepper");
-    sp.addEventListener("click", function(e){
-      var b = e.target.closest("button"); if(!b) return;
-      var d = +b.getAttribute("data-d");
-      if(key==="domains") st.domains = Math.max(1, Math.min(8, st.domains+d));
-      else st.mailboxes = Math.max(1, Math.min(24, st.mailboxes+d));
-      if(st.mailboxes < st.domains) st.mailboxes = st.domains;
-      renderMailboxes();
     });
+    list.insertAdjacentHTML("beforeend",
+      '<p class="hint" style="margin:10px 2px 2px">Repeats across all '+st.domains+' domains — '+st.mailboxes+' mailboxes total.</p>');
+  }
+  function selectVolume(row){
+    $$("#volOpts .opt-row").forEach(function(r){ r.classList.remove("sel"); });
+    row.classList.add("sel");
+    st.domains = +row.getAttribute("data-domains");
+    st.mailboxes = +row.getAttribute("data-mailboxes");
+    renderMailboxes();
+  }
+  $$("#volOpts .opt-row").forEach(function(r){ r.addEventListener("click", function(){ selectVolume(r); }); });
+  selectVolume($("#volOpts .opt-row"));   // default to first tier
+  $("#fwdToggle").addEventListener("change", function(){
+    var f = $("#fwdField");
+    if(this.checked){ f.style.display="none"; $("#fwdDomain").value = rootDomainVal(); }
+    else { $("#fwdDomain").value=""; f.style.display="block"; $("#fwdDomain").focus(); }
   });
-  $("#fwdToggle").addEventListener("change", function(){ $("#fwdField").style.display = this.checked?"block":"none"; });
 
   // =====================================================================
   // Step 3 — connect
@@ -785,26 +802,31 @@
   // =====================================================================
   var ordered = false;
   function fillInboxKit(){
-    var base = rootDomainVal(); var doms = domainVariants(base);
+    var doms = domainVariants(rootDomainVal());
     var box = $("#domainPicks"); box.innerHTML="";
-    for(var i=0;i<st.domains;i++){
+    var shown = Math.min(5, st.domains);
+    for(var i=0;i<shown;i++){
       box.insertAdjacentHTML("beforeend",
-        '<div class="line"><span class="k mono">'+doms[i]+'</span><span class="pill ok dot">Available</span></div>');
+        '<div class="line"><span class="k mono">'+doms[i%doms.length]+'</span><span class="pill ok dot">Available</span></div>');
+    }
+    if(st.domains>shown){
+      box.insertAdjacentHTML("beforeend",
+        '<div class="line"><span class="k">+ '+(st.domains-shown)+' more domains</span><span class="pill ok dot">Available</span></div>');
     }
     $("#sumDomains").textContent = st.domains;
     $("#sumMailboxes").textContent = st.mailboxes;
-    $("#sumPrice").textContent = "$"+(st.mailboxes*14).toFixed(2);
+    $("#sumPrice").textContent = "$"+(st.mailboxes*3).toLocaleString()+".00";
     if(!ordered){
-      $("#orderState").innerHTML='<span class="pill dot" style="color:var(--warn)">Awaiting confirmation</span><p class="hint mt8">Tap below to place the order through InboxKit.</p>';
+      $("#orderState").innerHTML='<span class="pill dot" style="color:var(--warn)">Awaiting confirmation</span><p class="hint mt8">Tap below to provision your infrastructure.</p>';
     }
   }
   function placeOrder(cb){
     var s = $("#orderState");
-    s.innerHTML='<div class="ai-stages" style="margin:0"><li class="run" style="border:none;justify-content:center"><span class="dot"></span> Placing order with InboxKit…</li></div>';
+    s.innerHTML='<div class="ai-stages" style="margin:0"><li class="run" style="border:none;justify-content:center"><span class="dot"></span> Provisioning your infrastructure…</li></div>';
     cta.disabled = true;
     setTimeout(function(){
       ordered = true;
-      s.innerHTML='<span class="pill ok dot">Order confirmed</span><p class="hint mt8">DNS records auto-configured. Warmup starts now.</p>';
+      s.innerHTML='<span class="pill ok dot">Infrastructure provisioned</span><p class="hint mt8">DNS records auto-configured. Warmup starts now.</p>';
       cta.disabled = false; cb&&cb();
     }, rm?0:1400);
   }
@@ -831,6 +853,7 @@
         $("#researchSub").textContent = "AI drafted these, a human refined them. Edit anything before it's saved.";
         $("#researchCard").style.display="none";
         $("#reviewDocs").style.display="";
+        bindGrow($("#reviewDocs"));   // re-size now that they're visible
         cta.disabled = false;
       }
     }
@@ -841,18 +864,22 @@
   // Step 7 — campaigns
   // =====================================================================
   var CAMPAIGNS = [
-    {nm:"The Direct Ask", ang:"Problem → solution",
-     sub:"{first_name}, fixing {company}'s pipeline leaks",
-     body:"Hi {first_name},\n\nMost RevOps teams at companies like {company} lose deals to handoffs between disconnected tools.\n\nWe replaced that stack for 400+ teams — 32% faster cycles, live in under a week.\n\nWorth a 15-min look?"},
-    {nm:"The Case Study", ang:"Social proof",
-     sub:"how a team like {company} cut cycle time 32%",
-     body:"Hi {first_name},\n\nA {industry} team your size was drowning in manual handoffs. After switching to us: 1.8x rep capacity in one quarter.\n\nHappy to share the 1-pager — interested?"},
-    {nm:"The Quick Question", ang:"Curiosity / low-friction",
-     sub:"quick one, {first_name}",
-     body:"Hi {first_name},\n\nIs {company} still running pipeline ops across separate tools, or have you consolidated?\n\nAsking because it's usually where the biggest velocity gains hide."},
-    {nm:"The Final Touch", ang:"Breakup",
-     sub:"closing the loop, {first_name}",
-     body:"Hi {first_name},\n\nHaven't heard back, so I'll assume timing's off.\n\nIf cutting pipeline cycle time ever climbs the list, the door's open. All the best."}
+    {type:"linkedin", nm:"LinkedIn — Start a conversation", ang:"Connection request + 3 casual touches",
+     steps:[
+       {k:"Connection request", delay:"Day 0", text:"Hey {first_name} — keep seeing {company} pop up in my feed, would love to connect 👋"},
+       {k:"Message 1", delay:"2 days after accept", text:"Appreciate the connect {first_name}! Not here to pitch you anything 😄 Genuinely just curious how you're handling pipeline at {company} these days — still juggling a bunch of separate tools?"},
+       {k:"Message 2", delay:"3 days later", text:"Totally get it if now's chaos. We've been helping a few RevOps folks claw back the hours lost to busywork — happy to trade notes whenever, zero agenda."},
+       {k:"Message 3", delay:"4 days later", text:"All good either way {first_name} 🙂 If it's ever handy I'll send over how a couple of similar teams approached it. Either way — glad we connected!"}
+     ]},
+    {type:"email", nm:"Email 1 — Conversation Starter", ang:"Lead with value · soft CTA, no meeting ask",
+     sub:"a quick idea for {company}",
+     body:"Hi {first_name},\n\nPut together a short teardown of how a few {industry} teams cut the busywork out of their pipeline — no strings, figured it might be useful for {company}.\n\nWant me to send it over? Worth a quick look?"},
+    {type:"email", nm:"Email 2 — Meeting CTA", ang:"Direct ask · short and confident",
+     sub:"{first_name} — 15 minutes?",
+     body:"Hi {first_name},\n\nWe help teams like {company} replace the disconnected tool stack and ship pipeline automation in under a week — 32% faster cycles.\n\nOpen to a 15-min call this week to see if it's a fit?"},
+    {type:"email", nm:"Email 3 — Value-Based CTA", ang:"Problem → outcome → offer → CTA",
+     sub:"the {company} handoff problem",
+     body:"Hi {first_name},\n\nMost {industry} teams quietly lose deals in the handoffs between disconnected tools.\n\nWe fix that — one workflow engine, 1.8x rep capacity, live in a week.\n\nHappy to map out exactly how we'd approach it for {company}. Worth seeing how we'd approach this for you?"}
   ];
   var campBuilt = false, confirmed = [false,false,false,false];
   function buildCampaigns(){
@@ -861,13 +888,22 @@
     CAMPAIGNS.forEach(function(c,i){
       var el = document.createElement("div");
       el.className="glass camp"+(i===0?" open":"");
+      var inner;
+      if(c.type==="linkedin"){
+        inner = c.steps.map(function(s){
+          return '<div class="lstep"><div class="lh"><span class="ln">'+s.k+'</span><span class="ldelay">'+s.delay+'</span></div>'+
+                 '<textarea rows="3" data-grow>'+s.text+'</textarea></div>';
+        }).join("");
+      } else {
+        inner = '<div class="sub-l">Subject</div><input type="text" value="'+c.sub.replace(/"/g,"&quot;")+'">'+
+                '<div class="sub-l" style="margin-top:12px">Body</div><textarea rows="7" data-grow>'+c.body+'</textarea>';
+      }
       el.innerHTML =
         '<div class="head"><span class="num">0'+(i+1)+'</span><div><div class="nm">'+c.nm+'</div><div class="ang">'+c.ang+'</div></div>'+
         '<span class="chev">›</span></div>'+
         '<div class="body"><div class="pad">'+
-          '<div class="sub-l">Subject</div><input type="text" value="'+c.sub.replace(/"/g,"&quot;")+'">'+
-          '<div class="sub-l" style="margin-top:12px">Body</div><textarea rows="7" data-grow>'+c.body+'</textarea>'+
-          '<button class="btn btn-ghost confirm" style="width:100%;margin-top:14px">Confirm campaign '+(i+1)+'</button>'+
+          inner +
+          '<button class="btn btn-ghost confirm" style="width:100%;margin-top:16px">Confirm campaign '+(i+1)+'</button>'+
         '</div></div>';
       var body = el.querySelector(".body");
       el.querySelector(".head").addEventListener("click", function(){
@@ -892,7 +928,7 @@
   function updateCampCount(){
     var n = confirmed.filter(Boolean).length;
     $("#campCount").textContent = n+" of 4 campaigns confirmed";
-    if(n===4){ $("#campNote").style.background="rgba(52,211,153,.1)"; $("#campNote").style.borderColor="rgba(52,211,153,.35)"; cta.disabled=false; }
+    if(n===4){ $("#campNote").style.background="rgba(0,122,255,.08)"; $("#campNote").style.borderColor="rgba(0,122,255,.3)"; cta.disabled=false; }
   }
 
   function doLaunch(){
@@ -916,7 +952,14 @@
   // onEnter hooks + validators
   // =====================================================================
   var onEnter = {
-    domains: function(){ if(!$("#mailboxList").children.length) renderMailboxes(); },
+    domains: function(){
+      if(!$("#rootDomain").value.trim()){
+        var w = $("#website").value.trim();
+        if(w) $("#rootDomain").value = w.replace(/^https?:\/\//,"").replace(/\/.*$/,"");
+      }
+      if($("#fwdToggle").checked) $("#fwdDomain").value = rootDomainVal();
+      renderMailboxes();
+    },
     inboxkit: fillInboxKit,
     research: function(){ runResearch(); },
     campaigns: function(){ buildCampaigns(); $("#campCount").style.color=""; cta.disabled = confirmed.filter(Boolean).length<4 ? false:false; },
@@ -981,7 +1024,7 @@
   function fireConfetti(){
     var c=$("#confetti"), ctx=c.getContext("2d");
     var w=c.width=c.offsetWidth, h=c.height=c.offsetHeight;
-    var cols=["#6C3CE9","#8B5CF6","#22D3EE","#FB7185","#34D399","#FFFFFF"];
+    var cols=["#007AFF","#3399FF","#5AC8FA","#0A84FF","#9BD0FF","#FFFFFF"];
     var P=[]; for(var i=0;i<90;i++){P.push({x:w/2,y:h*0.6,vx:(Math.cos(i)*6)+(i%7-3),vy:-(6+i%9),g:0.22,r:Math.random()*5+3,c:cols[i%cols.length],a:1,rot:i});}
     var t0=0, frames=0;
     (function anim(){
