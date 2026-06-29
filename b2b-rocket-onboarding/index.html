@@ -102,7 +102,7 @@
   /* ---------- screens ---------- */
   .screens{position:relative;z-index:4;flex:1;overflow:hidden}
   .screen{position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;
-    padding:8px 22px 130px;opacity:0;transform:translateX(34px);pointer-events:none;
+    padding:8px 22px 26px;opacity:0;transform:translateX(34px);pointer-events:none;
     transition:opacity .45s var(--ease),transform .45s var(--ease);-webkit-overflow-scrolling:touch}
   .screen::-webkit-scrollbar{width:0}
   .screen.active{opacity:1;transform:none;pointer-events:auto}
@@ -163,9 +163,8 @@
   .btn-launch{background:var(--brand);box-shadow:0 4px 14px rgba(0,122,255,.28)}
 
   /* ---------- action bar ---------- */
-  .actionbar{position:absolute;left:0;right:0;bottom:0;z-index:6;padding:16px 22px calc(20px + env(safe-area-inset-bottom));
-    background:linear-gradient(to top,var(--space) 40%,rgba(239,236,251,.82) 75%,transparent);
-    backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+  /* in-flow: sits at the end of each screen's content so it must be scrolled to */
+  .actionbar{width:100%;margin-top:26px;padding:0 0 calc(6px + env(safe-area-inset-bottom))}
 
   /* ---------- pieces ---------- */
   .pill{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:5px 11px;border-radius:99px;
@@ -365,7 +364,7 @@
   .hero-rk{color:var(--brand)}
   .hero-rk .em svg.icn{width:54px;height:54px}
 
-  .welcome-screen{display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding-bottom:130px}
+  .welcome-screen{display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center}
   .center{text-align:center}
   .mt8{margin-top:8px}.mt16{margin-top:16px}.mt24{margin-top:24px}
   .stack>*+*{margin-top:12px}
@@ -666,7 +665,7 @@
   var $ = function(s,c){return (c||document).querySelector(s);};
   var $$ = function(s,c){return Array.prototype.slice.call((c||document).querySelectorAll(s));};
   var screens = $$(".screen");
-  var cta = $("#cta"), backBtn = $("#backBtn"), stepLabel = $("#stepLabel"), segs = $("#segs"), brandmark = $("#brandmark");
+  var cta = $("#cta"), backBtn = $("#backBtn"), stepLabel = $("#stepLabel"), segs = $("#segs"), brandmark = $("#brandmark"), actionbar = $(".actionbar");
 
   // build segment bars
   for(var i=0;i<SEG_N;i++){ segs.insertAdjacentHTML("beforeend","<i><b></b></i>"); }
@@ -682,14 +681,17 @@
   function show(n){
     n = Math.max(0, Math.min(FLOW.length-1, n));
     var dir = n >= idx;
+    var activeEl = null;
     screens.forEach(function(s){
       var f = +s.getAttribute("data-flow");
       s.classList.remove("active","prev");
-      if(f===n){ s.classList.add("active"); s.scrollTop = 0; }
+      if(f===n){ s.classList.add("active"); activeEl = s; }
       else if(f < n){ s.classList.add("prev"); }
     });
     idx = n;
     var name = FLOW[n];
+    // move the action button to the end of the active screen's content
+    if(activeEl){ activeEl.appendChild(actionbar); activeEl.scrollTop = 0; }
 
     // progress
     var flowStep = +screens.filter(function(s){return s.getAttribute("data-screen")===name;})[0].getAttribute("data-flow");
