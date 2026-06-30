@@ -8,7 +8,7 @@
 <!-- Installable home-screen web app (PWA) -->
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="B2B Rocket">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="manifest" href="manifest.webmanifest">
@@ -68,13 +68,13 @@
   /* flat, tilted purple glow (frisbee) from upper-right reaching toward center */
   .app::before{
     content:"";position:absolute;z-index:0;pointer-events:none;
-    top:-14%;right:-28%;width:118%;height:60%;
-    background:radial-gradient(ellipse 50% 50% at 50% 50%,
-      rgba(103,99,215,0.55) 0%,
-      rgba(122,118,224,0.32) 36%,
+    top:-16%;right:-24%;width:150%;height:46%;
+    background:radial-gradient(ellipse 64% 40% at 50% 50%,
+      rgba(103,99,215,0.58) 0%,
+      rgba(122,118,224,0.34) 32%,
       rgba(172,169,237,0.12) 60%,
       rgba(255,255,255,0) 80%);
-    transform:rotate(-18deg);transform-origin:center;
+    transform:rotate(-13deg);transform-origin:center;
   }
   /* thin concentric rings tucked into the top-right corner */
   .app .rings{
