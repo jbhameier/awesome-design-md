@@ -13,14 +13,16 @@
   *{margin:0;padding:0;box-sizing:border-box}
 
   :root{
-    --lime:#cdf24c;
-    --lime-soft:#d7f55e;
-    --panel-dark:#1a241e;
-    --ink-on-lime:#162018;
-    --blue:#4fb3e3;
+    --brand:#6763d7;
+    --brand-soft:#7d78e4;
+    --brand-glow:rgba(103,99,215,0.30);
+    --panel:#ffffff;
+    --on-brand:#ffffff;
+    --blue:#4fa9e8;
     --orange:#f0a23d;
-    --muted:#8d978b;
-    --white:#f4f7f1;
+    --ink:#16181f;
+    --muted:#8d909c;
+    --track:#e9e8f6;
     --font:'Poppins',-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;
   }
 
@@ -29,8 +31,7 @@
     font-family:var(--font);
     -webkit-font-smoothing:antialiased;
     text-rendering:optimizeLegibility;
-    background:
-      radial-gradient(120% 90% at 70% 8%, #eef5e3 0%, #e6efd6 55%, #dde9c9 100%);
+    background:#eef0f6;
     min-height:100vh;
     display:flex;
     align-items:center;
@@ -47,14 +48,16 @@
     border-radius:46px;
     overflow:hidden;
     background:
-      radial-gradient(135% 95% at 88% -6%, #5a6f44 0%, #3a4a32 24%, #243029 52%, #1a241e 78%);
+      radial-gradient(120% 70% at 88% -8%, #eceafb 0%, rgba(236,234,251,0) 46%),
+      radial-gradient(90% 55% at 6% 2%, #f0effb 0%, rgba(240,239,251,0) 42%),
+      #ffffff;
     box-shadow:
-      0 40px 80px -28px rgba(40,55,30,0.45),
-      0 8px 24px -12px rgba(40,55,30,0.30);
+      0 40px 80px -28px rgba(60,55,120,0.22),
+      0 8px 24px -12px rgba(60,55,120,0.14);
     display:flex;
     flex-direction:column;
     padding:30px 26px 26px;
-    color:var(--white);
+    color:var(--ink);
   }
   /* faint concentric ring decoration top-right */
   .phone::before{
@@ -63,8 +66,8 @@
     top:-120px;right:-150px;
     width:420px;height:420px;
     border-radius:50%;
-    border:1.5px solid rgba(205,242,76,0.10);
-    box-shadow:0 0 0 60px rgba(205,242,76,0.025);
+    border:1.5px solid rgba(103,99,215,0.10);
+    box-shadow:0 0 0 60px rgba(103,99,215,0.022);
     pointer-events:none;
   }
 
@@ -78,24 +81,24 @@
   .back{
     width:54px;height:54px;
     border-radius:50%;
-    background:rgba(225,235,210,0.07);
-    border:1px solid rgba(225,235,210,0.10);
+    background:rgba(103,99,215,0.08);
+    border:1px solid rgba(103,99,215,0.14);
     display:flex;align-items:center;justify-content:center;
     cursor:pointer;
     flex:none;
     transition:background .2s;
   }
-  .back:hover,.back:focus-visible{background:rgba(225,235,210,0.13);outline:none}
-  .back svg{width:22px;height:22px;stroke:var(--white)}
+  .back:hover,.back:focus-visible{background:rgba(103,99,215,0.15);outline:none}
+  .back svg{width:22px;height:22px;stroke:var(--brand)}
 
   .progress{display:flex;align-items:center;gap:9px}
   .progress .dot{
     width:8px;height:8px;border-radius:50%;
-    background:rgba(205,242,76,0.30);
+    background:rgba(103,99,215,0.22);
   }
   .progress .bar{
     width:36px;height:8px;border-radius:5px;
-    background:var(--lime);
+    background:var(--brand);
   }
 
   /* ---------- heading ---------- */
@@ -104,7 +107,7 @@
     line-height:1.25;
     font-weight:700;
     letter-spacing:-0.012em;
-    color:var(--white);
+    color:var(--ink);
     text-align:center;
     margin-bottom:28px;
   }
@@ -112,13 +115,13 @@
   /* ---------- Your Goal speech bubble ---------- */
   .goal-wrap{position:relative;margin-bottom:14px}
   .goal{
-    background:var(--lime);
+    background:var(--brand);
     border-radius:26px;
     padding:24px 24px 24px 22px;
     display:flex;
     gap:13px;
     align-items:flex-start;
-    box-shadow:0 0 55px rgba(205,242,76,0.22);
+    box-shadow:0 22px 44px -16px var(--brand-glow);
   }
   .goal .icon{
     flex:none;
@@ -126,11 +129,11 @@
     margin-top:2px;
     display:flex;align-items:center;justify-content:center;
   }
-  .goal .icon svg{width:66px;height:66px;fill:#0e1410}
+  .goal .icon svg{width:66px;height:66px;fill:#ffffff}
   .goal h2{
     font-size:23px;
     font-weight:700;
-    color:var(--ink-on-lime);
+    color:var(--on-brand);
     line-height:1;
     margin-bottom:9px;
   }
@@ -138,7 +141,7 @@
     font-size:14.5px;
     line-height:1.42;
     font-weight:500;
-    color:#1e2b20;
+    color:rgba(255,255,255,0.9);
   }
 
   /* tail + falling crumbs */
@@ -153,7 +156,7 @@
     position:absolute;
     top:-14px;left:3px;
     width:24px;height:24px;
-    background:var(--lime);
+    background:var(--brand);
     border-radius:6px;
     transform:rotate(45deg);
   }
@@ -165,7 +168,7 @@
   }
   .crumbs span{
     position:absolute;
-    background:var(--lime);
+    background:var(--brand);
     border-radius:50%;
     opacity:.85;
   }
@@ -173,8 +176,8 @@
   /* ---------- stats card ---------- */
   .stats{
     margin-top:24px;
-    background:rgba(232,240,218,0.045);
-    border:1px solid rgba(232,240,218,0.05);
+    background:#f6f6fc;
+    border:1px solid rgba(103,99,215,0.10);
     border-radius:28px;
     padding:26px 24px 24px;
   }
@@ -195,11 +198,11 @@
     align-items:center;justify-content:center;
   }
   .ring .kcal-num{
-    font-size:31px;font-weight:700;color:var(--white);
+    font-size:31px;font-weight:700;color:var(--ink);
     letter-spacing:-0.01em;line-height:1;
   }
   .ring .kcal-lbl{
-    font-size:15px;color:#9aa499;margin-top:5px;font-weight:500;
+    font-size:15px;color:var(--muted);margin-top:5px;font-weight:500;
   }
 
   .macros{flex:1;display:flex;flex-direction:column;gap:18px;min-width:0}
@@ -207,19 +210,19 @@
     display:flex;justify-content:space-between;align-items:baseline;
     margin-bottom:9px;
   }
-  .macro .name{font-size:17px;font-weight:600;color:var(--white)}
+  .macro .name{font-size:17px;font-weight:600;color:var(--ink)}
   .macro .val{
-    font-size:16px;font-weight:500;color:#cfd6c9;
+    font-size:16px;font-weight:500;color:var(--muted);
     font-variant-numeric:tabular-nums;
   }
   .track{
     height:6px;border-radius:6px;
-    background:rgba(232,240,218,0.10);
+    background:var(--track);
     overflow:hidden;
   }
   .fill{height:100%;border-radius:6px}
   .fill.protein{width:72%;background:var(--blue)}
-  .fill.carbs{width:100%;background:var(--lime)}
+  .fill.carbs{width:100%;background:var(--brand)}
   .fill.fat{width:96%;background:var(--orange)}
 
   .stats .caption{
@@ -241,19 +244,19 @@
     width:100%;
     border:none;
     cursor:pointer;
-    background:var(--lime);
-    color:var(--ink-on-lime);
+    background:var(--brand);
+    color:var(--on-brand);
     font-family:var(--font);
     font-size:19px;
     font-weight:700;
     padding:23px;
     border-radius:40px;
-    box-shadow:0 0 45px rgba(205,242,76,0.22);
+    box-shadow:0 18px 38px -12px var(--brand-glow);
     transition:transform .15s, background .2s;
   }
-  .cta button:hover{background:var(--lime-soft)}
+  .cta button:hover{background:var(--brand-soft)}
   .cta button:active{transform:scale(.985)}
-  .cta button:focus-visible{outline:3px solid #ffffff;outline-offset:3px}
+  .cta button:focus-visible{outline:3px solid var(--brand);outline-offset:3px}
 
   @media (prefers-reduced-motion:reduce){
     *{transition:none!important}
@@ -294,12 +297,12 @@
             <!-- torso -->
             <rect x="39.5" y="32" width="5" height="20" rx="2.5"/>
             <!-- raised arm to pole -->
-            <path d="M43 36 L57 30" stroke="#0e1410" stroke-width="4.6" stroke-linecap="round" fill="none"/>
+            <path d="M43 36 L57 30" stroke="#ffffff" stroke-width="4.6" stroke-linecap="round" fill="none"/>
             <!-- other arm -->
-            <path d="M41 37 L33 46" stroke="#0e1410" stroke-width="4.6" stroke-linecap="round" fill="none"/>
+            <path d="M41 37 L33 46" stroke="#ffffff" stroke-width="4.6" stroke-linecap="round" fill="none"/>
             <!-- legs -->
-            <path d="M42 51 L35 64" stroke="#0e1410" stroke-width="4.8" stroke-linecap="round" fill="none"/>
-            <path d="M42 51 L49 64" stroke="#0e1410" stroke-width="4.8" stroke-linecap="round" fill="none"/>
+            <path d="M42 51 L35 64" stroke="#ffffff" stroke-width="4.8" stroke-linecap="round" fill="none"/>
+            <path d="M42 51 L49 64" stroke="#ffffff" stroke-width="4.8" stroke-linecap="round" fill="none"/>
             <!-- rocky mound -->
             <path d="M8 92 Q14 80 22 84 Q27 72 36 80 Q44 70 52 80 Q60 73 70 82 Q80 78 92 92 Z"/>
           </svg>
@@ -327,7 +330,7 @@
       <div class="stats-row">
         <div class="ring">
           <svg viewBox="0 0 172 172" aria-hidden="true">
-            <circle cx="86" cy="86" r="76" fill="none" stroke="var(--lime)" stroke-width="11"/>
+            <circle cx="86" cy="86" r="76" fill="none" stroke="var(--brand)" stroke-width="11"/>
           </svg>
           <div class="center">
             <span class="kcal-num">1281</span>
