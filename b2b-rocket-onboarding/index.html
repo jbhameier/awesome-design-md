@@ -272,6 +272,14 @@
   .empty-note{font-size:13px;color:var(--ink-faint);text-align:center;padding:14px 10px;margin:0 0 4px;
     border:1px dashed var(--hair);border-radius:var(--r-md);background:rgba(118,118,128,.05)}
   .empty-note.err-note{color:var(--ember);border-color:rgba(255,59,48,.4);background:rgba(255,59,48,.05)}
+  .opt-tag{font-size:10.5px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-faint);
+    background:var(--fill);padding:3px 8px;border-radius:99px;margin-left:7px;vertical-align:middle}
+
+  /* invite team cards */
+  .invite{position:relative;padding:16px;margin-bottom:12px}
+  .invite .inv-del{position:absolute;top:11px;right:11px;width:26px;height:26px;border-radius:50%;border:none;cursor:pointer;
+    background:rgba(0,0,0,.05);color:var(--ink-dim);font-size:16px;line-height:1;display:grid;place-items:center;z-index:1}
+  .invite .inv-del:hover{background:rgba(255,59,48,.14);color:var(--ember)}
 
   /* action sheet (provider chooser) */
   .sheet-back{position:fixed;inset:0;z-index:60;display:flex;align-items:flex-end;justify-content:center;
@@ -533,21 +541,36 @@
         <div class="scr-head">
           <p class="eyebrow">Step 4 · Connect accounts</p>
           <h1>Connect accounts</h1>
-          <p class="hint">We use these to send from, sync replies, and enrich LinkedIn outreach.</p>
+          <p class="hint">We use these to send from, sync replies, and enrich LinkedIn outreach. Both are optional — connect now or add them later.</p>
         </div>
 
-        <h2 style="margin:4px 2px 4px">Primary inbox</h2>
+        <h2 style="margin:4px 2px 4px">Primary inbox <span class="opt-tag">Optional</span></h2>
         <p class="hint" style="margin:0 2px 12px">Connect one or more sending mailboxes — Google or Microsoft.</p>
         <div id="primaryList"></div>
         <p class="empty-note" id="primaryEmpty">No mailboxes connected yet.</p>
         <div class="add-row" id="addMailbox" style="margin-top:4px">＋ Add a mailbox</div>
 
-        <h2 style="margin:24px 2px 4px">LinkedIn</h2>
+        <h2 style="margin:24px 2px 4px">LinkedIn <span class="opt-tag">Optional</span></h2>
         <p class="hint" style="margin:0 2px 12px">Connect the accounts you'll automate outreach from.</p>
         <div id="liList"></div>
         <p class="empty-note" id="liEmpty">No LinkedIn accounts connected yet.</p>
         <div class="add-row" id="addLinkedIn" style="margin-top:4px">＋ Add a LinkedIn account</div>
         <p class="hint center mt16" style="padding:0 10px">Connecting is simulated here — no real OAuth happens.</p>
+      </section>
+
+      <!-- 5 · TEAM -->
+      <section class="screen" data-screen="team" data-flow="5">
+        <div class="scr-head">
+          <p class="eyebrow">Step 5 · Your team</p>
+          <h1>Invite your team</h1>
+          <p class="hint">Bring teammates in to review campaigns and replies together. Optional — you can invite them anytime.</p>
+        </div>
+
+        <h2 style="margin:4px 2px 4px">Team members <span class="opt-tag">Optional</span></h2>
+        <p class="hint" style="margin:0 2px 12px">We'll email each person an invite to join your B2B Rocket workspace.</p>
+        <div id="inviteList"></div>
+        <div class="add-row" id="addInvite" style="margin-top:4px">＋ Add a teammate</div>
+        <p class="hint center mt16" style="padding:0 10px">Inviting is simulated here — no real emails are sent.</p>
       </section>
 
       <!-- 3 · INFRASTRUCTURE -->
@@ -576,9 +599,9 @@
       </section>
 
       <!-- 5 · AI RESEARCH -->
-      <section class="screen" data-screen="research" data-flow="5">
+      <section class="screen" data-screen="research" data-flow="6">
         <div class="scr-head">
-          <p class="eyebrow">Step 5 · Knowledge Center</p>
+          <p class="eyebrow">Step 6 · Knowledge Center</p>
           <h1 id="researchTitle">Researching…</h1>
           <p class="hint" id="researchSub">Our AI is reading your site and docs, then a human reviewer checks everything.</p>
         </div>
@@ -612,9 +635,9 @@
       </section>
 
       <!-- 6 · ICP -->
-      <section class="screen" data-screen="icp" data-flow="6">
+      <section class="screen" data-screen="icp" data-flow="7">
         <div class="scr-head">
-          <p class="eyebrow">Step 6 · Ideal Customer Profile</p>
+          <p class="eyebrow">Step 7 · Ideal Customer Profile</p>
           <h1>Your ICP</h1>
           <p class="hint">The AI drafted your ICP from your business. Refine it — we'll save it to the Knowledge Center for your team.</p>
         </div>
@@ -636,9 +659,9 @@
       </section>
 
       <!-- 7 · CAMPAIGNS -->
-      <section class="screen" data-screen="campaigns" data-flow="7">
+      <section class="screen" data-screen="campaigns" data-flow="8">
         <div class="scr-head">
-          <p class="eyebrow">Step 7 · Campaigns</p>
+          <p class="eyebrow">Step 8 · Campaigns</p>
           <h1>Review campaigns</h1>
           <p class="hint">We've set up 4 campaigns — 1 LinkedIn campaign and 3 cold emails. Swipe through each, edit anything, then approve. On launch we apply spintax, default settings, and attach your mailboxes.</p>
         </div>
@@ -649,7 +672,7 @@
       </section>
 
       <!-- 8 · DONE -->
-      <section class="screen" data-screen="done" data-flow="8">
+      <section class="screen" data-screen="done" data-flow="9">
         <div class="center" style="padding-top:18px">
           <div class="hero-rk" style="margin-top:10px"><span class="em"><svg class="icn" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8.2 12.4l2.6 2.6 5-5.4"/></svg></span></div>
           <p class="eyebrow" style="text-align:center;color:var(--ok)">Onboarding complete</p>
@@ -701,9 +724,9 @@
   var rm = window.matchMedia && window.matchMedia("(prefers-reduced-motion:reduce)").matches;
 
   // ----- flow definition -----
-  var FLOW = ["welcome","business","domains","inboxkit","connect","research","icp","campaigns","done"];
-  // segmented progress only spans the working steps (1..7)
-  var SEG_FROM = 1, SEG_TO = 7, SEG_N = SEG_TO - SEG_FROM + 1;
+  var FLOW = ["welcome","business","domains","inboxkit","connect","team","research","icp","campaigns","done"];
+  // segmented progress only spans the working steps (1..8)
+  var SEG_FROM = 1, SEG_TO = 8, SEG_N = SEG_TO - SEG_FROM + 1;
   var idx = 0;
 
   var $ = function(s,c){return (c||document).querySelector(s);};
@@ -717,7 +740,7 @@
 
   // CTA label per screen
   var CTA = {
-    welcome:"Get started", business:"Continue", domains:"Continue", connect:"Continue",
+    welcome:"Get started", business:"Continue", domains:"Continue", connect:"Continue", team:"Continue",
     inboxkit:"Provision infrastructure", research:"Approve & save to Knowledge Center",
     icp:"Save ICP & continue", campaigns:"Launch campaigns", done:"Restart walkthrough"
   };
@@ -962,6 +985,25 @@
   });
   $("#addLinkedIn").addEventListener("click", addLinkedIn);
   refreshEmpty();
+
+  // =====================================================================
+  // Step 5 — invite team (all optional)
+  // =====================================================================
+  var inviteList = $("#inviteList");
+  function inviteCard(){
+    var d = document.createElement("div"); d.className = "glass card invite";
+    d.innerHTML =
+      '<button class="inv-del" type="button" title="Remove">×</button>'+
+      '<div class="field"><label>Work email</label><input class="inv-email" type="email" inputmode="email" placeholder="teammate@company.com" autocomplete="off"></div>'+
+      '<div class="field" style="margin-bottom:0"><label>Role</label>'+
+        '<select class="inv-role"><option>Admin — full access</option><option selected>Member — build & send</option><option>Viewer — read only</option></select></div>';
+    d.querySelector(".inv-del").addEventListener("click", function(){
+      if($$(".invite", inviteList).length>1) d.remove(); else { d.querySelector(".inv-email").value=""; d.querySelector(".inv-role").selectedIndex=1; }
+    });
+    return d;
+  }
+  $("#addInvite").addEventListener("click", function(){ inviteList.appendChild(inviteCard()); });
+  inviteList.appendChild(inviteCard());   // start with one blank invite
 
   // =====================================================================
   // Step 4 — InboxKit
@@ -1211,16 +1253,6 @@
         ok=false;
       } else if(se){ se.style.display="none"; }
       if(!ok){ shake(); focusInvalid(); return false; }
-      return true;
-    },
-    connect: function(){
-      var pe = $("#primaryEmpty");
-      if(!$("#primaryList").children.length){
-        pe.textContent = "Add at least one sending mailbox to continue.";
-        pe.classList.add("err-note"); pe.style.display="block";
-        shake(); focusInvalid(); return false;
-      }
-      pe.classList.remove("err-note");
       return true;
     },
     inboxkit: function(){
