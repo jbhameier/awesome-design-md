@@ -192,6 +192,7 @@
   .opt-row.sel{background:var(--brand);border-color:transparent;box-shadow:0 12px 26px rgba(103,99,215,.36)}
   .opt-row.sel .otitle{color:#fff}
   .opt-row.sel .osub{color:rgba(255,255,255,0.85)}
+  .opts.invalid .opt-row{box-shadow:0 0 0 2px var(--ember)}
 
   /* iOS switch + switch row */
   .row-switch{display:flex;align-items:center;justify-content:space-between;gap:12px;
@@ -516,6 +517,7 @@
           <div class="opt-row" data-domains="34" data-mailboxes="100"><span class="radio"></span><span class="opt-meta"><span class="otitle">34 domains</span><span class="osub">100 mailboxes</span></span></div>
           <div class="opt-row" data-domains="67" data-mailboxes="201"><span class="radio"></span><span class="opt-meta"><span class="otitle">67 domains</span><span class="osub">201 mailboxes</span></span></div>
         </div>
+        <p class="err" id="volErr" style="margin:10px 2px 0">Select a sending volume to continue.</p>
         <p class="hint" style="margin:12px 2px 0">3 mailboxes per domain.</p>
 
         <h2 style="margin:22px 2px 10px">Senders</h2>
@@ -805,14 +807,18 @@
     var stem = base.split(".")[0];
     return ["get"+stem+".com","try"+stem+".com","go"+stem+".io","use"+stem+".com","the"+stem+".co","join"+stem+".com","hey"+stem+".com","my"+stem+".com"];
   }
+  var volChosen = false;
   function selectVolume(row){
     $$("#volOpts .opt-row").forEach(function(r){ r.classList.remove("sel"); });
     row.classList.add("sel");
     st.domains = +row.getAttribute("data-domains");
     st.mailboxes = +row.getAttribute("data-mailboxes");
+    volChosen = true;
+    $("#volOpts").classList.remove("invalid");
+    $("#volErr").style.display="none";
   }
   $$("#volOpts .opt-row").forEach(function(r){ r.addEventListener("click", function(){ selectVolume(r); }); });
-  selectVolume($("#volOpts .opt-row"));   // default to first tier
+  // no tier is preselected — the user must choose one
   $("#fwdToggle").addEventListener("change", function(){
     var f = $("#fwdField");
     if(this.checked){ f.style.display="none"; $("#fwdDomain").value = rootDomainVal(); }
@@ -1185,6 +1191,9 @@
       var ok = true;
       var f = $("#rootDomain").closest(".field");
       if(!$("#rootDomain").value.trim()){ f.classList.add("invalid"); ok=false; } else f.classList.remove("invalid");
+      // require the user to pick a sending volume
+      if(!volChosen){ $("#volOpts").classList.add("invalid"); $("#volErr").style.display="block"; ok=false; }
+      else { $("#volOpts").classList.remove("invalid"); $("#volErr").style.display="none"; }
       // require at least one sender with both a first and last name
       var rows = $$(".person", people);
       var hasSender = rows.some(function(p){
@@ -1241,7 +1250,7 @@
   // scroll the first thing the user needs to fix into view
   function focusInvalid(){
     var a = $(".screen.active"); if(!a) return;
-    var bad = a.querySelector(".field.invalid, .pf-first.invalid, .pf-last.invalid, .err-note");
+    var bad = a.querySelector(".field.invalid, .opts.invalid, .pf-first.invalid, .pf-last.invalid, .err-note");
     var se = $("#senderErr");
     if(!bad && se && se.style.display==="block") bad = se;
     if(bad) bad.scrollIntoView({behavior: rm?"auto":"smooth", block:"center"});
