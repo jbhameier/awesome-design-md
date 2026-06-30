@@ -42,6 +42,9 @@
     --mono:ui-monospace,"SF Mono","JetBrains Mono",Menlo,monospace;
     --r-lg:26px; --r-md:18px; --r-sm:13px;
     --ease:cubic-bezier(.22,.61,.36,1);
+    /* --- adjustable background orb (tunable via control panel) --- */
+    --g-w:240%; --g-h:98%; --g-top:-40%; --g-right:-64%; --g-rot:-40deg;
+    --g-rx:56%; --g-ry:46%; --g-a:0.95; --g-core:30%; --g-fade:88%;
   }
   *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   html,body{height:100%}
@@ -68,14 +71,13 @@
   /* flat, tilted purple glow (frisbee) from upper-right reaching toward center */
   .app::before{
     content:"";position:absolute;z-index:0;pointer-events:none;
-    top:-40%;right:-64%;width:240%;height:98%;
-    background:radial-gradient(ellipse 56% 46% at 50% 50%,
-      rgba(103,99,215,0.95) 0%,
-      rgba(103,99,215,0.86) 30%,
-      rgba(116,112,224,0.58) 52%,
-      rgba(150,146,233,0.24) 72%,
-      rgba(255,255,255,0) 88%);
-    transform:rotate(-40deg);transform-origin:center;
+    top:var(--g-top);right:var(--g-right);width:var(--g-w);height:var(--g-h);
+    background:radial-gradient(ellipse var(--g-rx) var(--g-ry) at 50% 50%,
+      rgba(103,99,215,var(--g-a)) 0%,
+      rgba(103,99,215,calc(var(--g-a)*0.88)) var(--g-core),
+      rgba(150,146,233,calc(var(--g-a)*0.30)) calc(var(--g-core) + (var(--g-fade) - var(--g-core))*0.55),
+      rgba(255,255,255,0) var(--g-fade));
+    transform:rotate(var(--g-rot));transform-origin:center;
   }
   /* thin concentric rings tucked into the top-right corner */
   .app .rings{
@@ -403,6 +405,27 @@
     *{animation:none!important;transition-duration:.01ms!important}
     .screen{transition:opacity .2s}
   }
+
+  /* === TEMPORARY glow control panel (removed once tuned) === */
+  #glowToggle{position:absolute;right:14px;bottom:calc(16px + env(safe-area-inset-bottom));z-index:70;
+    appearance:none;border:none;cursor:pointer;background:var(--brand);color:#fff;font:600 12px var(--font);
+    border-radius:99px;padding:9px 14px;box-shadow:0 6px 16px rgba(103,99,215,.45)}
+  #glowPanel{position:absolute;left:0;right:0;bottom:0;z-index:69;color:#fff;
+    background:rgba(18,16,34,0.94);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+    padding:12px 14px calc(14px + env(safe-area-inset-bottom));max-height:62%;overflow:auto;
+    border-radius:20px 20px 0 0;box-shadow:0 -10px 34px rgba(0,0,0,.4);
+    transform:translateY(102%);transition:transform .28s var(--ease);font-family:var(--mono)}
+  #glowPanel.open{transform:none}
+  #glowPanel h4{font-family:var(--font);font-size:14px;font-weight:700;margin-bottom:8px;
+    display:flex;align-items:center;justify-content:space-between}
+  #glowPanel h4 button{appearance:none;border:none;background:rgba(255,255,255,.14);color:#fff;
+    border-radius:99px;padding:5px 12px;font:600 12px var(--font);cursor:pointer}
+  #glowVals{background:rgba(255,255,255,.10);border-radius:10px;padding:9px 10px;line-height:1.55;
+    white-space:pre-wrap;word-break:break-word;font-size:11.5px;margin-bottom:10px;color:#E9E7FB}
+  .gp-row{display:flex;align-items:center;gap:9px;margin:6px 0}
+  .gp-row label{width:64px;flex-shrink:0;font:600 11px var(--font);color:#BDB9E6}
+  .gp-row input[type=range]{flex:1;accent-color:#8A86E6;height:22px}
+  .gp-row .v{width:56px;text-align:right;flex-shrink:0;font-size:11.5px;color:#fff}
 </style>
 </head>
 <body>
@@ -662,6 +685,14 @@
     <!-- launch fx -->
     <div class="launch-over" id="launchOver"><div class="rk"><svg class="icn" viewBox="0 0 24 24"><path d="M12 2.5c3.3 1.8 5 5 5 8.7 0 2.3-.7 4.3-1.7 5.8H8.7C7.7 15.5 7 13.5 7 11.2c0-3.7 1.7-6.9 5-8.7z"/><circle cx="12" cy="10" r="1.9"/><path d="M8.5 18l-2.7 4.5L10 20.8M15.5 18l2.7 4.5L14 20.8"/></svg></div><div class="lt">Launching campaigns…</div></div>
     <canvas id="confetti"></canvas>
+
+    <!-- TEMPORARY glow control panel (remove once tuned) -->
+    <button id="glowToggle" type="button">Glow ◰</button>
+    <div id="glowPanel" aria-label="Glow controls">
+      <h4>Background orb <button id="glowHide" type="button">Hide</button></h4>
+      <div id="glowVals"></div>
+      <div id="glowRows"></div>
+    </div>
   </div>
 </div>
 
@@ -1133,6 +1164,52 @@
 
   // boot
   show(0);
+})();
+</script>
+
+<!-- TEMPORARY: background-orb tuner (remove once values are baked in) -->
+<script>
+(function(){
+  var root=document.documentElement;
+  var P=[
+    {k:"rot",  label:"rotate",    min:-90, max:90,  step:1,   unit:"deg", val:-40},
+    {k:"w",    label:"width",     min:60,  max:340, step:1,   unit:"%",   val:240},
+    {k:"h",    label:"height",    min:20,  max:220, step:1,   unit:"%",   val:98},
+    {k:"top",  label:"top",       min:-110,max:60,  step:1,   unit:"%",   val:-40},
+    {k:"right",label:"right",     min:-130,max:60,  step:1,   unit:"%",   val:-64},
+    {k:"rx",   label:"shape X",   min:15,  max:95,  step:1,   unit:"%",   val:56},
+    {k:"ry",   label:"shape Y",   min:10,  max:95,  step:1,   unit:"%",   val:46},
+    {k:"a",    label:"intensity", min:0.1, max:1,   step:0.01,unit:"",    val:0.95},
+    {k:"core", label:"bold to",   min:0,   max:75,  step:1,   unit:"%",   val:30},
+    {k:"fade", label:"fade end",  min:30,  max:100, step:1,   unit:"%",   val:88}
+  ];
+  var rows=document.getElementById("glowRows");
+  var valsBox=document.getElementById("glowVals");
+  function v(k){ for(var i=0;i<P.length;i++) if(P[i].k===k) return P[i].val; }
+  function apply(p){ root.style.setProperty("--g-"+p.k, p.val+p.unit); }
+  function readout(){
+    valsBox.textContent =
+      "top:"+v("top")+"%; right:"+v("right")+"%; width:"+v("w")+"%; height:"+v("h")+"%;\n"+
+      "ellipse "+v("rx")+"% "+v("ry")+"%;  rotate("+v("rot")+"deg);\n"+
+      "--g-a:"+v("a")+"; --g-core:"+v("core")+"%; --g-fade:"+v("fade")+"%";
+  }
+  P.forEach(function(p){
+    apply(p);
+    var row=document.createElement("div"); row.className="gp-row";
+    row.innerHTML='<label>'+p.label+'</label>'+
+      '<input type="range" min="'+p.min+'" max="'+p.max+'" step="'+p.step+'" value="'+p.val+'">'+
+      '<span class="v"></span>';
+    var input=row.querySelector("input"), out=row.querySelector(".v");
+    out.textContent=p.val+p.unit;
+    input.addEventListener("input",function(){
+      p.val=parseFloat(input.value); out.textContent=p.val+p.unit; apply(p); readout();
+    });
+    rows.appendChild(row);
+  });
+  readout();
+  var panel=document.getElementById("glowPanel"), toggle=document.getElementById("glowToggle");
+  toggle.addEventListener("click",function(){ panel.classList.toggle("open"); });
+  document.getElementById("glowHide").addEventListener("click",function(){ panel.classList.remove("open"); });
 })();
 </script>
 </body>
