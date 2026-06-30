@@ -55,14 +55,19 @@
   }
   .app{
     position:relative;width:100vw;height:100dvh;overflow:hidden;
-    background:
-      radial-gradient(120% 95% at 102% -2%,
-        rgba(103,99,215,0.38) 0%,
-        rgba(124,120,224,0.20) 24%,
-        rgba(168,165,235,0.08) 44%,
-        rgba(255,255,255,0) 64%),
-      #FFFFFF;
+    background:#FFFFFF;
     display:flex;flex-direction:column;isolation:isolate;
+  }
+  /* flat, tilted purple glow (frisbee) from upper-right reaching toward center */
+  .app::before{
+    content:"";position:absolute;z-index:0;pointer-events:none;
+    top:-14%;right:-28%;width:118%;height:60%;
+    background:radial-gradient(ellipse 50% 50% at 50% 50%,
+      rgba(103,99,215,0.55) 0%,
+      rgba(122,118,224,0.32) 36%,
+      rgba(172,169,237,0.12) 60%,
+      rgba(255,255,255,0) 80%);
+    transform:rotate(-18deg);transform-origin:center;
   }
   @media(min-width:600px){
     .app{
