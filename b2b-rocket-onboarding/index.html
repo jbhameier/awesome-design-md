@@ -69,6 +69,14 @@
       rgba(255,255,255,0) 80%);
     transform:rotate(-18deg);transform-origin:center;
   }
+  /* thin concentric rings tucked into the top-right corner */
+  .app .rings{
+    position:absolute;z-index:0;pointer-events:none;top:0;right:0;width:88%;height:56%;
+    background:repeating-radial-gradient(circle at 100% 0%,
+      transparent 0 50px, rgba(103,99,215,0.20) 50px 51px);
+    -webkit-mask-image:radial-gradient(circle at 100% 0%, #000 6%, rgba(0,0,0,0.55) 34%, transparent 64%);
+    mask-image:radial-gradient(circle at 100% 0%, #000 6%, rgba(0,0,0,0.55) 34%, transparent 64%);
+  }
   @media(min-width:600px){
     .app{
       width:402px;height:858px;border-radius:54px;
@@ -398,9 +406,7 @@
 <body>
 <div class="stage">
   <div class="app" id="app">
-    <div class="aurora" aria-hidden="true">
-      <b class="b1"></b><b class="b2"></b><b class="b3"></b><div class="grain"></div>
-    </div>
+    <div class="rings" aria-hidden="true"></div>
 
     <!-- status bar -->
     <div class="statusbar">
