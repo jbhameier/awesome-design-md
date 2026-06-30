@@ -228,6 +228,7 @@
   .share-bar b{display:block;height:100%;width:100%;background:var(--brand);border-radius:99px;transition:width .2s var(--ease)}
   .share-ctl .pf-pct{width:64px;text-align:center;padding:9px 8px}
   .share-ctl .pct{font-size:14px;color:var(--ink-dim)}
+  .pf-first.invalid,.pf-last.invalid{box-shadow:0 0 0 2px var(--ember)}
 
   .add-row{display:flex;align-items:center;gap:8px;color:var(--accent);font-size:14px;font-weight:600;cursor:pointer;
     padding:13px;border:1px dashed rgba(103,99,215,.32);border-radius:var(--r-md);justify-content:center;background:rgba(103,99,215,.05)}
@@ -251,15 +252,41 @@
   .uptile.has .s{color:var(--ok)}
 
   /* connect rows */
-  .conn{display:flex;align-items:center;gap:13px;padding:15px;margin-bottom:12px}
-  .conn .logo{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;flex-shrink:0;font-weight:700;font-size:17px}
+  .conn{display:flex;align-items:center;gap:10px;padding:14px;margin-bottom:12px}
+  .conn .logo{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;flex-shrink:0;font-weight:700;font-size:16px}
   .conn .meta{flex:1;min-width:0}
-  .conn .meta .t{font-size:14.5px;font-weight:600}
+  .conn .meta .t{font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .conn .meta .s{font-size:12px;color:var(--ink-dim);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .conn .cbtn{flex-shrink:0;font-size:13px;font-weight:600;padding:9px 15px;border-radius:99px;border:1px solid var(--hair);
+  .conn .cbtn{flex-shrink:0;font-size:12px;font-weight:600;padding:7px 12px;border-radius:99px;border:1px solid var(--hair);
     background:rgba(255,255,255,.7);color:var(--ink);cursor:pointer;transition:.15s}
   .conn .cbtn:hover{background:#fff}
-  .conn.linked .cbtn{background:rgba(103,99,215,.12);border-color:rgba(103,99,215,.3);color:var(--ok);pointer-events:none}
+  .conn.linked .cbtn{background:rgba(103,99,215,.12);border-color:rgba(103,99,215,.3);color:var(--ok);pointer-events:none;
+    width:30px;height:30px;padding:0;display:grid;place-items:center;font-size:14px;border-radius:50%}
+  .conn.connecting .cbtn{color:var(--ink-dim)}
+  .conn .cx{flex-shrink:0;width:28px;height:28px;border-radius:50%;border:none;cursor:pointer;
+    background:rgba(0,0,0,.05);color:var(--ink-dim);font-size:17px;line-height:1;display:grid;place-items:center}
+  .conn .cx:hover{background:rgba(255,59,48,.14);color:var(--ember)}
+  .empty-note{font-size:13px;color:var(--ink-faint);text-align:center;padding:14px 10px;margin:0 0 4px;
+    border:1px dashed var(--hair);border-radius:var(--r-md);background:rgba(118,118,128,.05)}
+  .empty-note.err-note{color:var(--ember);border-color:rgba(255,59,48,.4);background:rgba(255,59,48,.05)}
+
+  /* action sheet (provider chooser) */
+  .sheet-back{position:fixed;inset:0;z-index:60;display:flex;align-items:flex-end;justify-content:center;
+    background:rgba(20,18,40,.28);opacity:0;transition:opacity .22s ease;-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px)}
+  .sheet-back[hidden]{display:none}
+  .sheet-back.show{opacity:1}
+  .sheet{width:100%;max-width:480px;margin:0 8px calc(8px + env(safe-area-inset-bottom));padding:10px;
+    background:rgba(255,255,255,.86);-webkit-backdrop-filter:blur(28px) saturate(180%);backdrop-filter:blur(28px) saturate(180%);
+    border:1px solid var(--hair);border-radius:22px;box-shadow:0 18px 50px rgba(40,34,90,.28);
+    transform:translateY(18px);transition:transform .24s var(--ease)}
+  .sheet-back.show .sheet{transform:translateY(0)}
+  .sheet-title{font-size:12.5px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-faint);text-align:center;padding:8px 0 10px}
+  .sheet-opt{display:flex;align-items:center;gap:13px;width:100%;padding:13px;border:none;border-radius:14px;
+    background:rgba(118,118,128,.08);margin-bottom:8px;cursor:pointer;font-size:15px;font-weight:600;color:var(--ink);text-align:left}
+  .sheet-opt:hover{background:rgba(103,99,215,.1)}
+  .sheet-opt .logo{width:38px;height:38px;border-radius:11px;display:grid;place-items:center;flex-shrink:0;font-weight:700;font-size:16px;border:1px solid var(--hair-soft)}
+  .sheet-cancel{width:100%;padding:14px;border:none;border-radius:14px;background:rgba(118,118,128,.1);
+    cursor:pointer;font-size:15px;font-weight:600;color:var(--brand);margin-top:2px}
 
   /* mailbox list */
   .mbx{display:flex;align-items:center;gap:10px;padding:11px 13px;border-radius:var(--r-md);background:rgba(255,255,255,.55);
@@ -299,18 +326,37 @@
   .doc textarea{margin-top:13px}
   .doc .ic{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:rgba(103,99,215,.16);font-size:16px;flex-shrink:0}
 
-  /* campaign cards */
-  .camp{padding:0;margin-bottom:13px;overflow:hidden}
-  .camp .head{display:flex;align-items:center;gap:11px;padding:15px 16px;cursor:pointer}
-  .camp .num{font-family:var(--mono);font-size:12px;color:var(--accent);font-weight:600}
-  .camp .nm{font-size:14.5px;font-weight:600}
+  /* campaign sequences — swipeable carousels */
+  .camp{padding:15px 0 14px;margin-bottom:15px;overflow:hidden}
+  .camp-top{display:flex;align-items:center;gap:11px;padding:0 16px 13px}
+  .camp .ico{width:38px;height:38px;border-radius:11px;display:grid;place-items:center;flex-shrink:0;font-weight:700;font-size:15px}
+  .camp .ico.li{background:#0A66C2;color:#fff}
+  .camp .ico.em{background:rgba(103,99,215,.14);color:var(--brand)}
+  .camp .nm{font-size:15px;font-weight:600}
   .camp .ang{font-size:11.5px;color:var(--ink-dim);margin-top:1px}
-  .camp .chev{margin-left:auto;color:var(--ink-dim);transition:transform .25s}
-  .camp.open .chev{transform:rotate(90deg)}
-  .camp .body{max-height:0;overflow:hidden;transition:max-height .4s var(--ease)}
-  .camp .pad{padding:0 16px 16px}
-  .camp .sub-l{font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint);margin:4px 0 6px}
-  .camp.confirmed .head{background:rgba(103,99,215,.06)}
+  .camp .ct-badge{margin-left:auto;flex-shrink:0;font-size:11px;font-weight:600;color:var(--ink-dim);
+    background:rgba(118,118,128,.12);padding:4px 9px;border-radius:99px;white-space:nowrap}
+  .camp.confirmed .ct-badge{background:rgba(103,99,215,.14);color:var(--ok)}
+  .swipe{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;
+    scroll-behavior:smooth;gap:12px;padding:0 16px 2px;scrollbar-width:none}
+  .swipe::-webkit-scrollbar{display:none}
+  .slide{flex:0 0 100%;scroll-snap-align:center;box-sizing:border-box}
+  .slide-card{background:rgba(255,255,255,.5);border:1px solid var(--hair-soft);border-radius:var(--r-md);padding:15px;height:100%;box-sizing:border-box}
+  .slide .lh{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+  .slide .ln{font-size:13px;font-weight:700;letter-spacing:.01em}
+  .slide .sub-l{font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint);margin:12px 0 6px}
+  .slide .sub-l:first-child{margin-top:0}
+  .slide input,.slide textarea{width:100%}
+  .slide.approve .slide-card{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:6px;
+    background:rgba(103,99,215,.05);border-color:rgba(103,99,215,.28);min-height:180px}
+  .ap-ic{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;background:rgba(103,99,215,.14);color:var(--brand);font-size:22px;margin-bottom:4px}
+  .ap-t{font-size:15.5px;font-weight:600}
+  .ap-s{font-size:12.5px;color:var(--ink-dim);max-width:240px;line-height:1.45}
+  .slide .confirm{width:100%;margin-top:12px}
+  .sdots{display:flex;justify-content:center;gap:6px;margin-top:13px}
+  .sdots i{width:6px;height:6px;border-radius:50%;background:var(--sep);transition:.25s}
+  .sdots i.on{background:var(--brand);width:18px;border-radius:99px}
+  .swipe-hint{font-size:11.5px;color:var(--ink-faint);text-align:center;margin-top:8px}
 
   /* done timeline */
   .tl{position:relative;padding-left:30px;margin-top:6px}
@@ -475,6 +521,7 @@
         <div id="peopleList"></div>
         <div class="add-row" id="addPerson">＋ Add a person</div>
         <p class="hint center" id="pTotal" style="margin:13px 2px 0;font-weight:600">Total volume — 100%</p>
+        <p class="err" id="senderErr" style="text-align:center;display:none;margin-top:10px">Add at least one sender with a first and last name.</p>
       </section>
 
       <!-- 4 · CONNECT -->
@@ -485,25 +532,17 @@
           <p class="hint">We use these to send from, sync replies, and enrich LinkedIn outreach.</p>
         </div>
 
-        <h2 style="margin:4px 2px 12px">Primary inbox</h2>
-        <div class="glass conn" data-conn="google" data-acct="alex@acme.io">
-          <div class="logo" style="background:#fff;color:#4285F4">G</div>
-          <div class="meta"><div class="t">Google Workspace</div><div class="s">Send & sync replies</div></div>
-          <button class="cbtn">Connect</button>
-        </div>
-        <div class="glass conn" data-conn="ms" data-acct="alex@acme.io">
-          <div class="logo" style="background:#fff;color:#0078D4">M</div>
-          <div class="meta"><div class="t">Microsoft 365</div><div class="s">Send & sync replies</div></div>
-          <button class="cbtn">Connect</button>
-        </div>
+        <h2 style="margin:4px 2px 4px">Primary inbox</h2>
+        <p class="hint" style="margin:0 2px 12px">Connect one or more sending mailboxes — Google or Microsoft.</p>
+        <div id="primaryList"></div>
+        <p class="empty-note" id="primaryEmpty">No mailboxes connected yet.</p>
+        <div class="add-row" id="addMailbox" style="margin-top:4px">＋ Add a mailbox</div>
 
-        <h2 style="margin:22px 2px 12px">LinkedIn</h2>
-        <div class="glass conn" data-conn="li" data-acct="Alex Rivera">
-          <div class="logo" style="background:#0A66C2;color:#fff">in</div>
-          <div class="meta"><div class="t">LinkedIn account</div><div class="s">Automate connection requests & DMs</div></div>
-          <button class="cbtn">Connect</button>
-        </div>
-        <div class="add-row" id="addLinkedIn" style="margin-top:4px">＋ Add another LinkedIn account</div>
+        <h2 style="margin:24px 2px 4px">LinkedIn</h2>
+        <p class="hint" style="margin:0 2px 12px">Connect the accounts you'll automate outreach from.</p>
+        <div id="liList"></div>
+        <p class="empty-note" id="liEmpty">No LinkedIn accounts connected yet.</p>
+        <div class="add-row" id="addLinkedIn" style="margin-top:4px">＋ Add a LinkedIn account</div>
         <p class="hint center mt16" style="padding:0 10px">Connecting is simulated here — no real OAuth happens.</p>
       </section>
 
@@ -597,11 +636,11 @@
         <div class="scr-head">
           <p class="eyebrow">Step 7 · Campaigns</p>
           <h1>Review campaigns</h1>
-          <p class="hint">We've set up 4 campaigns — one LinkedIn sequence and three cold-email steps. Edit anything, then confirm each. On launch we apply spintax, default settings, and attach your mailboxes.</p>
+          <p class="hint">We've set up 2 sequences — a LinkedIn touch and a 3-step email. Swipe through each step, edit anything, then approve. On launch we apply spintax, default settings, and attach your mailboxes.</p>
         </div>
         <div id="campaignList"></div>
         <div class="glass card center" id="campNote" style="border-color:var(--hair-soft)">
-          <p class="hint" id="campCount">0 of 4 campaigns confirmed</p>
+          <p class="hint" id="campCount">0 of 2 sequences approved</p>
         </div>
       </section>
 
@@ -627,7 +666,7 @@
           <h2 style="margin-bottom:6px">Your setup</h2>
           <div class="recap"><span class="rc"><svg class="icn" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="M4 7.5l8 5.5 8-5.5"/></svg></span><span>Domains & mailboxes</span><span class="rv" id="recapMbx">6 mailboxes</span></div>
           <div class="recap"><span class="rc"><svg class="icn" viewBox="0 0 24 24"><path d="M6.5 3H18a1 1 0 0 1 1 1v16H6.5A1.5 1.5 0 0 1 5 18.5v-14A1.5 1.5 0 0 1 6.5 3z"/><path d="M5 18.5A1.5 1.5 0 0 1 6.5 17H19"/></svg></span><span>Knowledge Center</span><span class="rv">3 docs + ICP</span></div>
-          <div class="recap"><span class="rc"><svg class="icn" viewBox="0 0 24 24"><path d="M22 3 11 14"/><path d="M22 3l-7 18-4-7-7-4 18-7z"/></svg></span><span>Campaigns</span><span class="rv">4 launching</span></div>
+          <div class="recap"><span class="rc"><svg class="icn" viewBox="0 0 24 24"><path d="M22 3 11 14"/><path d="M22 3l-7 18-4-7-7-4 18-7z"/></svg></span><span>Campaigns</span><span class="rv">2 sequences</span></div>
           <div class="recap"><span class="rc"><svg class="icn" viewBox="0 0 24 24"><path d="M12 4l1.5 4 4 1.5-4 1.5L12 15l-1.5-4-4-1.5 4-1.5z" fill="currentColor" stroke="none"/><path d="M18 13.5l.8 2.2 2.2.8-2.2.8-.8 2.2-.8-2.2-2.2-.8 2.2-.8z" fill="currentColor" stroke="none"/></svg></span><span>AI agents</span><span class="rv" style="color:var(--ok)">Configured</span></div>
         </div>
       </section>
@@ -637,6 +676,16 @@
     <!-- action bar -->
     <div class="actionbar">
       <button class="btn btn-primary" id="cta">Get started</button>
+    </div>
+
+    <!-- mailbox provider chooser -->
+    <div class="sheet-back" id="mbxSheet" hidden>
+      <div class="sheet">
+        <div class="sheet-title">Add a mailbox</div>
+        <button class="sheet-opt" data-add="google"><span class="logo" style="background:#fff;color:#4285F4">G</span><span class="so-t">Google Workspace</span></button>
+        <button class="sheet-opt" data-add="ms"><span class="logo" style="background:#fff;color:#0078D4">M</span><span class="so-t">Microsoft 365</span></button>
+        <button class="sheet-cancel" type="button">Cancel</button>
+      </div>
     </div>
 
     <!-- launch fx -->
@@ -846,25 +895,68 @@
   addPerson();   // start with one blank sender
 
   // =====================================================================
-  // Step 3 — connect
+  // Step 4 — connect (mailboxes + LinkedIn, start empty, add as needed)
   // =====================================================================
-  $("#screens").addEventListener("click", function(e){
-    var btn = e.target.closest(".conn .cbtn"); if(!btn) return;
-    var conn = btn.closest(".conn");
-    if(conn.classList.contains("linked")) return;
-    btn.textContent = "Connecting…";
-    setTimeout(function(){
-      conn.classList.add("linked");
-      btn.textContent = "Connected ✓";
-      conn.querySelector(".meta .s").textContent = conn.getAttribute("data-acct");
-    }, rm?0:650);
-  });
-  $("#addLinkedIn").addEventListener("click", function(){
+  var primaryList = $("#primaryList"), liList = $("#liList");
+  var PROVIDERS = {
+    google: {t:"Google Workspace", logo:"G", bg:"#fff", color:"#4285F4"},
+    ms:     {t:"Microsoft 365",    logo:"M", bg:"#fff", color:"#0078D4"}
+  };
+  function senderAddress(dom){
+    var p = $$(".person", people)[0];
+    var first = p && p.querySelector(".pf-first").value.trim();
+    var last  = p && p.querySelector(".pf-last").value.trim();
+    var local = (first ? first.toLowerCase() : "you") + (last ? "."+last.toLowerCase() : "");
+    return local + "@" + dom;
+  }
+  function senderName(){
+    var p = $$(".person", people)[0];
+    var first = p && p.querySelector(".pf-first").value.trim();
+    var last  = p && p.querySelector(".pf-last").value.trim();
+    return (first || last) ? ((first||"")+" "+(last||"")).trim() : "Your account";
+  }
+  function refreshEmpty(){
+    $("#primaryEmpty").style.display = primaryList.children.length ? "none" : "block";
+    $("#liEmpty").style.display = liList.children.length ? "none" : "block";
+  }
+  function makeConn(kind, opts){
     var n = document.createElement("div");
-    n.className="glass conn"; n.setAttribute("data-conn","li2"); n.setAttribute("data-acct","Second account");
-    n.innerHTML='<div class="logo" style="background:#0A66C2;color:#fff">in</div><div class="meta"><div class="t">LinkedIn account</div><div class="s">Automate connection requests & DMs</div></div><button class="cbtn">Connect</button>';
-    this.parentNode.insertBefore(n, this);
+    n.className = "glass conn connecting";
+    n.innerHTML =
+      '<div class="logo" style="background:'+opts.bg+';color:'+opts.color+'">'+opts.logo+'</div>'+
+      '<div class="meta"><div class="t">'+opts.t+'</div><div class="s">Connecting…</div></div>'+
+      '<span class="cbtn">Connecting…</span>'+
+      '<button class="cx" type="button" title="Remove">×</button>';
+    n.querySelector(".cx").addEventListener("click", function(){ n.remove(); refreshEmpty(); });
+    setTimeout(function(){
+      n.classList.remove("connecting"); n.classList.add("linked");
+      var b=n.querySelector(".cbtn"); b.textContent="✓"; b.setAttribute("aria-label","Connected"); b.title="Connected";
+      n.querySelector(".meta .s").textContent = opts.acct;
+    }, rm?0:700);
+    return n;
+  }
+  function addMailbox(kind){
+    var p = PROVIDERS[kind];
+    primaryList.appendChild(makeConn(kind, {t:p.t, logo:p.logo, bg:p.bg, color:p.color, acct:senderAddress(rootDomainVal())}));
+    refreshEmpty();
+  }
+  function addLinkedIn(){
+    liList.appendChild(makeConn("li", {t:"LinkedIn account", logo:"in", bg:"#0A66C2", color:"#fff", acct:senderName()}));
+    refreshEmpty();
+  }
+
+  // provider chooser sheet
+  var mbxSheet = $("#mbxSheet");
+  function openSheet(){ mbxSheet.hidden=false; requestAnimationFrame(function(){ mbxSheet.classList.add("show"); }); }
+  function closeSheet(){ mbxSheet.classList.remove("show"); setTimeout(function(){ mbxSheet.hidden=true; }, rm?0:220); }
+  $("#addMailbox").addEventListener("click", openSheet);
+  mbxSheet.addEventListener("click", function(e){
+    if(e.target===mbxSheet || e.target.closest(".sheet-cancel")){ closeSheet(); return; }
+    var opt = e.target.closest(".sheet-opt"); if(!opt) return;
+    addMailbox(opt.getAttribute("data-add")); closeSheet();
   });
+  $("#addLinkedIn").addEventListener("click", addLinkedIn);
+  refreshEmpty();
 
   // =====================================================================
   // Step 4 — InboxKit
@@ -933,82 +1025,99 @@
   // Step 7 — campaigns
   // =====================================================================
   var CAMPAIGNS = [
-    {type:"linkedin", nm:"LinkedIn — Start a conversation", ang:"Connection request + 3 casual touches",
+    {type:"linkedin", nm:"LinkedIn sequence", ang:"Connection request + 3 casual touches",
      steps:[
        {k:"Connection request", delay:"Day 0", text:"Hey {first_name} — keep seeing {company} pop up in my feed, would love to connect 👋"},
        {k:"Message 1", delay:"2 days after accept", text:"Appreciate the connect {first_name}! Not here to pitch you anything 😄 Genuinely just curious how you're handling pipeline at {company} these days — still juggling a bunch of separate tools?"},
        {k:"Message 2", delay:"3 days later", text:"Totally get it if now's chaos. We've been helping a few RevOps folks claw back the hours lost to busywork — happy to trade notes whenever, zero agenda."},
        {k:"Message 3", delay:"4 days later", text:"All good either way {first_name} 🙂 If it's ever handy I'll send over how a couple of similar teams approached it. Either way — glad we connected!"}
      ]},
-    {type:"email", nm:"Email 1 — Conversation Starter", ang:"Lead with value · soft CTA, no meeting ask",
-     sub:"a quick idea for {company}",
-     body:"Hi {first_name},\n\nPut together a short teardown of how a few {industry} teams cut the busywork out of their pipeline — no strings, figured it might be useful for {company}.\n\nWant me to send it over? Worth a quick look?"},
-    {type:"email", nm:"Email 2 — Meeting CTA", ang:"Direct ask · short and confident",
-     sub:"{first_name} — 15 minutes?",
-     body:"Hi {first_name},\n\nWe help teams like {company} replace the disconnected tool stack and ship pipeline automation in under a week — 32% faster cycles.\n\nOpen to a 15-min call this week to see if it's a fit?"},
-    {type:"email", nm:"Email 3 — Value-Based CTA", ang:"Problem → outcome → offer → CTA",
-     sub:"the {company} handoff problem",
-     body:"Hi {first_name},\n\nMost {industry} teams quietly lose deals in the handoffs between disconnected tools.\n\nWe fix that — one workflow engine, 1.8x rep capacity, live in a week.\n\nHappy to map out exactly how we'd approach it for {company}. Worth seeing how we'd approach this for you?"}
+    {type:"email", nm:"Email sequence", ang:"3 cold-email steps · value-first",
+     steps:[
+       {k:"Email 1 — Conversation Starter", delay:"Day 0", sub:"a quick idea for {company}",
+        body:"Hi {first_name},\n\nPut together a short teardown of how a few {industry} teams cut the busywork out of their pipeline — no strings, figured it might be useful for {company}.\n\nWant me to send it over? Worth a quick look?"},
+       {k:"Email 2 — Meeting CTA", delay:"Day 3", sub:"{first_name} — 15 minutes?",
+        body:"Hi {first_name},\n\nWe help teams like {company} replace the disconnected tool stack and ship pipeline automation in under a week — 32% faster cycles.\n\nOpen to a 15-min call this week to see if it's a fit?"},
+       {k:"Email 3 — Value-Based CTA", delay:"Day 6", sub:"the {company} handoff problem",
+        body:"Hi {first_name},\n\nMost {industry} teams quietly lose deals in the handoffs between disconnected tools.\n\nWe fix that — one workflow engine, 1.8x rep capacity, live in a week.\n\nHappy to map out exactly how we'd approach it for {company}. Worth seeing how we'd approach this for you?"}
+     ]}
   ];
-  var campBuilt = false, confirmed = [false,false,false,false];
+  var campBuilt = false, confirmed = CAMPAIGNS.map(function(){ return false; });
+  function esc(s){ return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/"/g,"&quot;"); }
   function buildCampaigns(){
     if(campBuilt) return; campBuilt = true;
     var list = $("#campaignList"); list.innerHTML="";
     CAMPAIGNS.forEach(function(c,i){
       var el = document.createElement("div");
-      el.className="glass camp"+(i===0?" open":"");
-      var inner;
-      if(c.type==="linkedin"){
-        inner = c.steps.map(function(s){
-          return '<div class="lstep"><div class="lh"><span class="ln">'+s.k+'</span><span class="ldelay">'+s.delay+'</span></div>'+
-                 '<textarea rows="3" data-grow>'+s.text+'</textarea></div>';
-        }).join("");
-      } else {
-        inner = '<div class="sub-l">Subject</div><input type="text" value="'+c.sub.replace(/"/g,"&quot;")+'">'+
-                '<div class="sub-l" style="margin-top:12px">Body</div><textarea rows="7" data-grow>'+c.body+'</textarea>';
-      }
-      el.innerHTML =
-        '<div class="head"><span class="num">0'+(i+1)+'</span><div><div class="nm">'+c.nm+'</div><div class="ang">'+c.ang+'</div></div>'+
-        '<span class="chev">›</span></div>'+
-        '<div class="body"><div class="pad">'+
-          inner +
-          '<button class="btn btn-ghost confirm" style="width:100%;margin-top:16px">Confirm campaign '+(i+1)+'</button>'+
+      el.className="glass camp";
+      var nStep = c.steps.length;
+      // one slide per step + a final approve slide
+      var slides = c.steps.map(function(s){
+        var inner;
+        if(c.type==="linkedin"){
+          inner = '<textarea rows="4" data-grow>'+esc(s.text)+'</textarea>';
+        } else {
+          inner = '<div class="sub-l">Subject</div><input type="text" value="'+esc(s.sub)+'">'+
+                  '<div class="sub-l">Body</div><textarea rows="7" data-grow>'+esc(s.body)+'</textarea>';
+        }
+        return '<div class="slide"><div class="slide-card">'+
+                 '<div class="lh"><span class="ln">'+s.k+'</span><span class="ldelay">'+s.delay+'</span></div>'+
+                 inner+'</div></div>';
+      }).join("");
+      var approve = '<div class="slide approve"><div class="slide-card">'+
+        '<div class="ap-ic">✓</div>'+
+        '<div class="ap-t">Approve this sequence</div>'+
+        '<div class="ap-s">You\'ve reviewed all '+nStep+' steps. Approve to include this sequence at launch.</div>'+
+        '<button class="btn btn-ghost confirm" type="button">Approve sequence</button>'+
         '</div></div>';
-      var body = el.querySelector(".body");
-      el.querySelector(".head").addEventListener("click", function(){
-        var open = el.classList.toggle("open");
-        body.style.maxHeight = open ? body.scrollHeight+"px" : "0";
+      var dots = ""; for(var d=0;d<nStep+1;d++){ dots += '<i'+(d===0?' class="on"':'')+'></i>'; }
+      el.innerHTML =
+        '<div class="camp-top">'+
+          '<div class="ico '+(c.type==="linkedin"?"li":"em")+'">'+(c.type==="linkedin"?"in":"@")+'</div>'+
+          '<div><div class="nm">'+c.nm+'</div><div class="ang">'+c.ang+'</div></div>'+
+          '<span class="ct-badge">'+nStep+' steps</span>'+
+        '</div>'+
+        '<div class="swipe">'+slides+approve+'</div>'+
+        '<div class="sdots">'+dots+'</div>'+
+        '<p class="swipe-hint">Swipe through each step → approve at the end</p>';
+      var swipe = el.querySelector(".swipe");
+      var dotEls = $$(".sdots i", el);
+      swipe.addEventListener("scroll", function(){
+        var w = swipe.clientWidth + 12; // slide width + gap
+        var k = Math.round(swipe.scrollLeft / w);
+        dotEls.forEach(function(dt,j){ dt.classList.toggle("on", j===k); });
       });
       el.querySelector(".confirm").addEventListener("click", function(){
         confirmed[i]=true; el.classList.add("confirmed");
-        this.textContent="Confirmed ✓"; this.style.color="var(--ok)";
-        el.querySelector(".head").insertAdjacentHTML("beforeend","");
-        if(!el.querySelector(".head .pill")){
-          var p=document.createElement("span"); p.className="pill ok"; p.style.marginLeft="6px"; p.textContent="✓";
-        }
+        this.textContent="Approved ✓"; this.disabled=true;
+        el.querySelector(".ct-badge").textContent="Approved ✓";
         updateCampCount();
       });
       list.appendChild(el);
-      if(i===0) requestAnimationFrame(function(){ body.style.maxHeight = body.scrollHeight+"px"; });
       bindGrow(el);
     });
     updateCampCount();
   }
   function updateCampCount(){
-    var n = confirmed.filter(Boolean).length;
-    $("#campCount").textContent = n+" of 4 campaigns confirmed";
-    if(n===4){ $("#campNote").style.background="rgba(103,99,215,.08)"; $("#campNote").style.borderColor="rgba(103,99,215,.3)"; cta.disabled=false; }
+    var n = confirmed.filter(Boolean).length, total = CAMPAIGNS.length;
+    $("#campCount").textContent = n+" of "+total+" sequences approved";
+    $("#campCount").style.color="";
+    if(n===total){ $("#campNote").style.background="rgba(103,99,215,.08)"; $("#campNote").style.borderColor="rgba(103,99,215,.3)"; }
+    cta.disabled=false;
   }
 
   function doLaunch(){
-    if(confirmed.filter(Boolean).length<4){
-      // gently expand unconfirmed
+    var total = CAMPAIGNS.length;
+    if(confirmed.filter(Boolean).length<total){
       var firstUn = confirmed.indexOf(false);
       var card = $$("#campaignList .camp")[firstUn];
-      if(card && !card.classList.contains("open")){ card.querySelector(".head").click(); }
-      $("#campCount").textContent = "Confirm all 4 campaigns to launch ("+confirmed.filter(Boolean).length+"/4)";
+      if(card){
+        var swipe = card.querySelector(".swipe");
+        swipe.scrollTo({left: swipe.scrollWidth, behavior: rm?"auto":"smooth"}); // reveal approve slide
+        card.scrollIntoView({behavior: rm?"auto":"smooth", block:"center"});
+      }
+      $("#campCount").textContent = "Approve all "+total+" sequences to launch ("+confirmed.filter(Boolean).length+"/"+total+")";
       $("#campCount").style.color="var(--ember)";
-      card && card.scrollIntoView({behavior: rm?"auto":"smooth", block:"center"});
       return;
     }
     var ov = $("#launchOver");
@@ -1030,7 +1139,7 @@
     },
     inboxkit: fillInboxKit,
     research: function(){ runResearch(); },
-    campaigns: function(){ buildCampaigns(); $("#campCount").style.color=""; cta.disabled = confirmed.filter(Boolean).length<4 ? false:false; },
+    campaigns: function(){ buildCampaigns(); $("#campCount").style.color=""; cta.disabled=false; },
     done: function(){ $("#recapMbx").textContent = st.mailboxes+" mailboxes"; }
   };
 
@@ -1047,9 +1156,37 @@
       return ok;
     },
     domains: function(){
+      var ok = true;
       var f = $("#rootDomain").closest(".field");
-      if(!$("#rootDomain").value.trim()){ f.classList.add("invalid"); shake(); return false; }
-      f.classList.remove("invalid"); return true;
+      if(!$("#rootDomain").value.trim()){ f.classList.add("invalid"); ok=false; } else f.classList.remove("invalid");
+      // require at least one sender with both a first and last name
+      var rows = $$(".person", people);
+      var hasSender = rows.some(function(p){
+        return p.querySelector(".pf-first").value.trim() && p.querySelector(".pf-last").value.trim();
+      });
+      var se = $("#senderErr");
+      if(!hasSender){
+        var first = rows[0];
+        if(first){
+          ["pf-first","pf-last"].forEach(function(c){
+            var inp=first.querySelector("."+c); if(!inp.value.trim()) inp.classList.add("invalid");
+          });
+        }
+        if(se) se.style.display="block";
+        ok=false;
+      } else if(se){ se.style.display="none"; }
+      if(!ok){ shake(); return false; }
+      return true;
+    },
+    connect: function(){
+      var pe = $("#primaryEmpty");
+      if(!$("#primaryList").children.length){
+        pe.textContent = "Add at least one sending mailbox to continue.";
+        pe.classList.add("err-note"); pe.style.display="block";
+        shake(); return false;
+      }
+      pe.classList.remove("err-note");
+      return true;
     },
     inboxkit: function(){
       if(ordered) return true;
@@ -1063,6 +1200,10 @@
   document.addEventListener("input", function(e){
     var f = e.target.closest && e.target.closest(".field.invalid, .prod.invalid");
     if(f && e.target.value.trim()) f.classList.remove("invalid");
+    if(e.target.classList && (e.target.classList.contains("pf-first") || e.target.classList.contains("pf-last"))){
+      e.target.classList.remove("invalid");
+      var se=$("#senderErr"); if(se) se.style.display="none";
+    }
   });
 
   function shake(){
@@ -1082,7 +1223,7 @@
 
   function resetAll(){
     // reset campaigns + research + order so restart feels fresh
-    confirmed=[false,false,false,false]; campBuilt=false; researchRun=false; researchDone=false; ordered=false;
+    confirmed=CAMPAIGNS.map(function(){ return false; }); campBuilt=false; researchRun=false; researchDone=false; ordered=false;
     $("#researchTitle").innerHTML="Researching…";
   }
 
