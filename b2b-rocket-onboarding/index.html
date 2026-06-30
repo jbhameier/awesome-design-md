@@ -139,8 +139,10 @@
   select{appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none'><path d='M1 1l5 5 5-5' stroke='%235B5280' stroke-width='1.6' stroke-linecap='round'/></svg>");
     background-repeat:no-repeat;background-position:right 14px center;padding-right:36px}
   .field.invalid input,.field.invalid textarea{box-shadow:0 0 0 2px var(--ember)}
+  .field.invalid .at{box-shadow:0 0 0 2px var(--ember)}        /* prefix wrapper clips inner ring */
   .err{display:none;font-size:12.5px;color:var(--ember);margin-top:6px}
   .field.invalid .err{display:block}
+  .prod.invalid .err{display:block}
   .mono{font-family:var(--mono);font-size:13px;letter-spacing:-0.02em}
 
   /* prefix input (domain) */
@@ -1169,10 +1171,14 @@
       var web = $("#website").closest(".field");
       if(!$("#website").value.trim()){ web.classList.add("invalid"); ok=false; } else web.classList.remove("invalid");
       $$(".prod").forEach(function(p){
-        var n=p.querySelector(".p-name").value.trim(), d=p.querySelector(".p-desc").value.trim();
-        if(!n||!d){ p.classList.add("invalid"); ok=false; } else p.classList.remove("invalid");
+        var nameInp=p.querySelector(".p-name"), descInp=p.querySelector(".p-desc");
+        var nOk=!!nameInp.value.trim(), dOk=!!descInp.value.trim();
+        nameInp.closest(".field").classList.toggle("invalid", !nOk);  // ring the specific empty field
+        descInp.closest(".field").classList.toggle("invalid", !dOk);
+        p.classList.toggle("invalid", !(nOk&&dOk));
+        if(!(nOk&&dOk)) ok=false;
       });
-      if(!ok) shake();
+      if(!ok){ shake(); focusInvalid(); }
       return ok;
     },
     domains: function(){
@@ -1195,7 +1201,7 @@
         if(se) se.style.display="block";
         ok=false;
       } else if(se){ se.style.display="none"; }
-      if(!ok){ shake(); return false; }
+      if(!ok){ shake(); focusInvalid(); return false; }
       return true;
     },
     connect: function(){
@@ -1203,7 +1209,7 @@
       if(!$("#primaryList").children.length){
         pe.textContent = "Add at least one sending mailbox to continue.";
         pe.classList.add("err-note"); pe.style.display="block";
-        shake(); return false;
+        shake(); focusInvalid(); return false;
       }
       pe.classList.remove("err-note");
       return true;
@@ -1216,15 +1222,30 @@
     research: function(){ return researchDone; }
   };
 
-  // clear field error on input
+  // clear the red border as soon as the user fixes a field
   document.addEventListener("input", function(e){
-    var f = e.target.closest && e.target.closest(".field.invalid, .prod.invalid");
-    if(f && e.target.value.trim()) f.classList.remove("invalid");
-    if(e.target.classList && (e.target.classList.contains("pf-first") || e.target.classList.contains("pf-last"))){
-      e.target.classList.remove("invalid");
+    var t = e.target;
+    var f = t.closest && t.closest(".field.invalid");
+    if(f && t.value.trim()) f.classList.remove("invalid");
+    var prod = t.closest && t.closest(".prod.invalid");
+    if(prod){
+      var n=prod.querySelector(".p-name").value.trim(), d=prod.querySelector(".p-desc").value.trim();
+      if(n && d) prod.classList.remove("invalid");
+    }
+    if(t.classList && (t.classList.contains("pf-first") || t.classList.contains("pf-last"))){
+      t.classList.remove("invalid");
       var se=$("#senderErr"); if(se) se.style.display="none";
     }
   });
+
+  // scroll the first thing the user needs to fix into view
+  function focusInvalid(){
+    var a = $(".screen.active"); if(!a) return;
+    var bad = a.querySelector(".field.invalid, .pf-first.invalid, .pf-last.invalid, .err-note");
+    var se = $("#senderErr");
+    if(!bad && se && se.style.display==="block") bad = se;
+    if(bad) bad.scrollIntoView({behavior: rm?"auto":"smooth", block:"center"});
+  }
 
   function shake(){
     if(rm) return;
