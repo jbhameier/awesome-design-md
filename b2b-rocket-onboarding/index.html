@@ -662,7 +662,7 @@
         <div class="scr-head">
           <p class="eyebrow">Step 8 · Campaigns</p>
           <h1>Review campaigns</h1>
-          <p class="hint">We've set up 4 campaigns — 1 LinkedIn and 3 email. Each runs a conversation starter, a value-based CTA, and a meeting ask (LinkedIn opens with a connection request). Swipe through each step, edit anything, then approve.</p>
+          <p class="hint">We've set up 4 campaigns — 1 LinkedIn sequence plus 3 email campaigns, each built around a single theme: value, a conversation starter, and a meeting ask. Swipe through each step, edit anything, then approve.</p>
         </div>
         <div id="campaignList"></div>
         <div class="glass card center" id="campNote" style="border-color:var(--hair-soft)">
@@ -1081,32 +1081,32 @@
         {k:"Value-based CTA", delay:"3 days later", text:"We've been helping {industry} teams claw back the hours lost to busywork — 32% faster cycles and 1.8x rep capacity. Happy to send the teardown of how they did it, zero agenda."},
         {k:"Book a meeting CTA", delay:"5 days later", text:"Worth a quick 15 min to see if it'd work for {company}? I can walk you through exactly how similar teams set it up — no pressure either way 🙂"}
       ]},
-    { type:"email", nm:"Email campaign 1", ang:"Pipeline-efficiency angle",
+    { type:"email", nm:"Email campaign 1", theme:"Value-based", ang:"Value-based — every step leads with outcomes",
       steps:[
-        {k:"Conversation starter", delay:"Day 0", sub:"a quick idea for {company}",
-         body:"Hi {first_name},\n\nPut together a short teardown of how a few {industry} teams cut the busywork out of their pipeline — no strings, figured it might be useful for {company}.\n\nWorth a quick look?"},
-        {k:"Value-based CTA", delay:"Day 3", sub:"32% faster cycles at {company}?",
-         body:"Hi {first_name},\n\nThe teams we work with replaced their disconnected stack with one workflow engine — 32% faster cycle times and 1.8x rep capacity, live in under a week.\n\nHappy to map out what that would look like for {company}."},
-        {k:"Book a meeting CTA", delay:"Day 6", sub:"{first_name} — 15 minutes?",
-         body:"Hi {first_name},\n\nOpen to a quick 15-min call this week? I'll show you exactly how we'd set this up for {company} and what to expect in the first month.\n\nWhat does your calendar look like?"}
+        {k:"Lead with value", delay:"Day 0", sub:"a quick idea for {company}",
+         body:"Hi {first_name},\n\nPut together a short teardown of how a few {industry} teams cut the busywork out of their pipeline — 32% faster cycle times, no extra headcount.\n\nThought it might be useful for {company}. Want me to send it over?"},
+        {k:"Prove it", delay:"Day 3", sub:"what 1.8x rep capacity looked like",
+         body:"Hi {first_name},\n\nA concrete one: a team a lot like {company} hit 1.8x rep capacity within a month of moving onto a single workflow engine — same headcount, far less manual work.\n\nHappy to share exactly how they got there."},
+        {k:"Full ROI picture", delay:"Day 6", sub:"the full picture for {company}",
+         body:"Hi {first_name},\n\nLast useful nugget — teams that switch typically see under a week to value and one source of truth for revenue.\n\nI roughed out what those numbers could look like for {company}. Want the one-pager?"}
       ]},
-    { type:"email", nm:"Email campaign 2", ang:"Tool-consolidation angle",
+    { type:"email", nm:"Email campaign 2", theme:"Conversation starter", ang:"Conversation starter — curiosity-led, no pitch",
       steps:[
-        {k:"Conversation starter", delay:"Day 0", sub:"how many tools is {company} running?",
-         body:"Hi {first_name},\n\nMost {industry} teams we meet are stitching together 6+ tools just to move a lead through pipeline.\n\nCurious — is that the case at {company}, or have you found a cleaner setup?"},
-        {k:"Value-based CTA", delay:"Day 3", sub:"one engine instead of six tools",
-         body:"Hi {first_name},\n\nWe replace the disconnected stack with a single workflow engine — setup in days, not quarters, and one source of truth for revenue.\n\nHappy to share how a team like {company} consolidated and what it freed up."},
-        {k:"Book a meeting CTA", delay:"Day 6", sub:"worth 15 minutes, {first_name}?",
-         body:"Hi {first_name},\n\nIf consolidating the stack is on your radar this quarter, a quick 15-min call is the fastest way to see if we're a fit for {company}.\n\nOpen to grabbing time this week?"}
+        {k:"Open the loop", delay:"Day 0", sub:"quick question, {first_name}",
+         body:"Hi {first_name},\n\nNot a pitch — genuinely curious how {company} is handling pipeline right now. Still juggling a stack of separate tools, or have you found something cleaner?"},
+        {k:"Name the pain", delay:"Day 3", sub:"the thing most teams tell us",
+         body:"Hi {first_name},\n\nWhen I ask {industry} folks that, the answer's usually \"too many tools, too much manual work.\"\n\nCurious whether that rings true for {company} — or you've cracked it?"},
+        {k:"Invite a reply", delay:"Day 6", sub:"no wrong answer 🙂",
+         body:"Hi {first_name},\n\nEither way I'd love to hear how you're thinking about it at {company} — always trading notes with people solving this.\n\nOpen to a quick back-and-forth?"}
       ]},
-    { type:"email", nm:"Email campaign 3", ang:"Lost-in-handoffs angle",
+    { type:"email", nm:"Email campaign 3", theme:"Book a meeting", ang:"Book a meeting — straight to the ask",
       steps:[
-        {k:"Conversation starter", delay:"Day 0", sub:"the {company} handoff problem",
-         body:"Hi {first_name},\n\nMost {industry} teams quietly lose deals in the handoffs between disconnected tools — not from bad reps, just things slipping through the cracks.\n\nIs that something you're seeing at {company}?"},
-        {k:"Value-based CTA", delay:"Day 3", sub:"close the gaps, keep the deals",
-         body:"Hi {first_name},\n\nWe fix the handoff problem with one workflow engine — every touch tracked, nothing dropped, 1.8x rep capacity.\n\nHappy to show how we'd approach it specifically for {company}."},
-        {k:"Book a meeting CTA", delay:"Day 6", sub:"{first_name}, quick look this week?",
-         body:"Hi {first_name},\n\nWant me to walk you through exactly how we'd tighten the handoffs at {company}? 15 minutes is plenty.\n\nWhat day works best?"}
+        {k:"Make the ask", delay:"Day 0", sub:"15 minutes this week, {first_name}?",
+         body:"Hi {first_name},\n\nWe help teams like {company} ship pipeline automation in under a week.\n\nWorth a quick 15-min call to see if it's a fit?"},
+        {k:"Pin a time", delay:"Day 3", sub:"grabbing time, {first_name}",
+         body:"Hi {first_name},\n\nFollowing up — I can walk you through exactly how we'd set this up for {company} and what month one looks like.\n\nDoes Thursday or Friday work better for you?"},
+        {k:"Last call", delay:"Day 6", sub:"should I close this out?",
+         body:"Hi {first_name},\n\nDon't want to clutter your inbox — if now's not the time for {company}, all good.\n\nIf it is, send me a day and I'll keep it to 15 minutes. Either way, just say the word."}
       ]}
   ];
   var TOTAL_CAMPAIGNS = CAMPAIGNS.length;   // 4
@@ -1136,9 +1136,12 @@
       var el = document.createElement("div"); el.className="glass camp";
       var n = c.steps.length;
       var slides = c.steps.map(function(s){ return stepSlide(c.type, s); }).join("");
+      var apNote = (c.type==="linkedin")
+        ? "a connection request, then a conversation starter, value, and a meeting ask"
+        : "all built around your "+c.theme.toLowerCase()+" theme";
       var approve = '<div class="slide approve"><div class="slide-card">'+
         '<div class="ap-ic">✓</div><div class="ap-t">Approve this campaign</div>'+
-        '<div class="ap-s">You\'ve reviewed all '+n+' steps — conversation starter, value-based CTA, and meeting ask. Approve to include it at launch.</div>'+
+        '<div class="ap-s">You\'ve reviewed all '+n+' steps — '+apNote+'. Approve to include it at launch.</div>'+
         '<button class="btn btn-ghost confirm" type="button">Approve campaign</button></div></div>';
       var dots = ""; for(var d=0;d<n+1;d++){ dots += '<i'+(d===0?' class="on"':'')+'></i>'; }
       el.innerHTML =
