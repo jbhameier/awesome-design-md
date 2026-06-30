@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0">
-<meta name="theme-color" content="#E8E7EE">
+<meta name="theme-color" content="#F2F2F7">
 <meta name="description" content="B2B Rocket — a simulated mobile onboarding journey with Apple-style glassmorphism.">
 <title>B2B Rocket · Onboarding</title>
 <style>
@@ -11,11 +11,11 @@
     /* iOS system grouped palette (HIG) */
     --space:#F2F2F7;         /* systemGroupedBackground */
     --panel:#FFFFFF;         /* secondarySystemGroupedBackground — cells */
-    --brand:#007AFF;         /* systemBlue — tint */
-    --glow:#3399FF;
-    --accent:#007AFF;
+    --brand:#6C3CE9;         /* B2B Rocket purple — tint */
+    --glow:#8A5CF0;
+    --accent:#6C3CE9;
     --ember:#FF3B30;         /* systemRed — errors */
-    --ok:#007AFF;            /* success/active states use the tint */
+    --ok:#6C3CE9;            /* success/active states use the tint */
     --switch-on:#34C759;     /* systemGreen — switches */
     --warn:#8E8E93;
     /* labels */
@@ -68,9 +68,9 @@
   .aurora{display:none}
   .aurora-x{position:absolute;inset:0;z-index:0;overflow:hidden}
   .aurora b{position:absolute;border-radius:50%;filter:blur(70px);will-change:transform}
-  .aurora .b1{width:400px;height:400px;left:-130px;top:-120px;background:radial-gradient(circle,rgba(0,122,255,0.20),transparent 70%);animation:drift1 24s var(--ease) infinite alternate}
+  .aurora .b1{width:400px;height:400px;left:-130px;top:-120px;background:radial-gradient(circle,rgba(108,60,233,0.20),transparent 70%);animation:drift1 24s var(--ease) infinite alternate}
   .aurora .b2{width:340px;height:340px;right:-150px;top:50px;background:radial-gradient(circle,rgba(90,200,250,0.17),transparent 70%);animation:drift2 28s var(--ease) infinite alternate}
-  .aurora .b3{width:360px;height:360px;left:-90px;bottom:-150px;background:radial-gradient(circle,rgba(0,122,255,0.12),transparent 72%);animation:drift3 30s var(--ease) infinite alternate}
+  .aurora .b3{width:360px;height:360px;left:-90px;bottom:-150px;background:radial-gradient(circle,rgba(108,60,233,0.12),transparent 72%);animation:drift3 30s var(--ease) infinite alternate}
   .aurora .grain{display:none}
   @keyframes drift1{to{transform:translate(60px,80px) scale(1.15)}}
   @keyframes drift2{to{transform:translate(-50px,90px) scale(1.1)}}
@@ -89,7 +89,7 @@
   .topbar .row{display:flex;align-items:center;gap:14px;min-height:24px}
   .brandmark{display:flex;align-items:center;gap:9px;font-weight:700;font-size:15px;letter-spacing:-0.02em}
   .brandmark .rk{width:26px;height:26px;display:grid;place-items:center;border-radius:9px;
-    background:linear-gradient(150deg,var(--brand),var(--glow));box-shadow:0 3px 10px rgba(0,122,255,.32)}
+    background:linear-gradient(150deg,var(--brand),var(--glow));box-shadow:0 3px 10px rgba(108,60,233,.32)}
   .step-label{margin-left:auto;font-size:12px;color:var(--ink-dim);font-variant-numeric:tabular-nums}
   .segs{display:flex;gap:5px}
   .segs i{height:4px;flex:1;border-radius:99px;background:rgba(27,22,51,.12);overflow:hidden}
@@ -167,7 +167,7 @@
   /* ---------- pieces ---------- */
   .pill{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:5px 11px;border-radius:99px;
     background:rgba(27,22,51,.05);border:1px solid var(--hair-soft);color:var(--ink-soft)}
-  .pill.ok{color:var(--ok);border-color:rgba(0,122,255,.25);background:rgba(0,122,255,.10)}
+  .pill.ok{color:var(--ok);border-color:rgba(108,60,233,.25);background:rgba(108,60,233,.10)}
   .pill.dot::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
 
   .stepper{display:flex;align-items:center;gap:0;background:rgba(255,255,255,.5);border:1px solid var(--hair);
@@ -206,7 +206,7 @@
   .lstep .lh{display:flex;align-items:center;gap:8px;margin-bottom:7px}
   .lstep .ln{font-size:12px;font-weight:700;letter-spacing:.02em}
   .ldelay{font-size:10px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--brand);
-    background:rgba(0,122,255,.10);padding:3px 8px;border-radius:99px;margin-left:auto;white-space:nowrap}
+    background:rgba(108,60,233,.10);padding:3px 8px;border-radius:99px;margin-left:auto;white-space:nowrap}
 
   /* senders / people */
   .person{position:relative;padding:16px;margin-bottom:12px}
@@ -215,7 +215,7 @@
   .person .p-del:hover{background:rgba(255,59,48,.14);color:var(--ember)}
   .p-top{display:flex;align-items:center;gap:13px;padding-right:26px}
   .avatar{width:54px;height:54px;border-radius:50%;flex-shrink:0;cursor:pointer;position:relative;overflow:hidden;
-    background:rgba(0,122,255,.10);border:1px solid var(--hair);display:grid;place-items:center}
+    background:rgba(108,60,233,.10);border:1px solid var(--hair);display:grid;place-items:center}
   .avatar .ava-init{font-size:17px;font-weight:600;color:var(--brand)}
   .avatar .ava-img{position:absolute;inset:0;background-size:cover;background-position:center;display:none}
   .avatar.has .ava-img{display:block}
@@ -230,8 +230,8 @@
   .share-ctl .pct{font-size:14px;color:var(--ink-dim)}
 
   .add-row{display:flex;align-items:center;gap:8px;color:var(--accent);font-size:14px;font-weight:600;cursor:pointer;
-    padding:13px;border:1px dashed rgba(0,122,255,.32);border-radius:var(--r-md);justify-content:center;background:rgba(0,122,255,.05)}
-  .add-row:hover{background:rgba(0,122,255,.09)}
+    padding:13px;border:1px dashed rgba(108,60,233,.32);border-radius:var(--r-md);justify-content:center;background:rgba(108,60,233,.05)}
+  .add-row:hover{background:rgba(108,60,233,.09)}
 
   .prod{position:relative}
   .prod .del{position:absolute;top:12px;right:12px;width:26px;height:26px;border-radius:50%;border:none;cursor:pointer;
@@ -244,7 +244,7 @@
   .uptile{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;border:1px dashed var(--hair);
     border-radius:var(--r-md);padding:16px 8px;text-align:center;cursor:pointer;transition:background .15s,border-color .15s}
   .uptile:hover{background:rgba(0,0,0,.03)}
-  .uptile.has{border-style:solid;border-color:rgba(0,122,255,.4);background:rgba(0,122,255,.07)}
+  .uptile.has{border-style:solid;border-color:rgba(108,60,233,.4);background:rgba(108,60,233,.07)}
   .uptile .ic{font-size:22px;margin-bottom:6px}
   .uptile .t{font-size:12.5px;font-weight:600}
   .uptile .s{font-size:11px;color:var(--ink-dim);margin-top:3px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -259,7 +259,7 @@
   .conn .cbtn{flex-shrink:0;font-size:13px;font-weight:600;padding:9px 15px;border-radius:99px;border:1px solid var(--hair);
     background:rgba(255,255,255,.7);color:var(--ink);cursor:pointer;transition:.15s}
   .conn .cbtn:hover{background:#fff}
-  .conn.linked .cbtn{background:rgba(0,122,255,.12);border-color:rgba(0,122,255,.3);color:var(--ok);pointer-events:none}
+  .conn.linked .cbtn{background:rgba(108,60,233,.12);border-color:rgba(108,60,233,.3);color:var(--ok);pointer-events:none}
 
   /* mailbox list */
   .mbx{display:flex;align-items:center;gap:10px;padding:11px 13px;border-radius:var(--r-md);background:rgba(255,255,255,.55);
@@ -297,7 +297,7 @@
   .doc .body{margin-top:13px}
   .doc-h{display:flex;align-items:center;gap:10px}
   .doc textarea{margin-top:13px}
-  .doc .ic{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:rgba(0,122,255,.16);font-size:16px;flex-shrink:0}
+  .doc .ic{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:rgba(108,60,233,.16);font-size:16px;flex-shrink:0}
 
   /* campaign cards */
   .camp{padding:0;margin-bottom:13px;overflow:hidden}
@@ -310,7 +310,7 @@
   .camp .body{max-height:0;overflow:hidden;transition:max-height .4s var(--ease)}
   .camp .pad{padding:0 16px 16px}
   .camp .sub-l{font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint);margin:4px 0 6px}
-  .camp.confirmed .head{background:rgba(0,122,255,.06)}
+  .camp.confirmed .head{background:rgba(108,60,233,.06)}
 
   /* done timeline */
   .tl{position:relative;padding-left:30px;margin-top:6px}
@@ -319,7 +319,7 @@
   .tl .pt:last-child{padding-bottom:0}
   .tl .pt::before{content:"";position:absolute;left:-26px;top:3px;width:14px;height:14px;border-radius:50%;
     background:var(--space);border:2px solid var(--accent)}
-  .tl .pt.now::before{background:var(--accent);box-shadow:0 0 0 5px rgba(0,122,255,.18)}
+  .tl .pt.now::before{background:var(--accent);box-shadow:0 0 0 5px rgba(108,60,233,.18)}
   .tl .pt .when{font-family:var(--mono);font-size:11px;color:var(--accent);letter-spacing:.04em}
   .tl .pt .what{font-size:14.5px;font-weight:600;margin-top:3px}
   .tl .pt .sub{font-size:12.5px;color:var(--ink-dim);margin-top:2px;line-height:1.4}
@@ -332,12 +332,12 @@
   /* hero rocket */
   .hero-rk{display:grid;place-items:center;margin:30px auto 8px;width:128px;height:128px;border-radius:36px;
     background:var(--glass-strong);border:1px solid var(--hair);box-shadow:var(--shadow);position:relative;overflow:hidden}
-  .hero-rk::after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 50% 120%,rgba(0,122,255,.28),transparent 62%)}
+  .hero-rk::after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 50% 120%,rgba(108,60,233,.28),transparent 62%)}
   .hero-rk .em{font-size:62px;position:relative;z-index:1;animation:bob 3.5s ease-in-out infinite}
   @keyframes bob{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-7px) rotate(2deg)}}
   .feat{display:flex;gap:12px;align-items:flex-start;padding:13px 0}
   .feat .fi{width:34px;height:34px;flex-shrink:0;border-radius:10px;display:grid;place-items:center;
-    background:linear-gradient(150deg,rgba(0,122,255,.16),rgba(0,122,255,.05));font-size:16px}
+    background:linear-gradient(150deg,rgba(108,60,233,.16),rgba(108,60,233,.05));font-size:16px}
   .feat .ft{font-size:14px;font-weight:600}
   .feat .fs{font-size:12.5px;color:var(--ink-dim);margin-top:2px;line-height:1.4}
 
@@ -364,7 +364,7 @@
   .feat .fi svg.icn{width:19px;height:19px}
   .doc .ic{color:var(--brand)}
   .doc .ic svg.icn{width:18px;height:18px}
-  .recap .rc{color:var(--brand);background:rgba(0,122,255,.10)}
+  .recap .rc{color:var(--brand);background:rgba(108,60,233,.10)}
   .recap .rc svg.icn{width:18px;height:18px}
   .uptile .ic{color:var(--ink-dim);transition:color .15s}
   .uptile.has .ic{color:var(--brand)}
@@ -565,7 +565,7 @@
         </div>
 
         <div id="reviewDocs" style="display:none">
-          <div class="glass card" style="border-color:rgba(0,122,255,.3);background:rgba(0,122,255,.06)">
+          <div class="glass card" style="border-color:rgba(108,60,233,.3);background:rgba(108,60,233,.06)">
             <div style="display:flex;align-items:center;gap:11px"><span class="ic" style="color:var(--brand)"><svg class="icn" viewBox="0 0 24 24" style="width:20px;height:20px"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c0-3.5 3.1-6 7-6s7 2.5 7 6"/></svg></span>
             <div><div style="font-size:13.5px;font-weight:600">Ready for your review</div>
             <div class="hint">A specialist refined these drafts. Edit anything before they're saved.</div></div></div>
@@ -1016,7 +1016,7 @@
   function updateCampCount(){
     var n = confirmed.filter(Boolean).length;
     $("#campCount").textContent = n+" of 4 campaigns confirmed";
-    if(n===4){ $("#campNote").style.background="rgba(0,122,255,.08)"; $("#campNote").style.borderColor="rgba(0,122,255,.3)"; cta.disabled=false; }
+    if(n===4){ $("#campNote").style.background="rgba(108,60,233,.08)"; $("#campNote").style.borderColor="rgba(108,60,233,.3)"; cta.disabled=false; }
   }
 
   function doLaunch(){
@@ -1111,7 +1111,7 @@
   function fireConfetti(){
     var c=$("#confetti"), ctx=c.getContext("2d");
     var w=c.width=c.offsetWidth, h=c.height=c.offsetHeight;
-    var cols=["#007AFF","#3399FF","#5AC8FA","#0A84FF","#9BD0FF","#FFFFFF"];
+    var cols=["#6C3CE9","#8A5CF0","#A78BFA","#C4B5FD","#6C3CE9","#FFFFFF"];
     var P=[]; for(var i=0;i<90;i++){P.push({x:w/2,y:h*0.6,vx:(Math.cos(i)*6)+(i%7-3),vy:-(6+i%9),g:0.22,r:Math.random()*5+3,c:cols[i%cols.length],a:1,rot:i});}
     var t0=0, frames=0;
     (function anim(){
