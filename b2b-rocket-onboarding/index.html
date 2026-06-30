@@ -662,7 +662,7 @@
         <div class="scr-head">
           <p class="eyebrow">Step 8 · Campaigns</p>
           <h1>Review campaigns</h1>
-          <p class="hint">We've set up 4 campaigns — 1 LinkedIn campaign and 3 cold emails. Swipe through each, edit anything, then approve. On launch we apply spintax, default settings, and attach your mailboxes.</p>
+          <p class="hint">We've set up 4 campaigns — 1 LinkedIn and 3 email. Each runs a conversation starter, a value-based CTA, and a meeting ask (LinkedIn opens with a connection request). Swipe through each step, edit anything, then approve.</p>
         </div>
         <div id="campaignList"></div>
         <div class="glass card center" id="campNote" style="border-color:var(--hair-soft)">
@@ -1070,27 +1070,47 @@
   // =====================================================================
   // Step 7 — campaigns
   // =====================================================================
-  // 4 campaigns total: 1 LinkedIn campaign + 3 email campaigns.
-  var LINKEDIN = {
-    nm:"LinkedIn campaign", ang:"Connection request + 3 casual touches",
-    steps:[
-      {k:"Connection request", delay:"Day 0", text:"Hey {first_name} — keep seeing {company} pop up in my feed, would love to connect 👋"},
-      {k:"Message 1", delay:"2 days after accept", text:"Appreciate the connect {first_name}! Not here to pitch you anything 😄 Genuinely just curious how you're handling pipeline at {company} these days — still juggling a bunch of separate tools?"},
-      {k:"Message 2", delay:"3 days later", text:"Totally get it if now's chaos. We've been helping a few RevOps folks claw back the hours lost to busywork — happy to trade notes whenever, zero agenda."},
-      {k:"Message 3", delay:"4 days later", text:"All good either way {first_name} 🙂 If it's ever handy I'll send over how a couple of similar teams approached it. Either way — glad we connected!"}
-    ]
-  };
-  var EMAILS = [
-    {nm:"Email 1 — Conversation Starter", ang:"Lead with value · soft CTA", delay:"Day 0", sub:"a quick idea for {company}",
-     body:"Hi {first_name},\n\nPut together a short teardown of how a few {industry} teams cut the busywork out of their pipeline — no strings, figured it might be useful for {company}.\n\nWant me to send it over? Worth a quick look?"},
-    {nm:"Email 2 — Meeting CTA", ang:"Direct ask · short and confident", delay:"Day 3", sub:"{first_name} — 15 minutes?",
-     body:"Hi {first_name},\n\nWe help teams like {company} replace the disconnected tool stack and ship pipeline automation in under a week — 32% faster cycles.\n\nOpen to a 15-min call this week to see if it's a fit?"},
-    {nm:"Email 3 — Value-Based CTA", ang:"Problem → outcome → offer → CTA", delay:"Day 6", sub:"the {company} handoff problem",
-     body:"Hi {first_name},\n\nMost {industry} teams quietly lose deals in the handoffs between disconnected tools.\n\nWe fix that — one workflow engine, 1.8x rep capacity, live in a week.\n\nHappy to map out exactly how we'd approach it for {company}. Worth seeing how we'd approach this for you?"}
+  // 4 campaigns. Each runs the same 3-beat arc — conversation starter,
+  // value-based CTA, book-a-meeting CTA — and LinkedIn adds a connection
+  // request first (4 steps). Every campaign is a swipe carousel + approve.
+  var CAMPAIGNS = [
+    { type:"linkedin", nm:"LinkedIn campaign", ang:"Connection → conversation → value → meeting",
+      steps:[
+        {k:"Connection request", delay:"Day 0", text:"Hey {first_name} — keep seeing {company} pop up in my feed, would love to connect 👋"},
+        {k:"Conversation starter", delay:"2 days after accept", text:"Appreciate the connect {first_name}! Not here to pitch anything 😄 Just curious how you're handling pipeline at {company} these days — still juggling a bunch of separate tools?"},
+        {k:"Value-based CTA", delay:"3 days later", text:"We've been helping {industry} teams claw back the hours lost to busywork — 32% faster cycles and 1.8x rep capacity. Happy to send the teardown of how they did it, zero agenda."},
+        {k:"Book a meeting CTA", delay:"5 days later", text:"Worth a quick 15 min to see if it'd work for {company}? I can walk you through exactly how similar teams set it up — no pressure either way 🙂"}
+      ]},
+    { type:"email", nm:"Email campaign 1", ang:"Pipeline-efficiency angle",
+      steps:[
+        {k:"Conversation starter", delay:"Day 0", sub:"a quick idea for {company}",
+         body:"Hi {first_name},\n\nPut together a short teardown of how a few {industry} teams cut the busywork out of their pipeline — no strings, figured it might be useful for {company}.\n\nWorth a quick look?"},
+        {k:"Value-based CTA", delay:"Day 3", sub:"32% faster cycles at {company}?",
+         body:"Hi {first_name},\n\nThe teams we work with replaced their disconnected stack with one workflow engine — 32% faster cycle times and 1.8x rep capacity, live in under a week.\n\nHappy to map out what that would look like for {company}."},
+        {k:"Book a meeting CTA", delay:"Day 6", sub:"{first_name} — 15 minutes?",
+         body:"Hi {first_name},\n\nOpen to a quick 15-min call this week? I'll show you exactly how we'd set this up for {company} and what to expect in the first month.\n\nWhat does your calendar look like?"}
+      ]},
+    { type:"email", nm:"Email campaign 2", ang:"Tool-consolidation angle",
+      steps:[
+        {k:"Conversation starter", delay:"Day 0", sub:"how many tools is {company} running?",
+         body:"Hi {first_name},\n\nMost {industry} teams we meet are stitching together 6+ tools just to move a lead through pipeline.\n\nCurious — is that the case at {company}, or have you found a cleaner setup?"},
+        {k:"Value-based CTA", delay:"Day 3", sub:"one engine instead of six tools",
+         body:"Hi {first_name},\n\nWe replace the disconnected stack with a single workflow engine — setup in days, not quarters, and one source of truth for revenue.\n\nHappy to share how a team like {company} consolidated and what it freed up."},
+        {k:"Book a meeting CTA", delay:"Day 6", sub:"worth 15 minutes, {first_name}?",
+         body:"Hi {first_name},\n\nIf consolidating the stack is on your radar this quarter, a quick 15-min call is the fastest way to see if we're a fit for {company}.\n\nOpen to grabbing time this week?"}
+      ]},
+    { type:"email", nm:"Email campaign 3", ang:"Lost-in-handoffs angle",
+      steps:[
+        {k:"Conversation starter", delay:"Day 0", sub:"the {company} handoff problem",
+         body:"Hi {first_name},\n\nMost {industry} teams quietly lose deals in the handoffs between disconnected tools — not from bad reps, just things slipping through the cracks.\n\nIs that something you're seeing at {company}?"},
+        {k:"Value-based CTA", delay:"Day 3", sub:"close the gaps, keep the deals",
+         body:"Hi {first_name},\n\nWe fix the handoff problem with one workflow engine — every touch tracked, nothing dropped, 1.8x rep capacity.\n\nHappy to show how we'd approach it specifically for {company}."},
+        {k:"Book a meeting CTA", delay:"Day 6", sub:"{first_name}, quick look this week?",
+         body:"Hi {first_name},\n\nWant me to walk you through exactly how we'd tighten the handoffs at {company}? 15 minutes is plenty.\n\nWhat day works best?"}
+      ]}
   ];
-  var TOTAL_CAMPAIGNS = 1 + EMAILS.length;   // 4
-  // confirmed[0] = LinkedIn, confirmed[1..3] = each email campaign
-  var campBuilt = false, confirmed = [false,false,false,false];
+  var TOTAL_CAMPAIGNS = CAMPAIGNS.length;   // 4
+  var campBuilt = false, confirmed = CAMPAIGNS.map(function(){ return false; });
   function esc(s){ return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/"/g,"&quot;"); }
   function bindSwipe(el){
     var swipe = el.querySelector(".swipe"), dotEls = $$(".sdots i", el);
@@ -1100,69 +1120,42 @@
       dotEls.forEach(function(dt,j){ dt.classList.toggle("on", j===k); });
     });
   }
+  function stepSlide(type, s){
+    var inner = (type==="linkedin")
+      ? '<textarea rows="4" data-grow>'+esc(s.text)+'</textarea>'
+      : '<div class="sub-l">Subject</div><input type="text" value="'+esc(s.sub)+'">'+
+        '<div class="sub-l">Body</div><textarea rows="7" data-grow>'+esc(s.body)+'</textarea>';
+    return '<div class="slide"><div class="slide-card">'+
+             '<div class="lh"><span class="ln">'+s.k+'</span><span class="ldelay">'+s.delay+'</span></div>'+
+             inner+'</div></div>';
+  }
   function buildCampaigns(){
     if(campBuilt) return; campBuilt = true;
     var list = $("#campaignList"); list.innerHTML="";
-
-    // ---- card 1: LinkedIn campaign (swipe steps → approve at the end) ----
-    var li = document.createElement("div"); li.className="glass camp";
-    var liSlides = LINKEDIN.steps.map(function(s){
-      return '<div class="slide"><div class="slide-card">'+
-               '<div class="lh"><span class="ln">'+s.k+'</span><span class="ldelay">'+s.delay+'</span></div>'+
-               '<textarea rows="4" data-grow>'+esc(s.text)+'</textarea></div></div>';
-    }).join("");
-    var liApprove = '<div class="slide approve"><div class="slide-card">'+
-      '<div class="ap-ic">✓</div><div class="ap-t">Approve LinkedIn campaign</div>'+
-      '<div class="ap-s">You\'ve reviewed all '+LINKEDIN.steps.length+' steps. Approve to launch it on day one.</div>'+
-      '<button class="btn btn-ghost confirm" type="button">Approve campaign</button></div></div>';
-    var liDots = ""; for(var a=0;a<LINKEDIN.steps.length+1;a++){ liDots += '<i'+(a===0?' class="on"':'')+'></i>'; }
-    li.innerHTML =
-      '<div class="camp-top"><div class="ico li">in</div>'+
-        '<div><div class="nm">'+LINKEDIN.nm+'</div><div class="ang">'+LINKEDIN.ang+'</div></div>'+
-        '<span class="ct-badge">'+LINKEDIN.steps.length+' steps</span></div>'+
-      '<div class="swipe">'+liSlides+liApprove+'</div>'+
-      '<div class="sdots">'+liDots+'</div>'+
-      '<p class="swipe-hint">Swipe through each step → approve at the end</p>';
-    li.querySelector(".confirm").addEventListener("click", function(){
-      confirmed[0]=true; li.classList.add("confirmed");
-      this.textContent="Approved ✓"; this.disabled=true;
-      li.querySelector(".ct-badge").textContent="Approved ✓";
-      updateCampCount();
-    });
-    bindSwipe(li); list.appendChild(li); bindGrow(li);
-
-    // ---- card 2: 3 email campaigns (swipe across each, approve each) ----
-    var em = document.createElement("div"); em.className="glass camp";
-    var emSlides = EMAILS.map(function(e,j){
-      return '<div class="slide"><div class="slide-card">'+
-               '<div class="lh"><span class="ln">'+e.nm+'</span><span class="ldelay">'+e.delay+'</span></div>'+
-               '<div class="ang" style="margin:-4px 0 12px">'+e.ang+'</div>'+
-               '<div class="sub-l">Subject</div><input type="text" value="'+esc(e.sub)+'">'+
-               '<div class="sub-l">Body</div><textarea rows="7" data-grow>'+esc(e.body)+'</textarea>'+
-               '<button class="btn btn-ghost confirm" type="button" data-em="'+j+'">Approve email '+(j+1)+'</button>'+
-             '</div></div>';
-    }).join("");
-    var emDots = ""; for(var b=0;b<EMAILS.length;b++){ emDots += '<i'+(b===0?' class="on"':'')+'></i>'; }
-    em.innerHTML =
-      '<div class="camp-top"><div class="ico em">@</div>'+
-        '<div><div class="nm">Email campaigns</div><div class="ang">'+EMAILS.length+' cold emails · value-first</div></div>'+
-        '<span class="ct-badge" id="emBadge">0/'+EMAILS.length+' approved</span></div>'+
-      '<div class="swipe">'+emSlides+'</div>'+
-      '<div class="sdots">'+emDots+'</div>'+
-      '<p class="swipe-hint">Swipe through each email → approve each</p>';
-    $$(".confirm", em).forEach(function(btn){
-      btn.addEventListener("click", function(){
-        var j = +btn.getAttribute("data-em");
-        confirmed[1+j]=true;
-        btn.textContent="Approved ✓"; btn.disabled=true;
-        var done = confirmed.slice(1).filter(Boolean).length;
-        $("#emBadge", em).textContent = done+"/"+EMAILS.length+" approved";
-        if(done===EMAILS.length) em.classList.add("confirmed");
+    CAMPAIGNS.forEach(function(c,i){
+      var el = document.createElement("div"); el.className="glass camp";
+      var n = c.steps.length;
+      var slides = c.steps.map(function(s){ return stepSlide(c.type, s); }).join("");
+      var approve = '<div class="slide approve"><div class="slide-card">'+
+        '<div class="ap-ic">✓</div><div class="ap-t">Approve this campaign</div>'+
+        '<div class="ap-s">You\'ve reviewed all '+n+' steps — conversation starter, value-based CTA, and meeting ask. Approve to include it at launch.</div>'+
+        '<button class="btn btn-ghost confirm" type="button">Approve campaign</button></div></div>';
+      var dots = ""; for(var d=0;d<n+1;d++){ dots += '<i'+(d===0?' class="on"':'')+'></i>'; }
+      el.innerHTML =
+        '<div class="camp-top"><div class="ico '+(c.type==="linkedin"?"li":"em")+'">'+(c.type==="linkedin"?"in":"@")+'</div>'+
+          '<div><div class="nm">'+c.nm+'</div><div class="ang">'+c.ang+'</div></div>'+
+          '<span class="ct-badge">'+n+' steps</span></div>'+
+        '<div class="swipe">'+slides+approve+'</div>'+
+        '<div class="sdots">'+dots+'</div>'+
+        '<p class="swipe-hint">Swipe through each step → approve at the end</p>';
+      el.querySelector(".confirm").addEventListener("click", function(){
+        confirmed[i]=true; el.classList.add("confirmed");
+        this.textContent="Approved ✓"; this.disabled=true;
+        el.querySelector(".ct-badge").textContent="Approved ✓";
         updateCampCount();
       });
+      bindSwipe(el); list.appendChild(el); bindGrow(el);
     });
-    bindSwipe(em); list.appendChild(em); bindGrow(em);
-
     updateCampCount();
   }
   function updateCampCount(){
@@ -1176,13 +1169,10 @@
   function doLaunch(){
     if(confirmed.filter(Boolean).length<TOTAL_CAMPAIGNS){
       var firstUn = confirmed.indexOf(false);
-      var cards = $$("#campaignList .camp");
-      var card = firstUn===0 ? cards[0] : cards[1];
+      var card = $$("#campaignList .camp")[firstUn];
       if(card){
         var swipe = card.querySelector(".swipe");
-        // reveal the relevant slide (LinkedIn: approve slide; email: the unapproved one)
-        var target = firstUn===0 ? swipe.scrollWidth : (swipe.clientWidth+12)*(firstUn-1);
-        swipe.scrollTo({left: target, behavior: rm?"auto":"smooth"});
+        swipe.scrollTo({left: swipe.scrollWidth, behavior: rm?"auto":"smooth"});   // reveal approve slide
         card.scrollIntoView({behavior: rm?"auto":"smooth", block:"center"});
       }
       $("#campCount").textContent = "Approve all "+TOTAL_CAMPAIGNS+" campaigns to launch ("+confirmed.filter(Boolean).length+"/"+TOTAL_CAMPAIGNS+")";
