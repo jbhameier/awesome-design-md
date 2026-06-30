@@ -1333,36 +1333,6 @@
     })();
   }
 
-  // =====================================================================
-  // keep the chrome pinned when the iOS keyboard is up
-  // iOS doesn't shrink dvh for the keyboard — it scrolls the visual viewport
-  // up to reveal the focused field, dragging the topbar off-screen. Pin the
-  // app to the visual viewport so the stepper stays put and only .screen scrolls.
-  // =====================================================================
-  (function pinChrome(){
-    var vv = window.visualViewport; if(!vv) return;
-    var app = $("#app");
-    function reset(){ app.style.height=""; app.style.transform=""; }
-    function apply(){
-      if(window.innerWidth >= 600){ reset(); return; }   // desktop phone-bezel: leave alone
-      var kbUp = (window.innerHeight - vv.height) > 100;  // keyboard (or other widget) is open
-      if(kbUp){
-        app.style.height = vv.height + "px";
-        app.style.transform = "translateY(" + vv.offsetTop + "px)";
-      } else { reset(); }
-    }
-    vv.addEventListener("resize", apply);
-    vv.addEventListener("scroll", apply);
-    window.addEventListener("orientationchange", function(){ setTimeout(apply, 300); });
-    // when a field is focused, settle the layout then bring it into the visible area
-    document.addEventListener("focusin", function(e){
-      var el = e.target;
-      if(el && /^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName)){
-        setTimeout(function(){ apply(); el.scrollIntoView({block:"center", behavior:"auto"}); }, 280);
-      }
-    });
-  })();
-
   // boot
   show(0);
 })();
