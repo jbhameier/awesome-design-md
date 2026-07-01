@@ -108,6 +108,7 @@
 
   /* product peek dots */
   .pdots{display:flex;flex-wrap:wrap;gap:9px;margin-bottom:18px}
+  .pdots:empty{display:none}
   .pdot{position:relative;width:34px;height:34px;border-radius:50%;flex-shrink:0;cursor:pointer;border:1.5px dashed var(--sep);
     background:transparent;color:var(--ink-faint);font:inherit;font-size:12px;font-weight:700;display:grid;place-items:center;transition:transform .12s}
   .pdot:active{transform:scale(.92)}
@@ -230,17 +231,15 @@
   function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/"/g,"&quot;");}
   function initials(f,l){ return (((f||"")[0]||"")+((l||"")[0]||"")).toUpperCase()||"?"; }
   function nameInitials(s){ var w=(s||"").trim().split(/\s+/); return (((w[0]||"")[0]||"")+(w.length>1?((w[1]||"")[0]||""):"")).toUpperCase(); }
-  // little circles at the top of a product screen — peek the other entries by tapping
-  function renderPdots(el,cur,n,liveName){
+  // little circles at the top of a product screen — one per PRIOR entry already added
+  function renderPdots(el,cur,n){
     var box=el.querySelector("[data-pdots]"); if(!box) return; box.innerHTML="";
-    for(var k=0;k<n;k++){
+    for(var k=0;k<cur-1;k++){
       var pr=state.products[k]||{};
-      var nm = (k===cur-1 && liveName!=null) ? liveName.trim() : (pr.name||"");
-      var filled=!!nm, isCur=(k===cur-1);
-      var label = filled ? (nameInitials(nm)||(k+1)) : (k+1);
-      var tip = filled ? (nm+(pr.variation&&k!==cur-1?" — "+pr.variation:"")) : ("Product "+(k+1)+" — not added yet");
-      var d=document.createElement("button"); d.type="button";
-      d.className="pdot"+(isCur?" cur":"")+(filled?" filled":"");
+      var nm=pr.name||("Product "+(k+1));
+      var label=nameInitials(pr.name||"")||(k+1);
+      var tip=nm+(pr.variation?" — "+pr.variation:"");
+      var d=document.createElement("button"); d.type="button"; d.className="pdot filled";
       d.innerHTML='<span class="pdl">'+esc(String(label))+'</span><span class="ptip">'+esc(tip)+'</span>';
       (function(dd){ dd.addEventListener("click",function(e){ e.stopPropagation(); var open=dd.classList.contains("show"); box.querySelectorAll(".pdot").forEach(function(x){x.classList.remove("show");}); if(!open) dd.classList.add("show"); }); })(d);
       box.appendChild(d);
@@ -353,7 +352,7 @@
       },
       onShow:function(el){ var pr=state.products[i-1]; if(pr){ ["name","variation","desc","link"].forEach(function(k){ var inp=$('[data-p="'+k+'"]',el); if(inp&&!inp.value) inp.value=pr[k]||""; }); } renderPdots(el,i,n); },
       after:function(el){
-        $$('[data-p]',el).forEach(function(inp){ inp.addEventListener("input",function(){ var w=inp.closest(".field"); if(w)w.classList.remove("invalid"); inp.classList.remove("invalid"); $('[data-err]',el).classList.remove("show"); if(inp.getAttribute("data-p")==="name") renderPdots(el,i,n,inp.value); }); });
+        $$('[data-p]',el).forEach(function(inp){ inp.addEventListener("input",function(){ var w=inp.closest(".field"); if(w)w.classList.remove("invalid"); inp.classList.remove("invalid"); $('[data-err]',el).classList.remove("show"); }); });
         el.addEventListener("click",function(){ $$('.pdot.show',el).forEach(function(x){x.classList.remove("show");}); });
       },
       commit:function(el){ var o={}; ["name","variation","desc","link"].forEach(function(k){ o[k]=($('[data-p="'+k+'"]',el).value||"").trim(); }); state.products[i-1]=o; },
