@@ -715,6 +715,7 @@
     nodes.forEach(function(n,k){ n.classList.toggle("active",k===i); n.classList.toggle("up",k<i); });
     var prog = FLOW[i].welcome?0 : (FLOW[i].done?1 : i/(FLOW.length-1));
     bar.style.width=(prog*100)+"%";
+    bar.parentNode.style.visibility = FLOW[i].welcome ? "hidden" : "visible";  // no progress bar on welcome
     back.classList.toggle("show", i>0 && !FLOW[i].done);
     if(FLOW[i].onShow) FLOW[i].onShow(nodes[i]);
   }
