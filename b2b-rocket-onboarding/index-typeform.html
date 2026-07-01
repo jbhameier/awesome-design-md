@@ -173,12 +173,20 @@
   .srow{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--hair-soft)}
   .srow:last-child{border-bottom:none}
   .ava{width:34px;height:34px;border-radius:50%;flex-shrink:0;display:grid;place-items:center;background:rgba(103,99,215,.12);color:var(--brand);font-size:12.5px;font-weight:600}
-  .sname{font-size:13.5px;font-weight:600;flex-shrink:0;width:74px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .sname{font-size:13.5px;font-weight:600;flex-shrink:0;width:64px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .sbar{flex:1;height:7px;border-radius:99px;background:rgba(0,0,0,.07);overflow:hidden}
   .sbar b{display:block;height:100%;background:var(--brand);border-radius:99px;transition:width .2s}
-  .spct{width:56px;text-align:center;padding:9px 6px;flex-shrink:0}
+  .spct{width:54px;text-align:center;padding:9px 6px;flex-shrink:0}
   .pctsym{font-size:13px;color:var(--ink-dim);margin-left:-4px}
-  .split-total{text-align:center;font-size:13.5px;font-weight:600;margin-top:12px}
+  .srow.locked .spct{box-shadow:inset 0 0 0 1.5px var(--brand)}
+  .srow.locked .sbar b{background:var(--glow)}
+  .slock{display:none;flex-shrink:0;width:26px;height:26px;border-radius:50%;border:none;background:rgba(103,99,215,.14);color:var(--brand);cursor:pointer;padding:0;place-items:center}
+  .srow.locked .slock{display:grid}
+  .slock svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+  .split-foot{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:14px}
+  .split-total{font-size:13.5px;font-weight:600}
+  .split-reset{border:none;background:rgba(103,99,215,.10);color:var(--brand);font:inherit;font-size:12.5px;font-weight:600;padding:7px 13px;border-radius:99px;cursor:pointer;flex-shrink:0}
+  .split-reset:active{transform:scale(.96)}
 
   .stages{list-style:none;display:flex;flex-direction:column;gap:2px}
   .stages li{display:flex;align-items:center;gap:13px;padding:12px 0;border-bottom:1px solid var(--hair-soft);font-size:14.5px;color:var(--ink-dim);transition:color .3s}
@@ -241,7 +249,7 @@
 
   var state={
     website:"", domain:"", domainManual:false, fwdSame:true, fwd:"", vol:"", mbx:"",
-    pcount:1, products:[], senders:[], invites:[], files:[],
+    pcount:1, products:[], senders:[], invites:[], files:[], splitPct:[], splitLocked:[],
     icpInd:"B2B SaaS · Fintech · Prof. services", icpTitles:"VP Sales, Head of RevOps, CRO",
     icpPain:"Fragmented tooling, slow pipeline velocity."
   };
@@ -479,8 +487,10 @@
 
   STEPS.push({
     build:function(){
-      return '<p class="eyebrow">Sending setup</p><h1>Split the volume</h1><p class="hint">Sending is split evenly across your senders. Adjust any — the rest rebalance to 100%.</p>'+
-        '<div class="qfields"><div class="split-wrap" data-split></div><p class="split-total" data-total>Total — 100%</p></div>'+
+      return '<p class="eyebrow">Sending setup</p><h1>Split the volume</h1><p class="hint">Split evenly to start. Change a share to <b>lock</b> it — the rest rebalance around locked ones and the total stays at or under 100%.</p>'+
+        '<div class="qfields"><div class="split-wrap" data-split></div>'+
+          '<div class="split-foot"><span class="split-total" data-total>Total — 100%</span><button type="button" class="split-reset" data-reset>↺ Reset</button></div>'+
+        '</div>'+
         '<div class="qfoot"><button class="btn" data-next>Continue</button></div>';
     },
     onShow:function(el){ buildSplit(el); }
@@ -570,7 +580,7 @@
         '<div class="pt"><div class="when">WEEK 2</div><div class="what">BeBop added</div><div class="sub">Layers into your outreach to widen reach.</div></div>'+
         '<div class="pt"><div class="when">~DAY 14</div><div class="what">Email campaigns go live</div><div class="sub">Mailboxes attach and sending begins on schedule.</div></div>'+
       '</div><div class="qfoot"><button class="btn ghost" data-restart>Restart walkthrough</button></div>';
-  },after:function(el){ var r=$('[data-restart]',el); if(r) r.addEventListener("click",function(){ state.pcount=1;state.products=[];state.senders=[];state.invites=[];state.files=[];state.vol="";state.mbx="";state.domainManual=false;state.fwdSame=true; idx=0; render(); show(0); }); }});
+  },after:function(el){ var r=$('[data-restart]',el); if(r) r.addEventListener("click",function(){ state.pcount=1;state.products=[];state.senders=[];state.invites=[];state.files=[];state.splitPct=[];state.splitLocked=[];state.vol="";state.mbx="";state.domainManual=false;state.fwdSame=true; idx=0; render(); show(0); }); }});
 
   function renderChips(el,key,labeler){
     var box=$('[data-chips]',el); if(!box) return; box.innerHTML="";
@@ -607,40 +617,71 @@
     });
   }
 
+  function initSplit(n){
+    if(state.splitPct.length!==n){
+      state.splitPct=[]; state.splitLocked=[];
+      var base=Math.floor(100/n), rem=100-base*n;
+      for(var i=0;i<n;i++){ state.splitPct.push(base+(i<rem?1:0)); state.splitLocked.push(false); }
+    }
+  }
   function buildSplit(el){
     var wrap=$('[data-split]',el); wrap.innerHTML="";
     var sn=state.senders.length?state.senders:[{first:"You",last:""}];
-    var base=Math.floor(100/sn.length), rem=100-base*sn.length;
+    var n=sn.length; initSplit(n);
     sn.forEach(function(p,i){
-      var pct=base+(i<rem?1:0);
-      var row=document.createElement("div"); row.className="srow";
+      var row=document.createElement("div"); row.className="srow"; row.setAttribute("data-i",i);
       row.innerHTML='<span class="ava">'+initials(p.first,p.last)+'</span>'+
         '<span class="sname">'+esc((p.first+" "+(p.last||"")).trim())+'</span>'+
-        '<span class="sbar"><b style="width:'+pct+'%"></b></span>'+
-        '<input class="spct" data-i="'+i+'" type="number" min="0" max="100" inputmode="numeric" value="'+pct+'"><span class="pctsym">%</span>';
+        '<span class="sbar"><b></b></span>'+
+        '<input class="spct" type="number" min="0" max="100" inputmode="numeric" value="'+state.splitPct[i]+'">'+
+        '<span class="pctsym">%</span>'+
+        '<button type="button" class="slock" data-lock title="Locked — tap to unlock"><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></button>';
       wrap.appendChild(row);
     });
-    $$('.spct',wrap).forEach(function(inp){
-      inp.addEventListener("input",function(){ distribute(el,inp); });
-      inp.addEventListener("change",function(){ distribute(el,inp,true); });
+    $$('.srow',wrap).forEach(function(row){
+      var i=+row.getAttribute("data-i"), inp=row.querySelector(".spct");
+      inp.addEventListener("input",function(){ editShare(el,i,false); });
+      inp.addEventListener("change",function(){ editShare(el,i,true); });
+      row.querySelector("[data-lock]").addEventListener("click",function(e){ e.stopPropagation(); state.splitLocked[i]=false; redistribute(el); });
     });
-    updateSplitTotal(el);
+    var rb=$('[data-reset]',el); if(rb) rb.onclick=function(){ resetSplit(el); };
+    applySplit(el);
   }
-  function pctOf(inp){ var v=parseInt(inp.value,10); return isNaN(v)?0:Math.max(0,Math.min(100,v)); }
-  function setBar(inp){ var row=inp.closest(".srow"); row.querySelector(".sbar b").style.width=pctOf(inp)+"%"; }
-  function distribute(el,changed,commit){
-    var inputs=$$('.spct',el), n=inputs.length; if(!n) return;
-    var raw=parseInt(changed.value,10); if(isNaN(raw))raw=0; var v=Math.max(0,Math.min(100,raw));
-    if(commit||raw>100||raw<0) changed.value=v;
-    if(n===1){ changed.value=100; setBar(changed); updateSplitTotal(el); return; }
-    var others=inputs.filter(function(i){return i!==changed;});
-    var sumOther=others.reduce(function(a,i){return a+pctOf(i);},0), remain=100-v;
-    others.forEach(function(i){ var share=sumOther>0?Math.round(remain*pctOf(i)/sumOther):Math.round(remain/others.length); i.value=Math.max(0,Math.min(100,share)); setBar(i); });
-    var total=inputs.reduce(function(a,i){return a+pctOf(i);},0);
-    if(total!==100){ var big=others[0]; others.forEach(function(i){ if(pctOf(i)>pctOf(big))big=i; }); big.value=Math.max(0,pctOf(big)+(100-total)); setBar(big); }
-    setBar(changed); updateSplitTotal(el);
+  function editShare(el,i,commit){
+    var n=state.splitPct.length; if(!n) return;
+    var inp=el.querySelector('.srow[data-i="'+i+'"] .spct');
+    if(n===1){ state.splitPct[0]=100; state.splitLocked[0]=false; inp.value=100; applySplit(el); return; }
+    state.splitLocked[i]=true;
+    var lockedOther=0; for(var j=0;j<n;j++){ if(j!==i && state.splitLocked[j]) lockedOther+=state.splitPct[j]; }
+    var raw=parseInt(inp.value,10); if(isNaN(raw))raw=0;
+    var maxAllow=Math.max(0,100-lockedOther), v=Math.max(0,Math.min(maxAllow,raw));
+    if(commit||raw>maxAllow||raw<0) inp.value=v;
+    state.splitPct[i]=v;
+    redistribute(el);
   }
-  function updateSplitTotal(el){ var t=$$('.spct',el).reduce(function(a,i){return a+pctOf(i);},0); var l=$('[data-total]',el); l.textContent="Total — "+t+"%"; l.style.color=(t===100)?"":"var(--ember)"; }
+  function redistribute(el){
+    var n=state.splitPct.length, unlocked=[], lockedSum=0;
+    for(var k=0;k<n;k++){ if(state.splitLocked[k]) lockedSum+=state.splitPct[k]; else unlocked.push(k); }
+    var remaining=Math.max(0,100-lockedSum);
+    if(unlocked.length){ var base=Math.floor(remaining/unlocked.length), rem=remaining-base*unlocked.length; unlocked.forEach(function(u,ii){ state.splitPct[u]=base+(ii<rem?1:0); }); }
+    applySplit(el);
+  }
+  function resetSplit(el){
+    var n=state.splitPct.length||1, base=Math.floor(100/n), rem=100-base*n;
+    for(var i=0;i<n;i++){ state.splitPct[i]=base+(i<rem?1:0); state.splitLocked[i]=false; }
+    applySplit(el);
+  }
+  function applySplit(el){
+    $$('.srow',el).forEach(function(row){
+      var i=+row.getAttribute("data-i"), inp=row.querySelector(".spct");
+      row.classList.toggle("locked",!!state.splitLocked[i]);
+      if(document.activeElement!==inp) inp.value=state.splitPct[i];
+      row.querySelector(".sbar b").style.width=state.splitPct[i]+"%";
+    });
+    var t=state.splitPct.reduce(function(a,v){return a+(+v||0);},0);
+    var l=$('[data-total]',el); if(l){ l.textContent="Total — "+t+"%"; l.style.color=(t===100)?"":"var(--ember)"; }
+    var rb=$('[data-reset]',el); if(rb) rb.style.visibility = state.splitLocked.some(Boolean)?"visible":"hidden";
+  }
 
   var nodes=[], idx=0, FLOW=[];
   function buildFlow(){
