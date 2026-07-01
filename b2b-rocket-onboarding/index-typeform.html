@@ -368,8 +368,7 @@
     build:function(){
       return '<p class="eyebrow">Products & Services</p><h1>How many do you sell?</h1>'+
         '<p class="hint">Count each offering you want the AI to pitch. Add every distinct product or service — and if you sell one in different ways (by plan, tier, or segment), count each of those too.</p>'+
-        '<div class="qfields"><div class="stepper"><button data-dec type="button" aria-label="Fewer">−</button><div class="num" data-num>1</div><button data-inc type="button" aria-label="More">+</button></div>'+
-        '<p class="stepper-cap">product / service entries — you\'ll describe each next</p></div>'+
+        '<div class="qfields"><div class="stepper"><button data-dec type="button" aria-label="Fewer">−</button><div class="num" data-num>1</div><button data-inc type="button" aria-label="More">+</button></div></div>'+
         '<div class="qfoot"><button class="btn" data-next>Continue</button></div>';
     },
     onShow:function(el){ $('[data-num]',el).textContent=state.pcount; },
