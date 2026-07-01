@@ -144,11 +144,15 @@
   .fwd-row>div:first-child{flex:1;min-width:0}
   .fwd-row .t{font-size:14.5px;font-weight:600}.fwd-row .s{font-size:12.5px;color:var(--ink-dim);margin-top:2px;font-family:var(--mono)}
 
-  .uploads{display:flex;gap:10px}
-  .uptile{flex:1;display:flex;flex-direction:column;align-items:center;border:1px dashed var(--hair);border-radius:var(--r-md);padding:16px 8px;text-align:center;cursor:pointer}
-  .uptile.has{border-style:solid;border-color:rgba(103,99,215,.4);background:rgba(103,99,215,.07)}
-  .uptile .ic{font-size:22px;margin-bottom:6px}.uptile .t{font-size:12.5px;font-weight:600}.uptile .s{font-size:11px;color:var(--ink-dim);margin-top:3px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  .uptile.has .s{color:var(--ok)}
+  .dropzone{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:26px 16px;text-align:center;cursor:pointer;
+    border:1.5px dashed rgba(103,99,215,.4);border-radius:var(--r-md);background:rgba(103,99,215,.05);transition:transform .12s,background .15s}
+  .dropzone:active{transform:scale(.99)}
+  .dropzone.full{opacity:.6;cursor:default;border-style:solid;border-color:var(--hair-soft);background:rgba(118,118,128,.06)}
+  .dz-ic{font-size:24px}
+  .dz-t{font-size:15px;font-weight:600;color:var(--brand)}
+  .dropzone.full .dz-t{color:var(--ink-soft)}
+  .dz-s{font-size:12px;color:var(--ink-dim)}
+  .filedots{margin:14px 0 0}
 
   .split-wrap{max-height:42vh;overflow:auto;scrollbar-width:none}.split-wrap::-webkit-scrollbar{display:none}
   .srow{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--hair-soft)}
@@ -222,7 +226,7 @@
 
   var state={
     website:"", domain:"", domainManual:false, fwdSame:true, fwd:"", vol:"", mbx:"",
-    pcount:1, products:[], senders:[], invites:[],
+    pcount:1, products:[], senders:[], invites:[], files:[],
     icpInd:"B2B SaaS · Fintech · Prof. services", icpTitles:"VP Sales, Head of RevOps, CRO",
     icpPain:"Fragmented tooling, slow pipeline velocity."
   };
@@ -243,6 +247,22 @@
       d.innerHTML='<span class="pdl">'+esc(String(label))+'</span><span class="ptip">'+esc(tip)+'</span>';
       (function(dd){ dd.addEventListener("click",function(e){ e.stopPropagation(); var open=dd.classList.contains("show"); box.querySelectorAll(".pdot").forEach(function(x){x.classList.remove("show");}); if(!open) dd.classList.add("show"); }); })(d);
       box.appendChild(d);
+    }
+  }
+  // uploaded files shown as circles with a filename tooltip on tap
+  function renderFiles(el){
+    var box=el.querySelector("[data-files]"); if(!box) return; box.innerHTML="";
+    state.files.forEach(function(f){
+      var isImg=/\.(png|jpe?g|gif|webp|heic|heif|bmp|svg)$/i.test(f.name)||/^image\//.test(f.type||"");
+      var d=document.createElement("button"); d.type="button"; d.className="pdot filled";
+      d.innerHTML='<span class="pdl">'+(isImg?'🖼️':'📄')+'</span><span class="ptip">'+esc(f.name)+'</span>';
+      (function(dd){ dd.addEventListener("click",function(e){ e.stopPropagation(); var open=dd.classList.contains("show"); box.querySelectorAll(".pdot").forEach(function(x){x.classList.remove("show");}); if(!open) dd.classList.add("show"); }); })(d);
+      box.appendChild(d);
+    });
+    var zone=el.querySelector("[data-drop]"), input=zone&&zone.querySelector("input"), full=state.files.length>=8;
+    if(zone){ zone.classList.toggle("full",full); if(input) input.disabled=full;
+      zone.querySelector(".dz-t").textContent = full?(state.files.length+" files added"):(state.files.length?"Tap to add more":"Tap to upload");
+      zone.querySelector(".dz-s").textContent = full?"Maximum reached — 8 files":"Decks, docs, images — up to 8";
     }
   }
 
@@ -360,16 +380,23 @@
     };
   }
 
+  var MAX_FILES=8;
   STEPS.push({build:function(){
-    return '<p class="eyebrow">Your business</p><h1>Anything to share?</h1><p class="hint">A deck, one-pager or case studies make the AI sharper. Optional — attach as many as you like.</p>'+
-      '<div class="qfields"><div class="uploads">'+
-        '<label class="uptile"><span class="ic">📄</span><span class="t">Decks</span><span class="s">Tap to attach</span><input type="file" multiple hidden></label>'+
-        '<label class="uptile"><span class="ic">📑</span><span class="t">Docs</span><span class="s">Tap to attach</span><input type="file" multiple hidden></label>'+
-        '<label class="uptile"><span class="ic">🖼️</span><span class="t">Images</span><span class="s">Tap to attach</span><input type="file" accept="image/*" multiple hidden></label>'+
-      '</div></div>'+
+    return '<p class="eyebrow">Your business</p><h1>Anything to share?</h1><p class="hint">A deck, one-pager, case studies or screenshots — anything that helps the AI. Optional, up to '+MAX_FILES+' files.</p>'+
+      '<div class="qfields">'+
+        '<label class="dropzone" data-drop><input type="file" multiple hidden><span class="dz-ic">⬆️</span><span class="dz-t">Tap to upload</span><span class="dz-s">Decks, docs, images — up to '+MAX_FILES+'</span></label>'+
+        '<div class="pdots filedots" data-files></div>'+
+      '</div>'+
       '<div class="qfoot"><button class="btn" data-next>Continue</button><button class="skip" data-next>Skip for now</button></div>';
-  },after:function(el){
-    $$(".uptile input",el).forEach(function(inp){ inp.addEventListener("change",function(){ var t=inp.closest(".uptile"),s=t.querySelector(".s"); var n=inp.files?inp.files.length:0; if(n){t.classList.add("has");s.textContent=n+" file"+(n>1?"s":"")+" attached";}else{t.classList.remove("has");s.textContent="Tap to attach";} }); });
+  },onShow:function(el){ renderFiles(el); },
+  after:function(el){
+    var input=$('[data-drop] input',el);
+    input.addEventListener("change",function(){
+      Array.prototype.slice.call(input.files||[]).forEach(function(f){ if(state.files.length<MAX_FILES) state.files.push({name:f.name,type:f.type||""}); });
+      input.value=""; renderFiles(el);
+    });
+    el.addEventListener("click",function(){ $$('.filedots .pdot.show',el).forEach(function(x){x.classList.remove("show");}); });
+    renderFiles(el);
   }});
 
   STEPS.push(formStep({eyebrow:"Sending setup",h1:"What's your primary domain?",hint:"We protect this one and send from fresh look-alikes.",
@@ -521,7 +548,7 @@
         '<div class="pt"><div class="when">WEEK 2</div><div class="what">BeBop added</div><div class="sub">Layers into your outreach to widen reach.</div></div>'+
         '<div class="pt"><div class="when">~DAY 14</div><div class="what">Email campaigns go live</div><div class="sub">Mailboxes attach and sending begins on schedule.</div></div>'+
       '</div><div class="qfoot"><button class="btn ghost" data-restart>Restart walkthrough</button></div>';
-  },after:function(el){ var r=$('[data-restart]',el); if(r) r.addEventListener("click",function(){ state.pcount=1;state.products=[];state.senders=[];state.invites=[];state.vol="";state.mbx="";state.domainManual=false;state.fwdSame=true; idx=0; render(); show(0); }); }});
+  },after:function(el){ var r=$('[data-restart]',el); if(r) r.addEventListener("click",function(){ state.pcount=1;state.products=[];state.senders=[];state.invites=[];state.files=[];state.vol="";state.mbx="";state.domainManual=false;state.fwdSame=true; idx=0; render(); show(0); }); }});
 
   function renderChips(el,key,labeler){
     var box=$('[data-chips]',el); if(!box) return; box.innerHTML="";
