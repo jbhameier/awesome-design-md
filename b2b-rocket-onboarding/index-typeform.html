@@ -98,6 +98,13 @@
 
   .chips-added{display:flex;flex-wrap:wrap;gap:8px}
   .chips-added:empty{display:none}
+
+  /* count stepper */
+  .stepper{display:flex;align-items:center;justify-content:center;gap:22px}
+  .stepper button{width:56px;height:56px;border-radius:50%;border:1px solid var(--hair);background:var(--glass);box-shadow:var(--shadow);color:var(--brand);font-size:26px;font-weight:400;line-height:1;cursor:pointer;display:grid;place-items:center}
+  .stepper button:active{transform:scale(.94)}
+  .stepper .num{font-size:52px;font-weight:700;min-width:64px;text-align:center;font-variant-numeric:tabular-nums}
+  .stepper-cap{text-align:center;font-size:13px;color:var(--ink-dim);margin-top:12px}
   .chip{display:inline-flex;align-items:center;gap:8px;background:rgba(103,99,215,.10);color:var(--brand);border-radius:99px;padding:7px 9px 7px 13px;font-size:13px;font-weight:600;max-width:100%}
   .chip span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .chip button{border:none;background:rgba(103,99,215,.20);color:var(--brand);width:18px;height:18px;border-radius:50%;cursor:pointer;font-size:12px;line-height:1;flex-shrink:0}
@@ -197,7 +204,7 @@
 
   var state={
     website:"", domain:"", domainManual:false, fwdSame:true, fwd:"", vol:"", mbx:"",
-    products:[], senders:[], invites:[],
+    pcount:1, products:[], senders:[], invites:[],
     icpInd:"B2B SaaS · Fintech · Prof. services", icpTitles:"VP Sales, Head of RevOps, CRO",
     icpPain:"Fragmented tooling, slow pipeline velocity."
   };
@@ -273,26 +280,48 @@
     err:"Add your website so the AI can research you.",fields:[{k:"website",label:"Company website",required:true,mode:"url",ph:"https://b2brocket.ai"}],
     onCommit:function(){ if(!state.domainManual) state.domain=deriveDomain(state.website); }}));
 
+  // how many offerings? — drives how many product-entry screens appear next
   STEPS.push({
     build:function(){
-      return '<p class="eyebrow">Your business</p><h1>What do you sell?</h1><p class="hint">Add as many products or services as you like.</p>'+
-        '<div class="qfields">'+
-          '<div class="field"><label class="fl">Name <span class="req">*</span></label><input data-cf="name" placeholder="e.g. Pipeline Automation" autocomplete="off"></div>'+
-          '<div class="field"><label class="fl">Description <span class="req">*</span></label><textarea data-cf="desc" rows="2" placeholder="What it does and who it\'s for."></textarea></div>'+
-          '<div class="field"><label class="fl">Link <span class="opt">— optional</span></label><input data-cf="link" placeholder="b2brocket.ai/product" autocomplete="off"></div>'+
-          '<div class="chips-added" data-chips></div>'+
-        '</div><p class="ferr" data-err>Add a name and description.</p>'+
-        '<div class="qfoot"><button class="btn ghost" data-add>＋ Add another product</button><button class="btn" data-next>Continue</button>'+
-        '<p class="hintline"><b data-count>0</b> added</p></div>';
+      return '<p class="eyebrow">Products & Services</p><h1>How many do you sell?</h1>'+
+        '<p class="hint">Count every offering you want the AI to pitch — that can be <b>distinct products</b>, or the <b>same product sold different ways</b>. '+
+        'B2B Rocket has one product sold three ways (self-serve, white-label, VIP), so that\'s <b>3</b>. Another company might have <b>2</b> — one standard, one sold into several segments.</p>'+
+        '<div class="qfields"><div class="stepper"><button data-dec type="button" aria-label="Fewer">−</button><div class="num" data-num>1</div><button data-inc type="button" aria-label="More">+</button></div>'+
+        '<p class="stepper-cap">product / service entries — you\'ll describe each next</p></div>'+
+        '<div class="qfoot"><button class="btn" data-next>Continue</button></div>';
     },
-    after:function(el){ collectorWire(el,"products",function(p){return p.name;},["name","desc","link"]); renderChips(el,"products",function(p){return p.name;}); },
-    validate:function(el){
-      var r=collectorCommit(el,"products",["name","desc"],["name","desc","link"]);
-      if(r==="partial"){ $('[data-err]',el).classList.add("show"); return false; }
-      if(state.products.length<1){ $('[data-err]',el).textContent="Add at least one product or service."; $('[data-err]',el).classList.add("show"); return false; }
-      return true;
-    }
+    onShow:function(el){ $('[data-num]',el).textContent=state.pcount; },
+    after:function(el){
+      var num=$('[data-num]',el);
+      function set(v){ state.pcount=Math.max(1,Math.min(8,v)); num.textContent=state.pcount; }
+      $('[data-dec]',el).addEventListener("click",function(){ set(state.pcount-1); });
+      $('[data-inc]',el).addEventListener("click",function(){ set(state.pcount+1); });
+    },
+    rebuildAfter:true
   });
+  // placeholder that expands into `pcount` product-entry screens at render time
+  STEPS.push({expand:"products"});
+
+  function productStep(i,n){
+    return {
+      build:function(){
+        var title = n>1 ? ('Product / service '+i+' of '+n) : 'Tell us what you sell';
+        return '<p class="eyebrow">Products & Services</p><h1>'+title+'</h1>'+
+          '<p class="hint">Name it and describe what it does. If it\'s a variation of another offering, note how it\'s sold.</p>'+
+          '<div class="qfields">'+
+            '<div class="field"><label class="fl">Name <span class="req">*</span></label><input data-p="name" placeholder="e.g. B2B Rocket" autocomplete="off"></div>'+
+            '<div class="field"><label class="fl">Variation or segment <span class="opt">— optional</span></label><input data-p="variation" placeholder="e.g. Self-serve, White-label, VIP" autocomplete="off"></div>'+
+            '<div class="field"><label class="fl">Description <span class="req">*</span></label><textarea data-p="desc" rows="2" placeholder="What it does and who it\'s for."></textarea></div>'+
+            '<div class="field"><label class="fl">Link <span class="opt">— optional</span></label><input data-p="link" placeholder="b2brocket.ai/product" autocomplete="off"></div>'+
+          '</div><p class="ferr" data-err>Add a name and description.</p>'+
+          '<div class="qfoot"><button class="btn" data-next>Continue</button></div>';
+      },
+      onShow:function(el){ var pr=state.products[i-1]; if(pr){ ["name","variation","desc","link"].forEach(function(k){ var inp=$('[data-p="'+k+'"]',el); if(inp&&!inp.value) inp.value=pr[k]||""; }); } },
+      after:function(el){ $$('[data-p]',el).forEach(function(inp){ inp.addEventListener("input",function(){ var w=inp.closest(".field"); if(w)w.classList.remove("invalid"); inp.classList.remove("invalid"); $('[data-err]',el).classList.remove("show"); }); }); },
+      commit:function(el){ var o={}; ["name","variation","desc","link"].forEach(function(k){ o[k]=($('[data-p="'+k+'"]',el).value||"").trim(); }); state.products[i-1]=o; },
+      validate:function(el){ var ok=true; ["name","desc"].forEach(function(k){ var inp=$('[data-p="'+k+'"]',el); var bad=!inp.value.trim(); inp.classList.toggle("invalid",bad); var w=inp.closest(".field"); if(w)w.classList.toggle("invalid",bad); if(bad)ok=false; }); $('[data-err]',el).classList.toggle("show",!ok); return ok; }
+    };
+  }
 
   STEPS.push({build:function(){
     return '<p class="eyebrow">Your business</p><h1>Anything to share?</h1><p class="hint">A deck, one-pager or case studies make the AI sharper. Optional — attach as many as you like.</p>'+
@@ -454,7 +483,7 @@
         '<div class="pt"><div class="when">WEEK 2</div><div class="what">BeBop added</div><div class="sub">Layers into your outreach to widen reach.</div></div>'+
         '<div class="pt"><div class="when">~DAY 14</div><div class="what">Email campaigns go live</div><div class="sub">Mailboxes attach and sending begins on schedule.</div></div>'+
       '</div><div class="qfoot"><button class="btn ghost" data-restart>Restart walkthrough</button></div>';
-  },after:function(el){ var r=$('[data-restart]',el); if(r) r.addEventListener("click",function(){ state.products=[];state.senders=[];state.invites=[];state.vol="";state.mbx="";state.domainManual=false;state.fwdSame=true; idx=0; render(); show(0); }); }});
+  },after:function(el){ var r=$('[data-restart]',el); if(r) r.addEventListener("click",function(){ state.pcount=1;state.products=[];state.senders=[];state.invites=[];state.vol="";state.mbx="";state.domainManual=false;state.fwdSame=true; idx=0; render(); show(0); }); }});
 
   function renderChips(el,key,labeler){
     var box=$('[data-chips]',el); if(!box) return; box.innerHTML="";
@@ -526,10 +555,18 @@
   }
   function updateSplitTotal(el){ var t=$$('.spct',el).reduce(function(a,i){return a+pctOf(i);},0); var l=$('[data-total]',el); l.textContent="Total — "+t+"%"; l.style.color=(t===100)?"":"var(--ember)"; }
 
-  var nodes=[], idx=0;
-  function render(){
-    deck.innerHTML=""; nodes=[];
+  var nodes=[], idx=0, FLOW=[];
+  function buildFlow(){
+    FLOW=[];
     STEPS.forEach(function(st){
+      if(st.expand==="products"){ for(var i=1;i<=state.pcount;i++) FLOW.push(productStep(i,state.pcount)); }
+      else FLOW.push(st);
+    });
+  }
+  function render(){
+    buildFlow();
+    deck.innerHTML=""; nodes=[];
+    FLOW.forEach(function(st){
       var q=document.createElement("div"); q.className="q"+(st.full?" full":"");
       q.innerHTML=st.build();
       $$('[data-next]',q).forEach(function(b){ b.addEventListener("click",function(){ advance(nodes.indexOf(q)); }); });
@@ -538,23 +575,24 @@
     });
   }
   function advance(i){
-    var st=STEPS[i];
+    var st=FLOW[i];
     if(st.validate && !st.validate(nodes[i])){ shake(nodes[i]); return; }
     if(st.commit) st.commit(nodes[i]);
-    if(i>=STEPS.length-1) return;
+    if(st.rebuildAfter){ render(); show(i+1); return; }  // count changed → regenerate product screens
+    if(i>=FLOW.length-1) return;
     show(i+1);
   }
   function show(i){
-    i=Math.max(0,Math.min(STEPS.length-1,i)); idx=i;
+    i=Math.max(0,Math.min(FLOW.length-1,i)); idx=i;
     nodes.forEach(function(n,k){ n.classList.toggle("active",k===i); n.classList.toggle("up",k<i); });
-    var prog = STEPS[i].welcome?0 : (STEPS[i].done?1 : i/(STEPS.length-1));
+    var prog = FLOW[i].welcome?0 : (FLOW[i].done?1 : i/(FLOW.length-1));
     bar.style.width=(prog*100)+"%";
-    back.classList.toggle("show", i>0 && !STEPS[i].done);
-    if(STEPS[i].onShow) STEPS[i].onShow(nodes[i]);
+    back.classList.toggle("show", i>0 && !FLOW[i].done);
+    if(FLOW[i].onShow) FLOW[i].onShow(nodes[i]);
   }
   function shake(el){ if(rm)return; el.animate([{transform:"translateX(0)"},{transform:"translateX(-7px)"},{transform:"translateX(7px)"},{transform:"translateX(0)"}],{duration:240}); }
 
-  back.addEventListener("click",function(){ if(idx>0){ if(STEPS[idx].commit) STEPS[idx].commit(nodes[idx]); show(idx-1); } });
+  back.addEventListener("click",function(){ if(idx>0){ if(FLOW[idx].commit) FLOW[idx].commit(nodes[idx]); show(idx-1); } });
   document.addEventListener("keydown",function(e){
     if(e.key==="Enter" && e.target.tagName!=="TEXTAREA"){ var b=$('[data-next]',nodes[idx]); if(b&&!b.disabled){ e.preventDefault(); b.click(); } }
   });
