@@ -154,7 +154,20 @@
   .dz-t{font-size:15px;font-weight:600;color:var(--brand)}
   .dropzone.full .dz-t{color:var(--ink-soft)}
   .dz-s{font-size:12px;color:var(--ink-dim)}
-  .filedots{margin:14px 0 0}
+  .filelist{display:flex;flex-direction:column;gap:8px;margin-top:14px;max-height:38vh;overflow:auto;scrollbar-width:none}
+  .filelist::-webkit-scrollbar{display:none}
+  .filelist:empty{display:none}
+  .fpill{position:relative;display:flex;align-items:center;gap:11px;padding:11px 12px;border-radius:12px;background:var(--glass);border:1px solid var(--hair);box-shadow:var(--shadow)}
+  .fp-ic{font-size:18px;flex-shrink:0}
+  .fp-nm{flex:1;min-width:0;font-size:14px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .fp-x{flex-shrink:0;width:28px;height:28px;border-radius:50%;border:none;background:rgba(0,0,0,.05);color:var(--ink-dim);font-size:12px;cursor:pointer;display:grid;place-items:center}
+  .fp-x:hover{background:rgba(255,59,48,.14);color:var(--ember)}
+  .fp-confirm{display:none;position:absolute;inset:0;align-items:center;gap:8px;padding:0 10px 0 14px;border-radius:12px;
+    background:rgba(255,255,255,.95);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+  .fpill.confirming .fp-confirm{display:flex}
+  .fp-q{flex:1;min-width:0;font-size:13.5px;font-weight:600}
+  .fp-no{border:none;background:rgba(118,118,128,.14);color:var(--ink-soft);font:inherit;font-size:13px;font-weight:600;padding:7px 12px;border-radius:99px;cursor:pointer;flex-shrink:0}
+  .fp-yes{border:none;background:var(--ember);color:#fff;font:inherit;font-size:13px;font-weight:600;padding:7px 13px;border-radius:99px;cursor:pointer;flex-shrink:0}
 
   .split-wrap{max-height:42vh;overflow:auto;scrollbar-width:none}.split-wrap::-webkit-scrollbar{display:none}
   .srow{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--hair-soft)}
@@ -256,14 +269,17 @@
     var box=el.querySelector("[data-files]"); if(!box) return; box.innerHTML="";
     state.files.forEach(function(f,i){
       var isImg=/\.(png|jpe?g|gif|webp|heic|heif|bmp|svg)$/i.test(f.name)||/^image\//.test(f.type||"");
-      var d=document.createElement("div"); d.className="pdot filled"; d.setAttribute("role","button");
-      d.innerHTML='<span class="pdl">'+(isImg?'🖼️':'📄')+'</span>'+
-        '<span class="ptip"><span class="ptip-nm">'+esc(f.name)+'</span><span class="ptip-x" data-x>Remove</span></span>';
-      (function(dd,idx){
-        dd.addEventListener("click",function(e){ e.stopPropagation(); var open=dd.classList.contains("show"); box.querySelectorAll(".pdot").forEach(function(x){x.classList.remove("show");}); if(!open) dd.classList.add("show"); });
-        dd.querySelector("[data-x]").addEventListener("click",function(e){ e.stopPropagation(); state.files.splice(idx,1); renderFiles(el); });
-      })(d,i);
-      box.appendChild(d);
+      var pill=document.createElement("div"); pill.className="fpill";
+      pill.innerHTML='<span class="fp-ic">'+(isImg?'🖼️':'📄')+'</span>'+
+        '<span class="fp-nm">'+esc(f.name)+'</span>'+
+        '<button type="button" class="fp-x" data-x aria-label="Remove">✕</button>'+
+        '<div class="fp-confirm"><span class="fp-q">Remove this file?</span><button type="button" class="fp-no" data-no>Cancel</button><button type="button" class="fp-yes" data-yes>Remove</button></div>';
+      (function(pp,idx){
+        pp.querySelector("[data-x]").addEventListener("click",function(e){ e.stopPropagation(); box.querySelectorAll(".fpill.confirming").forEach(function(x){x.classList.remove("confirming");}); pp.classList.add("confirming"); });
+        pp.querySelector("[data-no]").addEventListener("click",function(e){ e.stopPropagation(); pp.classList.remove("confirming"); });
+        pp.querySelector("[data-yes]").addEventListener("click",function(e){ e.stopPropagation(); state.files.splice(idx,1); renderFiles(el); });
+      })(pill,i);
+      box.appendChild(pill);
     });
     var zone=el.querySelector("[data-drop]"), input=zone&&zone.querySelector("input"), full=state.files.length>=8;
     if(zone){ zone.classList.toggle("full",full); if(input) input.disabled=full;
@@ -391,7 +407,7 @@
     return '<p class="eyebrow">Your business</p><h1>Anything to share?</h1><p class="hint">A deck, one-pager, case studies or screenshots — anything that helps the AI. Optional, up to '+MAX_FILES+' files.</p>'+
       '<div class="qfields">'+
         '<label class="dropzone" data-drop><input type="file" multiple hidden><span class="dz-ic">⬆️</span><span class="dz-t">Tap to upload</span><span class="dz-s">Decks, docs, images — up to '+MAX_FILES+'</span></label>'+
-        '<div class="pdots filedots" data-files></div>'+
+        '<div class="filelist" data-files></div>'+
       '</div>'+
       '<div class="qfoot"><button class="btn" data-next>Continue</button><button class="skip" data-next>Skip for now</button></div>';
   },onShow:function(el){ renderFiles(el); },
@@ -401,7 +417,7 @@
       Array.prototype.slice.call(input.files||[]).forEach(function(f){ if(state.files.length<MAX_FILES) state.files.push({name:f.name,type:f.type||""}); });
       input.value=""; renderFiles(el);
     });
-    el.addEventListener("click",function(){ $$('.filedots .pdot.show',el).forEach(function(x){x.classList.remove("show");}); });
+    el.addEventListener("click",function(){ $$('.fpill.confirming',el).forEach(function(x){x.classList.remove("confirming");}); });
     renderFiles(el);
   }});
 
