@@ -105,6 +105,23 @@
   .stepper button:active{transform:scale(.94)}
   .stepper .num{font-size:52px;font-weight:700;min-width:64px;text-align:center;font-variant-numeric:tabular-nums}
   .stepper-cap{text-align:center;font-size:13px;color:var(--ink-dim);margin-top:12px}
+
+  /* product peek dots */
+  .pdots{display:flex;flex-wrap:wrap;gap:9px;margin-bottom:18px}
+  .pdot{position:relative;width:34px;height:34px;border-radius:50%;flex-shrink:0;cursor:pointer;border:1.5px dashed var(--sep);
+    background:transparent;color:var(--ink-faint);font:inherit;font-size:12px;font-weight:700;display:grid;place-items:center;transition:transform .12s}
+  .pdot:active{transform:scale(.92)}
+  .pdot.filled{border-style:solid;border-color:transparent;background:rgba(103,99,215,.12);color:var(--brand)}
+  .pdot.cur{border-style:solid;border-color:var(--brand);background:var(--brand);color:#fff;box-shadow:0 4px 12px rgba(103,99,215,.4)}
+  .pdot .pdl{pointer-events:none}
+  .ptip{position:absolute;bottom:calc(100% + 9px);left:50%;transform:translateX(-50%) translateY(4px);
+    background:#1b1633;color:#fff;font-size:12px;font-weight:600;padding:7px 11px;border-radius:9px;white-space:nowrap;max-width:200px;overflow:hidden;text-overflow:ellipsis;
+    opacity:0;pointer-events:none;transition:opacity .18s,transform .18s;box-shadow:0 8px 22px rgba(20,16,50,.28);z-index:5}
+  .ptip::after{content:"";position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:#1b1633}
+  .pdot.show .ptip{opacity:1;transform:translateX(-50%) translateY(0)}
+  .pdot:first-child .ptip{left:0;transform:translateX(0) translateY(4px)}
+  .pdot:first-child.show .ptip{transform:translateX(0) translateY(0)}
+  .pdot:first-child .ptip::after{left:16px}
   .chip{display:inline-flex;align-items:center;gap:8px;background:rgba(103,99,215,.10);color:var(--brand);border-radius:99px;padding:7px 9px 7px 13px;font-size:13px;font-weight:600;max-width:100%}
   .chip span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .chip button{border:none;background:rgba(103,99,215,.20);color:var(--brand);width:18px;height:18px;border-radius:50%;cursor:pointer;font-size:12px;line-height:1;flex-shrink:0}
@@ -212,6 +229,23 @@
   function primaryDomain(){ return state.domain || deriveDomain(state.website) || "yourcompany.com"; }
   function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/"/g,"&quot;");}
   function initials(f,l){ return (((f||"")[0]||"")+((l||"")[0]||"")).toUpperCase()||"?"; }
+  function nameInitials(s){ var w=(s||"").trim().split(/\s+/); return (((w[0]||"")[0]||"")+(w.length>1?((w[1]||"")[0]||""):"")).toUpperCase(); }
+  // little circles at the top of a product screen — peek the other entries by tapping
+  function renderPdots(el,cur,n,liveName){
+    var box=el.querySelector("[data-pdots]"); if(!box) return; box.innerHTML="";
+    for(var k=0;k<n;k++){
+      var pr=state.products[k]||{};
+      var nm = (k===cur-1 && liveName!=null) ? liveName.trim() : (pr.name||"");
+      var filled=!!nm, isCur=(k===cur-1);
+      var label = filled ? (nameInitials(nm)||(k+1)) : (k+1);
+      var tip = filled ? (nm+(pr.variation&&k!==cur-1?" — "+pr.variation:"")) : ("Product "+(k+1)+" — not added yet");
+      var d=document.createElement("button"); d.type="button";
+      d.className="pdot"+(isCur?" cur":"")+(filled?" filled":"");
+      d.innerHTML='<span class="pdl">'+esc(String(label))+'</span><span class="ptip">'+esc(tip)+'</span>';
+      (function(dd){ dd.addEventListener("click",function(e){ e.stopPropagation(); var open=dd.classList.contains("show"); box.querySelectorAll(".pdot").forEach(function(x){x.classList.remove("show");}); if(!open) dd.classList.add("show"); }); })(d);
+      box.appendChild(d);
+    }
+  }
 
   var CAMPAIGNS=[
     {type:"linkedin",nm:"LinkedIn campaign",ang:"Connection → conversation → value → meeting",steps:[
@@ -306,7 +340,8 @@
     return {
       build:function(){
         var title = n>1 ? ('Product / service '+i+' of '+n) : 'Tell us what you sell';
-        return '<p class="eyebrow">Products & Services</p><h1>'+title+'</h1>'+
+        return (n>1 ? '<div class="pdots" data-pdots></div>' : '')+
+          '<p class="eyebrow">Products & Services</p><h1>'+title+'</h1>'+
           '<p class="hint">Name it and describe what it does. If it\'s a variation of another offering, note how it\'s sold.</p>'+
           '<div class="qfields">'+
             '<div class="field"><label class="fl">Name <span class="req">*</span></label><input data-p="name" placeholder="e.g. B2B Rocket" autocomplete="off"></div>'+
@@ -316,8 +351,11 @@
           '</div><p class="ferr" data-err>Add a name and description.</p>'+
           '<div class="qfoot"><button class="btn" data-next>Continue</button></div>';
       },
-      onShow:function(el){ var pr=state.products[i-1]; if(pr){ ["name","variation","desc","link"].forEach(function(k){ var inp=$('[data-p="'+k+'"]',el); if(inp&&!inp.value) inp.value=pr[k]||""; }); } },
-      after:function(el){ $$('[data-p]',el).forEach(function(inp){ inp.addEventListener("input",function(){ var w=inp.closest(".field"); if(w)w.classList.remove("invalid"); inp.classList.remove("invalid"); $('[data-err]',el).classList.remove("show"); }); }); },
+      onShow:function(el){ var pr=state.products[i-1]; if(pr){ ["name","variation","desc","link"].forEach(function(k){ var inp=$('[data-p="'+k+'"]',el); if(inp&&!inp.value) inp.value=pr[k]||""; }); } renderPdots(el,i,n); },
+      after:function(el){
+        $$('[data-p]',el).forEach(function(inp){ inp.addEventListener("input",function(){ var w=inp.closest(".field"); if(w)w.classList.remove("invalid"); inp.classList.remove("invalid"); $('[data-err]',el).classList.remove("show"); if(inp.getAttribute("data-p")==="name") renderPdots(el,i,n,inp.value); }); });
+        el.addEventListener("click",function(){ $$('.pdot.show',el).forEach(function(x){x.classList.remove("show");}); });
+      },
       commit:function(el){ var o={}; ["name","variation","desc","link"].forEach(function(k){ o[k]=($('[data-p="'+k+'"]',el).value||"").trim(); }); state.products[i-1]=o; },
       validate:function(el){ var ok=true; ["name","desc"].forEach(function(k){ var inp=$('[data-p="'+k+'"]',el); var bad=!inp.value.trim(); inp.classList.toggle("invalid",bad); var w=inp.closest(".field"); if(w)w.classList.toggle("invalid",bad); if(bad)ok=false; }); $('[data-err]',el).classList.toggle("show",!ok); return ok; }
     };
