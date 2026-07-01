@@ -119,7 +119,9 @@
     background:#1b1633;color:#fff;font-size:12px;font-weight:600;padding:7px 11px;border-radius:9px;white-space:nowrap;max-width:200px;overflow:hidden;text-overflow:ellipsis;
     opacity:0;pointer-events:none;transition:opacity .18s,transform .18s;box-shadow:0 8px 22px rgba(20,16,50,.28);z-index:5}
   .ptip::after{content:"";position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:#1b1633}
-  .pdot.show .ptip{opacity:1;transform:translateX(-50%) translateY(0)}
+  .pdot.show .ptip{opacity:1;transform:translateX(-50%) translateY(0);pointer-events:auto}
+  .ptip-nm{display:block;max-width:180px;overflow:hidden;text-overflow:ellipsis}
+  .ptip-x{display:block;margin-top:6px;padding-top:6px;border-top:1px solid rgba(255,255,255,.16);color:#FF7A70;font-weight:700;cursor:pointer}
   .pdot:first-child .ptip{left:0;transform:translateX(0) translateY(4px)}
   .pdot:first-child.show .ptip{transform:translateX(0) translateY(0)}
   .pdot:first-child .ptip::after{left:16px}
@@ -252,11 +254,15 @@
   // uploaded files shown as circles with a filename tooltip on tap
   function renderFiles(el){
     var box=el.querySelector("[data-files]"); if(!box) return; box.innerHTML="";
-    state.files.forEach(function(f){
+    state.files.forEach(function(f,i){
       var isImg=/\.(png|jpe?g|gif|webp|heic|heif|bmp|svg)$/i.test(f.name)||/^image\//.test(f.type||"");
-      var d=document.createElement("button"); d.type="button"; d.className="pdot filled";
-      d.innerHTML='<span class="pdl">'+(isImg?'🖼️':'📄')+'</span><span class="ptip">'+esc(f.name)+'</span>';
-      (function(dd){ dd.addEventListener("click",function(e){ e.stopPropagation(); var open=dd.classList.contains("show"); box.querySelectorAll(".pdot").forEach(function(x){x.classList.remove("show");}); if(!open) dd.classList.add("show"); }); })(d);
+      var d=document.createElement("div"); d.className="pdot filled"; d.setAttribute("role","button");
+      d.innerHTML='<span class="pdl">'+(isImg?'🖼️':'📄')+'</span>'+
+        '<span class="ptip"><span class="ptip-nm">'+esc(f.name)+'</span><span class="ptip-x" data-x>Remove</span></span>';
+      (function(dd,idx){
+        dd.addEventListener("click",function(e){ e.stopPropagation(); var open=dd.classList.contains("show"); box.querySelectorAll(".pdot").forEach(function(x){x.classList.remove("show");}); if(!open) dd.classList.add("show"); });
+        dd.querySelector("[data-x]").addEventListener("click",function(e){ e.stopPropagation(); state.files.splice(idx,1); renderFiles(el); });
+      })(d,i);
       box.appendChild(d);
     });
     var zone=el.querySelector("[data-drop]"), input=zone&&zone.querySelector("input"), full=state.files.length>=8;
