@@ -359,7 +359,7 @@
     };
   }
 
-  STEPS.push(formStep({eyebrow:"Your business",h1:"What's your website?",hint:"We'll scan it to learn your business, your voice, and what you offer.",
+  STEPS.push(formStep({eyebrow:"Your business",h1:"What's your website?",hint:"We'll scan it to learn your business.",
     err:"Add your website so the AI can research you.",fields:[{k:"website",label:"Company website",required:true,mode:"url",ph:"https://b2brocket.ai"}],
     onCommit:function(){ if(!state.domainManual) state.domain=deriveDomain(state.website); }}));
 
