@@ -208,6 +208,8 @@
   .rvw-row:last-child{border-bottom:none}
   .rvw-k{color:var(--ink-dim);flex-shrink:0}
   .rvw-v{font-weight:600;text-align:right;min-width:0;overflow:hidden;text-overflow:ellipsis}
+  .rvw-group{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--brand);padding:15px 0 2px}
+  .rvw-group:first-child{padding-top:4px}
   .attach-btn{display:inline-flex;align-items:center;gap:8px;padding:11px 16px;border-radius:12px;border:1px dashed rgba(103,99,215,.4);background:rgba(103,99,215,.05);color:var(--brand);font-size:14px;font-weight:600;cursor:pointer}
   .attach-btn.disabled{opacity:.55;cursor:default;border-style:solid;color:var(--ink-dim)}
 
@@ -585,9 +587,9 @@
   });
 
   STEPS.push({full:true,done:true,build:function(){
-    return '<div class="center" style="margin-top:8px"><div class="seal"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8.2 12.4l2.6 2.6 5-5.4"/></svg></div>'+
-      '<p class="eyebrow" style="color:var(--ok)">Onboarding complete</p><h1 style="margin-top:6px">Cleared for launch</h1>'+
-      '<p class="hint">Your campaigns are queued. No action needed from you.</p></div>'+
+    return '<div class="center" style="margin-top:8px">'+
+      '<p class="eyebrow" style="color:var(--brand)">What happens next</p><h1 style="margin-top:6px">Your launch timeline</h1>'+
+      '<p class="hint">Your campaigns are queued — no action needed from you. Here\'s the schedule.</p></div>'+
       '<div class="tl">'+
         '<div class="pt now"><div class="when">TODAY · DAY 0</div><div class="what">Infrastructure provisioned</div><div class="sub">Domains ordered, DNS auto-configured, mailboxes created.</div></div>'+
         '<div class="pt now"><div class="when">TODAY · DAY 0</div><div class="what">LinkedIn campaign launches</div><div class="sub">Connection requests start going out — no warmup needed.</div></div>'+
@@ -635,6 +637,21 @@
       rvwRow("Team invites", state.invites.length?(state.invites.length+""):"None");
   }
   function reviewCampaigns(){ return CAMPAIGNS.map(function(c){ return rvwRow(c.nm, "Ready ✓"); }).join(""); }
+  // full journey recap, grouped by section — used on the first end screen
+  function doneSummary(){
+    return '<div class="rvw-group">AI Agent Research</div>'+reviewResearch()+
+           '<div class="rvw-group">Infrastructure</div>'+reviewInfra()+
+           '<div class="rvw-group">Campaigns</div>'+reviewCampaigns();
+  }
+  function doneSummaryStep(){
+    return { full:true, done:true, build:function(){
+      return '<div class="center" style="margin-top:2px"><div class="seal"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8.2 12.4l2.6 2.6 5-5.4"/></svg></div>'+
+        '<p class="eyebrow" style="color:var(--ok)">Onboarding complete</p><h1 style="margin-top:6px">You\'re all set</h1>'+
+        '<p class="hint" style="margin-top:8px">Everything your agents are set up with:</p></div>'+
+        '<div class="qfields"><div class="rvw-card" data-summary></div></div>'+
+        '<div class="qfoot"><button class="btn" data-next>See what happens next</button></div>';
+    }, onShow:function(el){ $('[data-summary]',el).innerHTML=doneSummary(); } };
+  }
 
   // reassemble into 3 chapters (welcome first, done last). indices per the push order above.
   var S = STEPS.slice();
@@ -652,7 +669,8 @@
       covers:["LinkedIn campaign","Three email campaigns","Approve & launch"]}),
     S[13], S[14], S[15], S[16],  // campaigns
     sectionReview({eyebrow:"Campaigns", title:"Ready to launch", blurb:"All your campaigns are set.", rows:reviewCampaigns, cta:"Launch"}),
-    S[17]  // done
+    doneSummaryStep(),  // end screen 1: everything you set up
+    S[17]  // end screen 2: what happens next
   ];
 
   function renderChips(el,key,labeler){
