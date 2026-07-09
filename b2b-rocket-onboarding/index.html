@@ -208,6 +208,8 @@
   .rvw-row:last-child{border-bottom:none}
   .rvw-k{color:var(--ink-dim);flex-shrink:0}
   .rvw-v{font-weight:600;text-align:right;min-width:0;overflow:hidden;text-overflow:ellipsis}
+  .attach-btn{display:inline-flex;align-items:center;gap:8px;padding:11px 16px;border-radius:12px;border:1px dashed rgba(103,99,215,.4);background:rgba(103,99,215,.05);color:var(--brand);font-size:14px;font-weight:600;cursor:pointer}
+  .attach-btn.disabled{opacity:.55;cursor:default;border-style:solid;color:var(--ink-dim)}
 
   .camp-head{display:flex;align-items:center;gap:11px;margin-top:12px}
   .camp-head .ico{width:38px;height:38px;border-radius:11px;display:grid;place-items:center;flex-shrink:0;font-weight:700;font-size:15px}
@@ -285,9 +287,23 @@
     }
   }
   // uploaded files shown as circles with a filename tooltip on tap
-  function renderFiles(el){
+  // ---- reusable file-attach control (writes to whatever array getArr() returns) ----
+  var MAX_FILES=8;
+  function uploadZoneHTML(label){
+    return (label?'<label class="fl" style="display:block;margin-bottom:8px">'+label+' <span class="opt">— optional</span></label>':'')+
+      '<label class="attach-btn" data-drop><input type="file" multiple hidden><span class="ab-t">＋ Attach files</span></label>'+
+      '<div class="filelist" data-files></div>';
+  }
+  function wireUploadZone(el,getArr){
+    var input=el.querySelector('[data-drop] input'); if(!input) return;
+    input.addEventListener("change",function(){ Array.prototype.slice.call(input.files||[]).forEach(function(f){ if(getArr().length<MAX_FILES) getArr().push({name:f.name,type:f.type||""}); }); input.value=""; renderFiles(el,getArr); });
+    el.addEventListener("click",function(){ $$('.fpill.confirming',el).forEach(function(x){x.classList.remove("confirming");}); });
+    renderFiles(el,getArr);
+  }
+  function renderFiles(el,getArr){
     var box=el.querySelector("[data-files]"); if(!box) return; box.innerHTML="";
-    state.files.forEach(function(f,i){
+    var arr=getArr();
+    arr.forEach(function(f,i){
       var isImg=/\.(png|jpe?g|gif|webp|heic|heif|bmp|svg)$/i.test(f.name)||/^image\//.test(f.type||"");
       var pill=document.createElement("div"); pill.className="fpill";
       pill.innerHTML='<span class="fp-ic">'+(isImg?'🖼️':'📄')+'</span>'+
@@ -297,14 +313,13 @@
       (function(pp,idx){
         pp.querySelector("[data-x]").addEventListener("click",function(e){ e.stopPropagation(); box.querySelectorAll(".fpill.confirming").forEach(function(x){x.classList.remove("confirming");}); pp.classList.add("confirming"); });
         pp.querySelector("[data-no]").addEventListener("click",function(e){ e.stopPropagation(); pp.classList.remove("confirming"); });
-        pp.querySelector("[data-yes]").addEventListener("click",function(e){ e.stopPropagation(); state.files.splice(idx,1); renderFiles(el); });
+        pp.querySelector("[data-yes]").addEventListener("click",function(e){ e.stopPropagation(); arr.splice(idx,1); renderFiles(el,getArr); });
       })(pill,i);
       box.appendChild(pill);
     });
-    var zone=el.querySelector("[data-drop]"), input=zone&&zone.querySelector("input"), full=state.files.length>=8;
-    if(zone){ zone.classList.toggle("full",full); if(input) input.disabled=full;
-      zone.querySelector(".dz-t").textContent = full?(state.files.length+" files added"):(state.files.length?"Tap to add more":"Tap to upload");
-      zone.querySelector(".dz-s").textContent = full?"Maximum reached — 8 files":"Decks, docs, images — up to 8";
+    var zone=el.querySelector("[data-drop]"), input=zone&&zone.querySelector("input"), full=arr.length>=MAX_FILES;
+    if(zone){ zone.classList.toggle("disabled",full); if(input) input.disabled=full;
+      var t=zone.querySelector(".ab-t"); if(t) t.textContent = full?("Maximum "+MAX_FILES+" files"):(arr.length?"＋ Add more files":"＋ Attach files");
     }
   }
 
@@ -349,8 +364,9 @@
                   : '<input data-k="'+f.k+'" type="text" '+(f.mode?'inputmode="'+f.mode+'" ':'')+'placeholder="'+(f.ph||"")+'" autocomplete="off">';
           return '<div class="field"><label class="fl">'+f.label+(f.required?' <span class="req">*</span>':' <span class="opt">— optional</span>')+'</label>'+tag+'</div>';
         }).join("");
+        var upload = cfg.uploadArr ? '<div class="field" style="margin-bottom:0">'+uploadZoneHTML(cfg.uploadLabel||"Files")+'</div>' : '';
         return '<p class="eyebrow">'+cfg.eyebrow+'</p><h1>'+cfg.h1+'</h1>'+(cfg.hint?'<p class="hint">'+cfg.hint+'</p>':'')+
-          '<div class="qfields">'+fields+'</div><p class="ferr" data-err>'+(cfg.err||"Please complete this.")+'</p>'+
+          '<div class="qfields">'+fields+upload+'</div><p class="ferr" data-err>'+(cfg.err||"Please complete this.")+'</p>'+
           '<div class="qfoot"><button class="btn" data-next>Continue</button></div>';
       },
       after:function(el){
@@ -358,6 +374,7 @@
           if(state[inp.getAttribute("data-k")]!=null && state[inp.getAttribute("data-k")]!=="") inp.value=state[inp.getAttribute("data-k")];
           inp.addEventListener("input",function(){ var w=inp.closest(".field"); if(w)w.classList.remove("invalid"); inp.classList.remove("invalid"); $('[data-err]',el).classList.remove("show"); });
         });
+        if(cfg.uploadArr) wireUploadZone(el, cfg.uploadArr);
         if(cfg.onAfter) cfg.onAfter(el);
       },
       onShow:cfg.onShow,
@@ -373,6 +390,7 @@
 
   STEPS.push(formStep({eyebrow:"Your business",h1:"What's your website?",hint:"We'll scan it to learn your business.",
     err:"Add your website so the AI can research you.",fields:[{k:"website",label:"Company website",required:true,mode:"url",ph:"https://b2brocket.ai"}],
+    uploadArr:function(){ return state.files; }, uploadLabel:"Company docs for the AI to learn from",
     onCommit:function(){ if(!state.domainManual) state.domain=deriveDomain(state.website); }}));
 
   // how many offerings? — drives how many product-entry screens appear next
@@ -396,6 +414,7 @@
   STEPS.push({expand:"products"});
 
   function productStep(i,n){
+    function pfiles(){ if(!state.products[i-1]) state.products[i-1]={}; if(!state.products[i-1].files) state.products[i-1].files=[]; return state.products[i-1].files; }
     return {
       build:function(){
         var title = n>1 ? ('Product / service '+i+' of '+n) : 'Tell us what you sell';
@@ -407,37 +426,23 @@
             '<div class="field"><label class="fl">Variation or segment <span class="opt">— optional</span></label><input data-p="variation" placeholder="e.g. Self-serve, White-label, VIP" autocomplete="off"></div>'+
             '<div class="field"><label class="fl">Description <span class="req">*</span></label><textarea data-p="desc" rows="2" placeholder="What it does and who it\'s for."></textarea></div>'+
             '<div class="field"><label class="fl">Link <span class="opt">— optional</span></label><input data-p="link" placeholder="b2brocket.ai/product" autocomplete="off"></div>'+
+            '<div class="field" style="margin-bottom:0">'+uploadZoneHTML("Files for this product / service")+'</div>'+
           '</div><p class="ferr" data-err>Add a name and description.</p>'+
           '<div class="qfoot"><button class="btn" data-next>Continue</button></div>';
       },
-      onShow:function(el){ var pr=state.products[i-1]; if(pr){ ["name","variation","desc","link"].forEach(function(k){ var inp=$('[data-p="'+k+'"]',el); if(inp&&!inp.value) inp.value=pr[k]||""; }); } renderPdots(el,i,n); },
+      onShow:function(el){ var pr=state.products[i-1]; if(pr){ ["name","variation","desc","link"].forEach(function(k){ var inp=$('[data-p="'+k+'"]',el); if(inp&&!inp.value) inp.value=pr[k]||""; }); } renderPdots(el,i,n); renderFiles(el,pfiles); },
       after:function(el){
         $$('[data-p]',el).forEach(function(inp){ inp.addEventListener("input",function(){ var w=inp.closest(".field"); if(w)w.classList.remove("invalid"); inp.classList.remove("invalid"); $('[data-err]',el).classList.remove("show"); }); });
+        wireUploadZone(el, pfiles);
         el.addEventListener("click",function(){ $$('.pdot.show',el).forEach(function(x){x.classList.remove("show");}); });
       },
-      commit:function(el){ var o={}; ["name","variation","desc","link"].forEach(function(k){ o[k]=($('[data-p="'+k+'"]',el).value||"").trim(); }); state.products[i-1]=o; },
+      commit:function(el){ var o=state.products[i-1]||{}; o.files=o.files||[]; ["name","variation","desc","link"].forEach(function(k){ o[k]=($('[data-p="'+k+'"]',el).value||"").trim(); }); state.products[i-1]=o; },
       validate:function(el){ var ok=true; ["name","desc"].forEach(function(k){ var inp=$('[data-p="'+k+'"]',el); var bad=!inp.value.trim(); inp.classList.toggle("invalid",bad); var w=inp.closest(".field"); if(w)w.classList.toggle("invalid",bad); if(bad)ok=false; }); $('[data-err]',el).classList.toggle("show",!ok); return ok; }
     };
   }
 
-  var MAX_FILES=8;
-  STEPS.push({build:function(){
-    return '<p class="eyebrow">Your business</p><h1>Anything to share?</h1><p class="hint">A deck, one-pager, case studies or screenshots — anything that helps the AI. Optional, up to '+MAX_FILES+' files.</p>'+
-      '<div class="qfields">'+
-        '<label class="dropzone" data-drop><input type="file" multiple hidden><span class="dz-ic">⬆️</span><span class="dz-t">Tap to upload</span><span class="dz-s">Decks, docs, images — up to '+MAX_FILES+'</span></label>'+
-        '<div class="filelist" data-files></div>'+
-      '</div>'+
-      '<div class="qfoot"><button class="btn" data-next>Continue</button><button class="skip" data-next>Skip for now</button></div>';
-  },onShow:function(el){ renderFiles(el); },
-  after:function(el){
-    var input=$('[data-drop] input',el);
-    input.addEventListener("change",function(){
-      Array.prototype.slice.call(input.files||[]).forEach(function(f){ if(state.files.length<MAX_FILES) state.files.push({name:f.name,type:f.type||""}); });
-      input.value=""; renderFiles(el);
-    });
-    el.addEventListener("click",function(){ $$('.fpill.confirming',el).forEach(function(x){x.classList.remove("confirming");}); });
-    renderFiles(el);
-  }});
+  // (standalone "Anything to share?" step removed — general research uploads now live on the website step,
+  //  and each product/service has its own file uploads)
 
   STEPS.push(formStep({eyebrow:"Sending setup",h1:"What's your primary domain?",hint:"We protect this one and send from fresh look-alikes.",
     err:"We need your primary domain.",fields:[{k:"domain",label:"Primary domain",required:true,kind:"domain",ph:"b2brocket.ai"}],
@@ -616,7 +621,7 @@
     var prods=state.products.map(function(p){return (p.name||"")+(p.variation?" ("+p.variation+")":"");}).filter(function(s){return s.trim();});
     return rvwRow("Website", state.website||"—")+
       rvwRow("Products / services", prods.length?prods.join(", "):"—")+
-      rvwRow("Files shared", state.files.length?(state.files.length+" attached"):"None")+
+      rvwRow("Files shared", (function(){var t=state.files.length+state.products.reduce(function(a,p){return a+((p&&p.files&&p.files.length)||0);},0);return t?(t+" attached"):"None";})())+
       rvwRow("Knowledge base", state.products.length+" doc"+(state.products.length>1?"s":"")+" + ICP drafted");
   }
   function reviewInfra(){
@@ -637,17 +642,17 @@
     S[0],  // welcome
     sectionIntro({n:1, title:"AI Agent Research", blurb:"First, tell us about your business. Your agents read it, research your market, and draft everything they need to sound like you.",
       covers:["Your website & offerings","Any docs to learn from","AI research & knowledge base","Your ideal customer profile"]}),
-    S[1], S[2], S[3], S[4], S[12], S[13],  // website, count, {products}, uploads, research, icp
+    S[1], S[2], S[3], S[11], S[12],  // website, count, {products}, research, icp
     sectionReview({eyebrow:"AI Agent Research", title:"Your research, at a glance", blurb:"Here's what your agents will work from.", rows:reviewResearch, cta:"Looks good — continue"}),
     sectionIntro({n:2, title:"Infrastructure", blurb:"Now let's set up how you send — the domains, mailboxes, and accounts your agents send from.",
       covers:["Your sending domain","Volume & mailboxes","Who's sending","Connect accounts & team"]}),
-    S[5], S[6], S[7], S[8], S[9], S[10], S[11],  // domain, forwarding, volume, senders, split, connect, team
+    S[4], S[5], S[6], S[7], S[8], S[9], S[10],  // domain, forwarding, volume, senders, split, connect, team
     sectionReview({eyebrow:"Infrastructure", title:"Your sending setup", blurb:"Everything's ready to send from.", rows:reviewInfra, cta:"Looks good — continue"}),
     sectionIntro({n:3, title:"Campaigns", blurb:"Last step — review the sequences your agents will run and approve each one.",
       covers:["LinkedIn campaign","Three email campaigns","Approve & launch"]}),
-    S[14], S[15], S[16], S[17],  // campaigns
+    S[13], S[14], S[15], S[16],  // campaigns
     sectionReview({eyebrow:"Campaigns", title:"Ready to launch", blurb:"All your campaigns are set.", rows:reviewCampaigns, cta:"Launch"}),
-    S[18]  // done
+    S[17]  // done
   ];
 
   function renderChips(el,key,labeler){
