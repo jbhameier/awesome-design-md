@@ -106,6 +106,14 @@
   .stepper .num{font-size:52px;font-weight:700;min-width:64px;text-align:center;font-variant-numeric:tabular-nums}
   .stepper-cap{text-align:center;font-size:13px;color:var(--ink-dim);margin-top:12px}
 
+  /* simple / advanced segmented toggle */
+  .segmented{display:flex;gap:4px;padding:4px;border-radius:14px;background:var(--fill);margin-bottom:18px}
+  .segmented button{flex:1;border:none;background:transparent;color:var(--ink-dim);font:inherit;font-size:14px;font-weight:600;padding:9px 8px;border-radius:10px;cursor:pointer;transition:all .16s var(--ease)}
+  .segmented button.on{background:#fff;color:var(--brand);box-shadow:var(--shadow)}
+  .segmented button:active{transform:scale(.98)}
+  .pmode-detailed{text-align:center}
+  .pmode-hint{font-size:13.5px;color:var(--ink-dim);line-height:1.5;margin:0 0 20px;text-align:center}
+
   /* product peek dots */
   .pdots{display:flex;flex-wrap:wrap;gap:9px;margin-bottom:18px}
   .pdots:empty{display:none}
@@ -265,6 +273,7 @@
 
   var state={
     website:"", domain:"", domainManual:false, fwdSame:true, fwd:"", vol:"", mbx:"",
+    productsMode:"simple", productsText:"",
     pcount:1, products:[], senders:[], invites:[], files:[], splitPct:[], splitLocked:[], mailboxes:0, linkedin:0, crm:[], scheduling:[],
     icpInd:"B2B SaaS · Fintech · Prof. services", icpTitles:"VP Sales, Head of RevOps, CRO",
     icpPain:"Fragmented tooling, slow pipeline velocity."
@@ -395,24 +404,56 @@
     uploadArr:function(){ return state.files; }, uploadLabel:"Company docs for the AI to learn from",
     onCommit:function(){ if(!state.domainManual) state.domain=deriveDomain(state.website); }}));
 
-  // how many offerings? — drives how many product-entry screens appear next
+  // hybrid products step: describe everything in one text field (default), or switch
+  // to "add one by one" which reveals the count stepper + per-product screens (advanced)
+  function setProductsMode(el,m){
+    $$('[data-mode]',el).forEach(function(b){ b.classList.toggle("on", b.getAttribute("data-mode")===m); });
+    var ps=$('[data-panel="simple"]',el), pd=$('[data-panel="detailed"]',el);
+    if(ps) ps.hidden = m!=="simple";
+    if(pd) pd.hidden = m!=="detailed";
+  }
   STEPS.push({
     build:function(){
-      return '<p class="eyebrow">Products & Services</p><h1>How many do you sell?</h1>'+
-        '<p class="hint">Count each offering you want the AI to pitch. Add every distinct product or service — and if you sell one in different ways (by plan, tier, or segment), count each of those too.</p>'+
-        '<div class="qfields"><div class="stepper"><button data-dec type="button" aria-label="Fewer">−</button><div class="num" data-num>1</div><button data-inc type="button" aria-label="More">+</button></div></div>'+
+      return '<p class="eyebrow">Products & Services</p><h1>What do you sell?</h1>'+
+        '<p class="hint">Tell the AI what to pitch. Describe everything in your own words, or add each offering one by one.</p>'+
+        '<div class="segmented" data-seg>'+
+          '<button type="button" data-mode="simple">Describe in text</button>'+
+          '<button type="button" data-mode="detailed">Add one by one</button>'+
+        '</div>'+
+        '<div class="qfields">'+
+          '<div data-panel="simple"><div class="field" style="margin-bottom:0"><label class="fl">Your products &amp; services <span class="req">*</span></label>'+
+            '<textarea data-ptext rows="8" placeholder="Describe each product or service you want the AI to pitch — what it does, who it&#39;s for, and any variations you sell (by plan, tier, or segment)."></textarea></div></div>'+
+          '<div data-panel="detailed" class="pmode-detailed" hidden>'+
+            '<p class="pmode-hint">How many offerings do you sell? Count each distinct product or service — and each way you sell one (by plan, tier, or segment). You\'ll describe them one at a time next.</p>'+
+            '<div class="stepper"><button data-dec type="button" aria-label="Fewer">−</button><div class="num" data-num>1</div><button data-inc type="button" aria-label="More">+</button></div>'+
+          '</div>'+
+        '</div>'+
+        '<p class="ferr" data-err>Describe your products and services.</p>'+
         '<div class="qfoot"><button class="btn" data-next>Continue</button></div>';
     },
-    onShow:function(el){ $('[data-num]',el).textContent=state.pcount; },
+    onShow:function(el){
+      setProductsMode(el, state.productsMode||"simple");
+      var t=$('[data-ptext]',el); if(t && !t.value) t.value=state.productsText||"";
+      $('[data-num]',el).textContent=state.pcount;
+    },
     after:function(el){
+      $$('[data-mode]',el).forEach(function(b){ b.addEventListener("click",function(){ state.productsMode=b.getAttribute("data-mode"); setProductsMode(el,state.productsMode); }); });
       var num=$('[data-num]',el);
       function set(v){ state.pcount=Math.max(1,Math.min(8,v)); num.textContent=state.pcount; }
       $('[data-dec]',el).addEventListener("click",function(){ set(state.pcount-1); });
       $('[data-inc]',el).addEventListener("click",function(){ set(state.pcount+1); });
+      var t=$('[data-ptext]',el); if(t) t.addEventListener("input",function(){ t.classList.remove("invalid"); $('[data-err]',el).classList.remove("show"); });
+    },
+    commit:function(el){ var t=$('[data-ptext]',el); if(t) state.productsText=t.value.trim(); },
+    validate:function(el){
+      if((state.productsMode||"simple")!=="simple") return true;
+      var t=$('[data-ptext]',el), bad=!t.value.trim();
+      t.classList.toggle("invalid",bad); $('[data-err]',el).classList.toggle("show",bad);
+      return !bad;
     },
     rebuildAfter:true
   });
-  // placeholder that expands into `pcount` product-entry screens at render time
+  // placeholder that expands into `pcount` product-entry screens (advanced mode only)
   STEPS.push({expand:"products"});
 
   function productStep(i,n){
@@ -513,25 +554,14 @@
     onShow:function(el){ buildSplit(el); }
   });
 
-  STEPS.push({build:function(){
-    return '<p class="eyebrow">Connect <span class="opt" style="text-transform:none;letter-spacing:0">— optional</span></p><h1>Connect your accounts</h1><p class="hint">Add sending mailboxes or LinkedIn accounts now, or skip and do it later. Add as many as you need.</p>'+
-      '<div class="qfields"><div class="chips" id="connList"></div>'+
-        '<div class="addpill"><button data-add="google">＋ Google</button><button data-add="ms">＋ Microsoft</button><button data-add="li">＋ LinkedIn</button></div>'+
-      '</div><div class="qfoot"><button class="btn" data-next>Continue</button><button class="skip" data-next>Skip for now</button></div>';
-  },after:function(el){
-    var list=$("#connList",el);
-    var P={google:{t:"Google Workspace",l:"G",bg:"#fff",c:"#4285F4"},ms:{t:"Microsoft 365",l:"M",bg:"#fff",c:"#0078D4"},li:{t:"LinkedIn account",l:"in",bg:"#0A66C2",c:"#fff"}};
-    $$('[data-add]',el).forEach(function(b){ b.addEventListener("click",function(){
-      var kind=b.getAttribute("data-add"),p=P[kind],s0=state.senders[0]||{first:"alex",last:"rivera"};
-      var acct=kind==="li" ? ((s0.first||"Alex")+" "+(s0.last||"Rivera")) : ((s0.first||"alex").toLowerCase()+"."+(s0.last||"rivera").toLowerCase()+"@"+primaryDomain());
-      var n=document.createElement("div"); n.className="conn";
-      n.innerHTML='<div class="logo" style="background:'+p.bg+';color:'+p.c+'">'+p.l+'</div><div class="meta"><div class="t">'+p.t+'</div><div class="s">Connecting…</div></div><span class="stat">…</span><button class="cx">×</button>';
-      if(kind==="li") state.linkedin++; else state.mailboxes++;
-      n.querySelector(".cx").addEventListener("click",function(){ if(kind==="li") state.linkedin=Math.max(0,state.linkedin-1); else state.mailboxes=Math.max(0,state.mailboxes-1); n.remove(); });
-      list.appendChild(n);
-      setTimeout(function(){ n.querySelector(".meta .s").textContent=acct; n.querySelector(".stat").textContent="✓"; }, rm?0:600);
-    }); });
-  }});
+  // S[9] — primary mailbox connect (Google / Microsoft). LinkedIn is a separate step, added in the reassembly.
+  STEPS.push(accountStep({track:"mailboxes",
+    h1:"Connect your primary mailbox",
+    hint:"Add the Google or Microsoft mailboxes your agents send from — now, or skip and do it later. Add as many as you need.",
+    providers:[
+      {kind:"google",label:"Google",t:"Google Workspace",l:"G",bg:"#fff",c:"#4285F4"},
+      {kind:"ms",label:"Microsoft",t:"Microsoft 365",l:"M",bg:"#fff",c:"#0078D4"}
+    ]}));
 
   STEPS.push({
     build:function(){
@@ -598,8 +628,31 @@
         '<div class="pt"><div class="when">WEEK 2</div><div class="what">BeBop added</div><div class="sub">Layers into your outreach to widen reach.</div></div>'+
         '<div class="pt"><div class="when">~DAY 14</div><div class="what">Email campaigns go live</div><div class="sub">Mailboxes attach and sending begins on schedule.</div></div>'+
       '</div><div class="qfoot"><button class="btn ghost" data-restart>Restart walkthrough</button></div>';
-  },after:function(el){ var r=$('[data-restart]',el); if(r) r.addEventListener("click",function(){ state.pcount=1;state.products=[];state.senders=[];state.invites=[];state.files=[];state.splitPct=[];state.splitLocked=[];state.mailboxes=0;state.linkedin=0;state.crm=[];state.scheduling=[];state.vol="";state.mbx="";state.domainManual=false;state.fwdSame=true; idx=0; render(); show(0); }); }});
+  },after:function(el){ var r=$('[data-restart]',el); if(r) r.addEventListener("click",function(){ state.productsMode="simple";state.productsText="";state.pcount=1;state.products=[];state.senders=[];state.invites=[];state.files=[];state.splitPct=[];state.splitLocked=[];state.mailboxes=0;state.linkedin=0;state.crm=[];state.scheduling=[];state.vol="";state.mbx="";state.domainManual=false;state.fwdSame=true; idx=0; render(); show(0); }); }});
 
+  // connect-account screen (primary mailbox, LinkedIn) — optional, add-as-many, derives an account label per add
+  function accountStep(cfg){
+    return { build:function(){
+      var btns=cfg.providers.map(function(p){ return '<button data-add="'+p.kind+'">＋ '+p.label+'</button>'; }).join("");
+      return '<p class="eyebrow">Connections <span class="opt" style="text-transform:none;letter-spacing:0">— optional</span></p><h1>'+cfg.h1+'</h1><p class="hint">'+cfg.hint+'</p>'+
+        '<div class="qfields"><div class="chips" data-list></div>'+
+          '<div class="addpill">'+btns+'</div>'+
+        '</div><div class="qfoot"><button class="btn" data-next>Continue</button><button class="skip" data-next>Skip for now</button></div>';
+    }, after:function(el){
+      var list=$('[data-list]',el), P={}; cfg.providers.forEach(function(p){ P[p.kind]=p; });
+      $$('[data-add]',el).forEach(function(b){ b.addEventListener("click",function(){
+        var p=P[b.getAttribute("data-add")], s0=state.senders[0]||{first:"alex",last:"rivera"};
+        var acct=cfg.track==="linkedin" ? ((s0.first||"Alex")+" "+(s0.last||"Rivera"))
+          : ((s0.first||"alex").toLowerCase()+"."+(s0.last||"rivera").toLowerCase()+"@"+primaryDomain());
+        var n=document.createElement("div"); n.className="conn";
+        n.innerHTML='<div class="logo" style="background:'+p.bg+';color:'+p.c+'">'+p.l+'</div><div class="meta"><div class="t">'+p.t+'</div><div class="s">Connecting…</div></div><span class="stat">…</span><button class="cx">×</button>';
+        state[cfg.track]++;
+        n.querySelector(".cx").addEventListener("click",function(){ state[cfg.track]=Math.max(0,state[cfg.track]-1); n.remove(); });
+        list.appendChild(n);
+        setTimeout(function(){ n.querySelector(".meta .s").textContent=acct; n.querySelector(".stat").textContent="✓"; }, rm?0:600);
+      }); });
+    }};
+  }
   // ---- section chapters: an intro screen + a review screen around each of the 3 sections ----
   function sectionIntro(cfg){
     return { intro:true, build:function(){
@@ -620,11 +673,15 @@
     }, onShow:function(el){ $('[data-review]',el).innerHTML=cfg.rows(); } };
   }
   function reviewResearch(){
-    var prods=state.products.map(function(p){return (p.name||"")+(p.variation?" ("+p.variation+")":"");}).filter(function(s){return s.trim();});
+    var simple=(state.productsMode||"simple")==="simple";
+    var prodVal;
+    if(simple){ var txt=(state.productsText||"").trim(); prodVal = txt ? (txt.length>110?txt.slice(0,110)+"…":txt) : "—"; }
+    else { var prods=state.products.map(function(p){return (p.name||"")+(p.variation?" ("+p.variation+")":"");}).filter(function(s){return s.trim();}); prodVal = prods.length?prods.join(", "):"—"; }
+    var docCount = simple ? 1 : state.products.length;
     return rvwRow("Website", state.website||"—")+
-      rvwRow("Products / services", prods.length?prods.join(", "):"—")+
+      rvwRow("Products / services", prodVal)+
       rvwRow("Files shared", (function(){var t=state.files.length+state.products.reduce(function(a,p){return a+((p&&p.files&&p.files.length)||0);},0);return t?(t+" attached"):"None";})())+
-      rvwRow("Knowledge base", state.products.length+" doc"+(state.products.length>1?"s":"")+" + ICP drafted");
+      rvwRow("Knowledge base", docCount+" doc"+(docCount!==1?"s":"")+" + ICP drafted");
   }
   function reviewInfra(){
     var tier={"15":"Starter","34":"Growth","67":"Scale"}[state.vol]||"—";
@@ -708,8 +765,12 @@
     S[4], S[5], S[6], S[7], S[8],  // domain, forwarding, volume, senders, split
     sectionReview({eyebrow:"Infrastructure", title:"Your sending setup", blurb:"Everything's ready to send from.", rows:reviewInfra, cta:"Looks good — continue"}),
     sectionIntro({n:3, title:"Connections", blurb:"Plug in the tools your agents work alongside — your inbox, CRM, calendar, and teammates.",
-      covers:["Sending mailboxes & LinkedIn","Your CRM","Scheduling / calendar","Invite your team"]}),
-    S[9],  // connect accounts (mailboxes + LinkedIn)
+      covers:["Your primary mailbox","LinkedIn accounts","CRM & scheduling","Invite your team"]}),
+    S[9],  // connect primary mailbox (Google / Microsoft)
+    accountStep({track:"linkedin",
+      h1:"Connect LinkedIn",
+      hint:"Add the LinkedIn accounts your agents send connection requests and messages from — now, or skip and do it later. Add as many as you need.",
+      providers:[{kind:"li",label:"LinkedIn",t:"LinkedIn account",l:"in",bg:"#0A66C2",c:"#fff"}]}),
     integrationStep({h1:"Connect your CRM", hint:"Sync contacts and log every touch automatically. Optional.", arr:"crm", providers:CRM_PROVIDERS}),
     integrationStep({h1:"Connect scheduling", hint:"Let prospects book time straight from your emails. Optional.", arr:"scheduling", providers:SCHED_PROVIDERS}),
     S[10],  // invite team
@@ -827,7 +888,7 @@
   function buildFlow(){
     FLOW=[];
     STEPS.forEach(function(st){
-      if(st.expand==="products"){ for(var i=1;i<=state.pcount;i++) FLOW.push(productStep(i,state.pcount)); }
+      if(st.expand==="products"){ if((state.productsMode||"simple")==="detailed"){ for(var i=1;i<=state.pcount;i++) FLOW.push(productStep(i,state.pcount)); } }
       else FLOW.push(st);
     });
   }
