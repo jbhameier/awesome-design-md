@@ -196,6 +196,18 @@
   .stages li.done .dot{border-color:var(--ok);background:var(--ok)}
   .stages li.done .dot::after{content:"";position:absolute;left:6px;top:2.5px;width:5px;height:10px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg)}
   @keyframes spin{to{transform:rotate(360deg)}}
+  /* section chapters */
+  .sect-badge{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--brand);background:rgba(103,99,215,.12);padding:6px 14px;border-radius:99px}
+  .sect-covers{list-style:none;margin:20px auto 0;max-width:290px;text-align:left;display:flex;flex-direction:column;gap:11px}
+  .sect-covers li{position:relative;padding-left:28px;font-size:14.5px;color:var(--ink-soft)}
+  .sect-covers li::before{content:"";position:absolute;left:0;top:2px;width:18px;height:18px;border-radius:50%;background:rgba(103,99,215,.15)}
+  .sect-covers li::after{content:"";position:absolute;left:6px;top:5px;width:4px;height:8px;border:solid var(--brand);border-width:0 2px 2px 0;transform:rotate(45deg)}
+  .rvw-card{background:var(--glass);border:1px solid var(--hair);box-shadow:var(--shadow);border-radius:var(--r-md);padding:4px 16px;max-height:46vh;overflow:auto;scrollbar-width:none}
+  .rvw-card::-webkit-scrollbar{display:none}
+  .rvw-row{display:flex;justify-content:space-between;gap:14px;padding:13px 0;border-bottom:1px solid var(--hair-soft);font-size:14px}
+  .rvw-row:last-child{border-bottom:none}
+  .rvw-k{color:var(--ink-dim);flex-shrink:0}
+  .rvw-v{font-weight:600;text-align:right;min-width:0;overflow:hidden;text-overflow:ellipsis}
 
   .camp-head{display:flex;align-items:center;gap:11px;margin-top:12px}
   .camp-head .ico{width:38px;height:38px;border-radius:11px;display:grid;place-items:center;flex-shrink:0;font-weight:700;font-size:15px}
@@ -249,7 +261,7 @@
 
   var state={
     website:"", domain:"", domainManual:false, fwdSame:true, fwd:"", vol:"", mbx:"",
-    pcount:1, products:[], senders:[], invites:[], files:[], splitPct:[], splitLocked:[],
+    pcount:1, products:[], senders:[], invites:[], files:[], splitPct:[], splitLocked:[], mailboxes:0, linkedin:0,
     icpInd:"B2B SaaS · Fintech · Prof. services", icpTitles:"VP Sales, Head of RevOps, CRO",
     icpPain:"Fragmented tooling, slow pipeline velocity."
   };
@@ -507,7 +519,8 @@
       var acct=kind==="li" ? ((s0.first||"Alex")+" "+(s0.last||"Rivera")) : ((s0.first||"alex").toLowerCase()+"."+(s0.last||"rivera").toLowerCase()+"@"+primaryDomain());
       var n=document.createElement("div"); n.className="conn";
       n.innerHTML='<div class="logo" style="background:'+p.bg+';color:'+p.c+'">'+p.l+'</div><div class="meta"><div class="t">'+p.t+'</div><div class="s">Connecting…</div></div><span class="stat">…</span><button class="cx">×</button>';
-      n.querySelector(".cx").addEventListener("click",function(){ n.remove(); });
+      if(kind==="li") state.linkedin++; else state.mailboxes++;
+      n.querySelector(".cx").addEventListener("click",function(){ if(kind==="li") state.linkedin=Math.max(0,state.linkedin-1); else state.mailboxes=Math.max(0,state.mailboxes-1); n.remove(); });
       list.appendChild(n);
       setTimeout(function(){ n.querySelector(".meta .s").textContent=acct; n.querySelector(".stat").textContent="✓"; }, rm?0:600);
     }); });
@@ -578,7 +591,64 @@
         '<div class="pt"><div class="when">WEEK 2</div><div class="what">BeBop added</div><div class="sub">Layers into your outreach to widen reach.</div></div>'+
         '<div class="pt"><div class="when">~DAY 14</div><div class="what">Email campaigns go live</div><div class="sub">Mailboxes attach and sending begins on schedule.</div></div>'+
       '</div><div class="qfoot"><button class="btn ghost" data-restart>Restart walkthrough</button></div>';
-  },after:function(el){ var r=$('[data-restart]',el); if(r) r.addEventListener("click",function(){ state.pcount=1;state.products=[];state.senders=[];state.invites=[];state.files=[];state.splitPct=[];state.splitLocked=[];state.vol="";state.mbx="";state.domainManual=false;state.fwdSame=true; idx=0; render(); show(0); }); }});
+  },after:function(el){ var r=$('[data-restart]',el); if(r) r.addEventListener("click",function(){ state.pcount=1;state.products=[];state.senders=[];state.invites=[];state.files=[];state.splitPct=[];state.splitLocked=[];state.mailboxes=0;state.linkedin=0;state.vol="";state.mbx="";state.domainManual=false;state.fwdSame=true; idx=0; render(); show(0); }); }});
+
+  // ---- section chapters: an intro screen + a review screen around each of the 3 sections ----
+  function sectionIntro(cfg){
+    return { intro:true, build:function(){
+      var covers = cfg.covers ? '<ul class="sect-covers">'+cfg.covers.map(function(c){return '<li>'+c+'</li>';}).join("")+'</ul>' : '';
+      return '<div class="center">'+
+        '<div class="sect-badge">Section '+cfg.n+' of 3</div>'+
+        '<h1 style="margin-top:14px">'+cfg.title+'</h1>'+
+        '<p class="hint" style="margin-top:10px">'+cfg.blurb+'</p>'+covers+
+        '<div class="qfoot"><button class="btn" data-next>'+(cfg.cta||"Continue")+'</button></div></div>';
+    }};
+  }
+  function rvwRow(k,v){ return '<div class="rvw-row"><span class="rvw-k">'+esc(k)+'</span><span class="rvw-v">'+esc(v)+'</span></div>'; }
+  function sectionReview(cfg){
+    return { review:true, build:function(){
+      return '<p class="eyebrow">'+cfg.eyebrow+'</p><h1>'+cfg.title+'</h1>'+(cfg.blurb?'<p class="hint">'+cfg.blurb+'</p>':'')+
+        '<div class="qfields"><div class="rvw-card" data-review></div></div>'+
+        '<div class="qfoot"><button class="btn" data-next>'+(cfg.cta||"Continue")+'</button></div>';
+    }, onShow:function(el){ $('[data-review]',el).innerHTML=cfg.rows(); } };
+  }
+  function reviewResearch(){
+    var prods=state.products.map(function(p){return (p.name||"")+(p.variation?" ("+p.variation+")":"");}).filter(function(s){return s.trim();});
+    return rvwRow("Website", state.website||"—")+
+      rvwRow("Products / services", prods.length?prods.join(", "):"—")+
+      rvwRow("Files shared", state.files.length?(state.files.length+" attached"):"None")+
+      rvwRow("Knowledge base", state.products.length+" doc"+(state.products.length>1?"s":"")+" + ICP drafted");
+  }
+  function reviewInfra(){
+    var tier={"15":"Starter","34":"Growth","67":"Scale"}[state.vol]||"—";
+    var senders=state.senders.map(function(s,i){ return ((s.first||"")+" "+(s.last||"")).trim()+(state.splitPct[i]!=null?" · "+state.splitPct[i]+"%":""); }).join("   ");
+    return rvwRow("Sending domain", state.domain||primaryDomain())+
+      rvwRow("Volume", tier+(state.mbx?" · "+state.mbx+" mailboxes":""))+
+      rvwRow("Senders", senders||"—")+
+      rvwRow("Mailboxes connected", state.mailboxes?(state.mailboxes+""):"None yet")+
+      rvwRow("LinkedIn", state.linkedin?(state.linkedin+""):"None yet")+
+      rvwRow("Team invites", state.invites.length?(state.invites.length+""):"None");
+  }
+  function reviewCampaigns(){ return CAMPAIGNS.map(function(c){ return rvwRow(c.nm, "Ready ✓"); }).join(""); }
+
+  // reassemble into 3 chapters (welcome first, done last). indices per the push order above.
+  var S = STEPS.slice();
+  STEPS = [
+    S[0],  // welcome
+    sectionIntro({n:1, title:"AI Agent Research", blurb:"First, tell us about your business. Your agents read it, research your market, and draft everything they need to sound like you.",
+      covers:["Your website & offerings","Any docs to learn from","AI research & knowledge base","Your ideal customer profile"]}),
+    S[1], S[2], S[3], S[4], S[12], S[13],  // website, count, {products}, uploads, research, icp
+    sectionReview({eyebrow:"AI Agent Research", title:"Your research, at a glance", blurb:"Here's what your agents will work from.", rows:reviewResearch, cta:"Looks good — continue"}),
+    sectionIntro({n:2, title:"Infrastructure", blurb:"Now let's set up how you send — the domains, mailboxes, and accounts your agents send from.",
+      covers:["Your sending domain","Volume & mailboxes","Who's sending","Connect accounts & team"]}),
+    S[5], S[6], S[7], S[8], S[9], S[10], S[11],  // domain, forwarding, volume, senders, split, connect, team
+    sectionReview({eyebrow:"Infrastructure", title:"Your sending setup", blurb:"Everything's ready to send from.", rows:reviewInfra, cta:"Looks good — continue"}),
+    sectionIntro({n:3, title:"Campaigns", blurb:"Last step — review the sequences your agents will run and approve each one.",
+      covers:["LinkedIn campaign","Three email campaigns","Approve & launch"]}),
+    S[14], S[15], S[16], S[17],  // campaigns
+    sectionReview({eyebrow:"Campaigns", title:"Ready to launch", blurb:"All your campaigns are set.", rows:reviewCampaigns, cta:"Launch"}),
+    S[18]  // done
+  ];
 
   function renderChips(el,key,labeler){
     var box=$('[data-chips]',el); if(!box) return; box.innerHTML="";
@@ -713,7 +783,7 @@
     nodes.forEach(function(n,k){ n.classList.toggle("active",k===i); n.classList.toggle("up",k<i); });
     var prog = FLOW[i].welcome?0 : (FLOW[i].done?1 : i/(FLOW.length-1));
     bar.style.width=(prog*100)+"%";
-    bar.parentNode.style.visibility = FLOW[i].welcome ? "hidden" : "visible";  // no progress bar on welcome
+    bar.parentNode.style.visibility = (FLOW[i].welcome||FLOW[i].intro) ? "hidden" : "visible";  // hide bar on welcome + section intros
     back.classList.toggle("show", i>0 && !FLOW[i].done);
     if(FLOW[i].onShow) FLOW[i].onShow(nodes[i]);
   }
