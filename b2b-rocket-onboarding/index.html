@@ -513,25 +513,14 @@
     onShow:function(el){ buildSplit(el); }
   });
 
-  STEPS.push({build:function(){
-    return '<p class="eyebrow">Connect <span class="opt" style="text-transform:none;letter-spacing:0">— optional</span></p><h1>Connect your accounts</h1><p class="hint">Add sending mailboxes or LinkedIn accounts now, or skip and do it later. Add as many as you need.</p>'+
-      '<div class="qfields"><div class="chips" id="connList"></div>'+
-        '<div class="addpill"><button data-add="google">＋ Google</button><button data-add="ms">＋ Microsoft</button><button data-add="li">＋ LinkedIn</button></div>'+
-      '</div><div class="qfoot"><button class="btn" data-next>Continue</button><button class="skip" data-next>Skip for now</button></div>';
-  },after:function(el){
-    var list=$("#connList",el);
-    var P={google:{t:"Google Workspace",l:"G",bg:"#fff",c:"#4285F4"},ms:{t:"Microsoft 365",l:"M",bg:"#fff",c:"#0078D4"},li:{t:"LinkedIn account",l:"in",bg:"#0A66C2",c:"#fff"}};
-    $$('[data-add]',el).forEach(function(b){ b.addEventListener("click",function(){
-      var kind=b.getAttribute("data-add"),p=P[kind],s0=state.senders[0]||{first:"alex",last:"rivera"};
-      var acct=kind==="li" ? ((s0.first||"Alex")+" "+(s0.last||"Rivera")) : ((s0.first||"alex").toLowerCase()+"."+(s0.last||"rivera").toLowerCase()+"@"+primaryDomain());
-      var n=document.createElement("div"); n.className="conn";
-      n.innerHTML='<div class="logo" style="background:'+p.bg+';color:'+p.c+'">'+p.l+'</div><div class="meta"><div class="t">'+p.t+'</div><div class="s">Connecting…</div></div><span class="stat">…</span><button class="cx">×</button>';
-      if(kind==="li") state.linkedin++; else state.mailboxes++;
-      n.querySelector(".cx").addEventListener("click",function(){ if(kind==="li") state.linkedin=Math.max(0,state.linkedin-1); else state.mailboxes=Math.max(0,state.mailboxes-1); n.remove(); });
-      list.appendChild(n);
-      setTimeout(function(){ n.querySelector(".meta .s").textContent=acct; n.querySelector(".stat").textContent="✓"; }, rm?0:600);
-    }); });
-  }});
+  // S[9] — primary mailbox connect (Google / Microsoft). LinkedIn is a separate step, added in the reassembly.
+  STEPS.push(accountStep({track:"mailboxes",
+    h1:"Connect your primary mailbox",
+    hint:"Add the Google or Microsoft mailboxes your agents send from — now, or skip and do it later. Add as many as you need.",
+    providers:[
+      {kind:"google",label:"Google",t:"Google Workspace",l:"G",bg:"#fff",c:"#4285F4"},
+      {kind:"ms",label:"Microsoft",t:"Microsoft 365",l:"M",bg:"#fff",c:"#0078D4"}
+    ]}));
 
   STEPS.push({
     build:function(){
@@ -600,6 +589,29 @@
       '</div><div class="qfoot"><button class="btn ghost" data-restart>Restart walkthrough</button></div>';
   },after:function(el){ var r=$('[data-restart]',el); if(r) r.addEventListener("click",function(){ state.pcount=1;state.products=[];state.senders=[];state.invites=[];state.files=[];state.splitPct=[];state.splitLocked=[];state.mailboxes=0;state.linkedin=0;state.crm=[];state.scheduling=[];state.vol="";state.mbx="";state.domainManual=false;state.fwdSame=true; idx=0; render(); show(0); }); }});
 
+  // connect-account screen (primary mailbox, LinkedIn) — optional, add-as-many, derives an account label per add
+  function accountStep(cfg){
+    return { build:function(){
+      var btns=cfg.providers.map(function(p){ return '<button data-add="'+p.kind+'">＋ '+p.label+'</button>'; }).join("");
+      return '<p class="eyebrow">Connections <span class="opt" style="text-transform:none;letter-spacing:0">— optional</span></p><h1>'+cfg.h1+'</h1><p class="hint">'+cfg.hint+'</p>'+
+        '<div class="qfields"><div class="chips" data-list></div>'+
+          '<div class="addpill">'+btns+'</div>'+
+        '</div><div class="qfoot"><button class="btn" data-next>Continue</button><button class="skip" data-next>Skip for now</button></div>';
+    }, after:function(el){
+      var list=$('[data-list]',el), P={}; cfg.providers.forEach(function(p){ P[p.kind]=p; });
+      $$('[data-add]',el).forEach(function(b){ b.addEventListener("click",function(){
+        var p=P[b.getAttribute("data-add")], s0=state.senders[0]||{first:"alex",last:"rivera"};
+        var acct=cfg.track==="linkedin" ? ((s0.first||"Alex")+" "+(s0.last||"Rivera"))
+          : ((s0.first||"alex").toLowerCase()+"."+(s0.last||"rivera").toLowerCase()+"@"+primaryDomain());
+        var n=document.createElement("div"); n.className="conn";
+        n.innerHTML='<div class="logo" style="background:'+p.bg+';color:'+p.c+'">'+p.l+'</div><div class="meta"><div class="t">'+p.t+'</div><div class="s">Connecting…</div></div><span class="stat">…</span><button class="cx">×</button>';
+        state[cfg.track]++;
+        n.querySelector(".cx").addEventListener("click",function(){ state[cfg.track]=Math.max(0,state[cfg.track]-1); n.remove(); });
+        list.appendChild(n);
+        setTimeout(function(){ n.querySelector(".meta .s").textContent=acct; n.querySelector(".stat").textContent="✓"; }, rm?0:600);
+      }); });
+    }};
+  }
   // ---- section chapters: an intro screen + a review screen around each of the 3 sections ----
   function sectionIntro(cfg){
     return { intro:true, build:function(){
@@ -708,8 +720,12 @@
     S[4], S[5], S[6], S[7], S[8],  // domain, forwarding, volume, senders, split
     sectionReview({eyebrow:"Infrastructure", title:"Your sending setup", blurb:"Everything's ready to send from.", rows:reviewInfra, cta:"Looks good — continue"}),
     sectionIntro({n:3, title:"Connections", blurb:"Plug in the tools your agents work alongside — your inbox, CRM, calendar, and teammates.",
-      covers:["Sending mailboxes & LinkedIn","Your CRM","Scheduling / calendar","Invite your team"]}),
-    S[9],  // connect accounts (mailboxes + LinkedIn)
+      covers:["Your primary mailbox","LinkedIn accounts","CRM & scheduling","Invite your team"]}),
+    S[9],  // connect primary mailbox (Google / Microsoft)
+    accountStep({track:"linkedin",
+      h1:"Connect LinkedIn",
+      hint:"Add the LinkedIn accounts your agents send connection requests and messages from — now, or skip and do it later. Add as many as you need.",
+      providers:[{kind:"li",label:"LinkedIn",t:"LinkedIn account",l:"in",bg:"#0A66C2",c:"#fff"}]}),
     integrationStep({h1:"Connect your CRM", hint:"Sync contacts and log every touch automatically. Optional.", arr:"crm", providers:CRM_PROVIDERS}),
     integrationStep({h1:"Connect scheduling", hint:"Let prospects book time straight from your emails. Optional.", arr:"scheduling", providers:SCHED_PROVIDERS}),
     S[10],  // invite team
