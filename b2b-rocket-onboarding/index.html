@@ -265,7 +265,7 @@
 
   var state={
     website:"", domain:"", domainManual:false, fwdSame:true, fwd:"", vol:"", mbx:"",
-    pcount:1, products:[], senders:[], invites:[], files:[], splitPct:[], splitLocked:[], mailboxes:0, linkedin:0,
+    pcount:1, products:[], senders:[], invites:[], files:[], splitPct:[], splitLocked:[], mailboxes:0, linkedin:0, crm:[], scheduling:[],
     icpInd:"B2B SaaS · Fintech · Prof. services", icpTitles:"VP Sales, Head of RevOps, CRO",
     icpPain:"Fragmented tooling, slow pipeline velocity."
   };
@@ -598,14 +598,14 @@
         '<div class="pt"><div class="when">WEEK 2</div><div class="what">BeBop added</div><div class="sub">Layers into your outreach to widen reach.</div></div>'+
         '<div class="pt"><div class="when">~DAY 14</div><div class="what">Email campaigns go live</div><div class="sub">Mailboxes attach and sending begins on schedule.</div></div>'+
       '</div><div class="qfoot"><button class="btn ghost" data-restart>Restart walkthrough</button></div>';
-  },after:function(el){ var r=$('[data-restart]',el); if(r) r.addEventListener("click",function(){ state.pcount=1;state.products=[];state.senders=[];state.invites=[];state.files=[];state.splitPct=[];state.splitLocked=[];state.mailboxes=0;state.linkedin=0;state.vol="";state.mbx="";state.domainManual=false;state.fwdSame=true; idx=0; render(); show(0); }); }});
+  },after:function(el){ var r=$('[data-restart]',el); if(r) r.addEventListener("click",function(){ state.pcount=1;state.products=[];state.senders=[];state.invites=[];state.files=[];state.splitPct=[];state.splitLocked=[];state.mailboxes=0;state.linkedin=0;state.crm=[];state.scheduling=[];state.vol="";state.mbx="";state.domainManual=false;state.fwdSame=true; idx=0; render(); show(0); }); }});
 
   // ---- section chapters: an intro screen + a review screen around each of the 3 sections ----
   function sectionIntro(cfg){
     return { intro:true, build:function(){
       var covers = cfg.covers ? '<ul class="sect-covers">'+cfg.covers.map(function(c){return '<li>'+c+'</li>';}).join("")+'</ul>' : '';
       return '<div class="center">'+
-        '<div class="sect-badge">Section '+cfg.n+' of 3</div>'+
+        '<div class="sect-badge">Section '+cfg.n+' of 4</div>'+
         '<h1 style="margin-top:14px">'+cfg.title+'</h1>'+
         '<p class="hint" style="margin-top:10px">'+cfg.blurb+'</p>'+covers+
         '<div class="qfoot"><button class="btn" data-next>'+(cfg.cta||"Continue")+'</button></div></div>';
@@ -631,16 +631,58 @@
     var senders=state.senders.map(function(s,i){ return ((s.first||"")+" "+(s.last||"")).trim()+(state.splitPct[i]!=null?" · "+state.splitPct[i]+"%":""); }).join("   ");
     return rvwRow("Sending domain", state.domain||primaryDomain())+
       rvwRow("Volume", tier+(state.mbx?" · "+state.mbx+" mailboxes":""))+
-      rvwRow("Senders", senders||"—")+
-      rvwRow("Mailboxes connected", state.mailboxes?(state.mailboxes+""):"None yet")+
-      rvwRow("LinkedIn", state.linkedin?(state.linkedin+""):"None yet")+
+      rvwRow("Senders", senders||"—");
+  }
+  function reviewConnections(){
+    return rvwRow("Sending mailboxes", state.mailboxes?(state.mailboxes+" connected"):"None yet")+
+      rvwRow("LinkedIn", state.linkedin?(state.linkedin+" connected"):"None yet")+
+      rvwRow("CRM", state.crm.length?state.crm.join(", "):"Not connected")+
+      rvwRow("Scheduling", state.scheduling.length?state.scheduling.join(", "):"Not connected")+
       rvwRow("Team invites", state.invites.length?(state.invites.length+""):"None");
   }
+  // generic "connect an integration" screen (CRM, scheduling) — optional, add/remove providers
+  function renderIntegr(el,cfg){
+    var list=el.querySelector("[data-list]"); if(!list) return; list.innerHTML="";
+    state[cfg.arr].forEach(function(t){
+      var pr=cfg.providers.filter(function(x){return x.t===t;})[0]||{t:t,l:t.charAt(0),bg:"#6763D7",c:"#fff"};
+      var n=document.createElement("div"); n.className="conn";
+      n.innerHTML='<div class="logo" style="background:'+pr.bg+';color:'+pr.c+'">'+pr.l+'</div><div class="meta"><div class="t">'+pr.t+'</div><div class="s">Connected</div></div><span class="stat">✓</span><button class="cx">×</button>';
+      n.querySelector(".cx").addEventListener("click",function(){ var idx=state[cfg.arr].indexOf(pr.t); if(idx>=0) state[cfg.arr].splice(idx,1); n.remove(); });
+      list.appendChild(n);
+    });
+  }
+  function integrationStep(cfg){
+    return {
+      build:function(){
+        var btns=cfg.providers.map(function(pr){ return '<button data-add="'+pr.t+'">＋ '+pr.t+'</button>'; }).join("");
+        return '<p class="eyebrow">Connections <span class="opt" style="text-transform:none;letter-spacing:0">— optional</span></p><h1>'+cfg.h1+'</h1><p class="hint">'+cfg.hint+'</p>'+
+          '<div class="qfields"><div class="chips" data-list></div><div class="addpill">'+btns+'</div></div>'+
+          '<div class="qfoot"><button class="btn" data-next>Continue</button><button class="skip" data-next>Skip for now</button></div>';
+      },
+      onShow:function(el){ var list=el.querySelector("[data-list]"); if(list && list.children.length===0 && state[cfg.arr].length) renderIntegr(el,cfg); },
+      after:function(el){
+        var list=$('[data-list]',el);
+        $$('[data-add]',el).forEach(function(btn){ btn.addEventListener("click",function(){
+          var pr=cfg.providers.filter(function(x){return x.t===btn.getAttribute("data-add");})[0];
+          if(state[cfg.arr].indexOf(pr.t)>=0) return;
+          state[cfg.arr].push(pr.t);
+          var n=document.createElement("div"); n.className="conn";
+          n.innerHTML='<div class="logo" style="background:'+pr.bg+';color:'+pr.c+'">'+pr.l+'</div><div class="meta"><div class="t">'+pr.t+'</div><div class="s">Connecting…</div></div><span class="stat">…</span><button class="cx">×</button>';
+          n.querySelector(".cx").addEventListener("click",function(){ var idx=state[cfg.arr].indexOf(pr.t); if(idx>=0) state[cfg.arr].splice(idx,1); n.remove(); });
+          list.appendChild(n);
+          setTimeout(function(){ n.querySelector(".meta .s").textContent="Connected"; n.querySelector(".stat").textContent="✓"; }, rm?0:600);
+        }); });
+      }
+    };
+  }
+  var CRM_PROVIDERS=[{t:"HubSpot",l:"H",bg:"#FF7A59",c:"#fff"},{t:"Salesforce",l:"SF",bg:"#00A1E0",c:"#fff"},{t:"Zoho",l:"Z",bg:"#E42527",c:"#fff"}];
+  var SCHED_PROVIDERS=[{t:"HubSpot Meetings",l:"H",bg:"#FF7A59",c:"#fff"},{t:"Calendly",l:"C",bg:"#006BFF",c:"#fff"}];
   function reviewCampaigns(){ return CAMPAIGNS.map(function(c){ return rvwRow(c.nm, "Ready ✓"); }).join(""); }
   // full journey recap, grouped by section — used on the first end screen
   function doneSummary(){
     return '<div class="rvw-group">AI Agent Research</div>'+reviewResearch()+
            '<div class="rvw-group">Infrastructure</div>'+reviewInfra()+
+           '<div class="rvw-group">Connections</div>'+reviewConnections()+
            '<div class="rvw-group">Campaigns</div>'+reviewCampaigns();
   }
   function doneSummaryStep(){
@@ -661,11 +703,18 @@
       covers:["Your website & offerings","Any docs to learn from","AI research & knowledge base","Your ideal customer profile"]}),
     S[1], S[2], S[3], S[11], S[12],  // website, count, {products}, research, icp
     sectionReview({eyebrow:"AI Agent Research", title:"Your research, at a glance", blurb:"Here's what your agents will work from.", rows:reviewResearch, cta:"Looks good — continue"}),
-    sectionIntro({n:2, title:"Infrastructure", blurb:"Now let's set up how you send — the domains, mailboxes, and accounts your agents send from.",
-      covers:["Your sending domain","Volume & mailboxes","Who's sending","Connect accounts & team"]}),
-    S[4], S[5], S[6], S[7], S[8], S[9], S[10],  // domain, forwarding, volume, senders, split, connect, team
+    sectionIntro({n:2, title:"Infrastructure", blurb:"Now let's set up how you send — the domains and mailboxes your agents send from.",
+      covers:["Your sending domain","Volume & mailboxes","Who's sending & the split"]}),
+    S[4], S[5], S[6], S[7], S[8],  // domain, forwarding, volume, senders, split
     sectionReview({eyebrow:"Infrastructure", title:"Your sending setup", blurb:"Everything's ready to send from.", rows:reviewInfra, cta:"Looks good — continue"}),
-    sectionIntro({n:3, title:"Campaigns", blurb:"Last step — review the sequences your agents will run and approve each one.",
+    sectionIntro({n:3, title:"Connections", blurb:"Plug in the tools your agents work alongside — your inbox, CRM, calendar, and teammates.",
+      covers:["Sending mailboxes & LinkedIn","Your CRM","Scheduling / calendar","Invite your team"]}),
+    S[9],  // connect accounts (mailboxes + LinkedIn)
+    integrationStep({h1:"Connect your CRM", hint:"Sync contacts and log every touch automatically. Optional.", arr:"crm", providers:CRM_PROVIDERS}),
+    integrationStep({h1:"Connect scheduling", hint:"Let prospects book time straight from your emails. Optional.", arr:"scheduling", providers:SCHED_PROVIDERS}),
+    S[10],  // invite team
+    sectionReview({eyebrow:"Connections", title:"Your connections", blurb:"What your agents are plugged into.", rows:reviewConnections, cta:"Looks good — continue"}),
+    sectionIntro({n:4, title:"Campaigns", blurb:"Last step — review the sequences your agents will run and approve each one.",
       covers:["LinkedIn campaign","Three email campaigns","Approve & launch"]}),
     S[13], S[14], S[15], S[16],  // campaigns
     sectionReview({eyebrow:"Campaigns", title:"Ready to launch", blurb:"All your campaigns are set.", rows:reviewCampaigns, cta:"Launch"}),
